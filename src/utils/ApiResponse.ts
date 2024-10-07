@@ -99,3 +99,15 @@ export const _403 = (res: Response, msg = '') => {
     };
     return res.status(403).json(data);
 }
+export const _409 = (res: Response, msg = '', data = null,) => {
+
+    var resData = {
+        status: 409,
+        message: msg,
+    };
+    if (data) {
+        resData[DATA_KEY] = data
+    }
+    resData = { ...resData, ...data }
+    return res.status(409).json(resData);
+}

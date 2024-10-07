@@ -8,49 +8,42 @@ import {
     getDistrictList,
     updateDistrict,
 } from "../../services/admin/district.service";
-import { _200, _201, _400, _404, _409 } from "../../utils/ApiResponse";
+import { addTaluka, getTaluka } from "../../services/admin/taluka.service";
+import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
 
-export class district {
-    static async addDistrict(req, res, next) {
-        let districtName = req?.body?.district_name;
+export class taluka {
+    static async addTaluka(req, res, next) {
+        let districtId = req?.body?.district_id;
+        let talukaName = req?.body?.district_id;
         let response = {};
         let currentTimestamp = Math.floor(new Date().getTime());
-        let params = [districtName];
-        addDistrict(params).then((result) => {
-            console.log('result', result);
-            if( result === "exists") {
-                console.log('test');
-                _409(res, districtName+' District Already Exists')
-            } else if( result == null) {
-                _400(res, 'District Not Added')
-            }else{
-                _201(res, districtName+' District Added Successfully')
+        let params = [districtId, talukaName];
+        addTaluka(params).then((result) => {
+            if (result) {
+                _201(res, talukaName+' taluka Added Successfully')
+            } else {
+                _400(res, talukaName+' taluka Not Added')
             }
         }
         ).catch((error) => {
-
-            logger.error("addDistrict :: ", error)
-            _400(res, 'District Not Added')
+            logger.error("addTaluka :: ", error)
+            _400(res, 'Taluka Not Added')
         });
     }
 
-    static async getDistrict(req, res, next) {
-
-        let districtId = req?.params?.id;
+    static async getTaluka(req, res, next) {
+        let talukaId = req?.params?.id;
         let response = {};
-        getDistrict([districtId]).then((result) => {
+        getTaluka([talukaId]).then((result) => {
             if (result) {
-
                 response['data'] = result;
-                _200(res, 'District Found Successfully', response)
+                _200(res, 'Taluka Found Successfully', response)
             } else {
-                _404(res, 'District Not Found')
+                _404(res, 'Taluka Not Found')
             }
         }).catch((error) => {
-
-            logger.error("getDistrict :: ", error)
-            _404(res, 'District Not Found')
-
+            logger.error("getTaluka :: ", error)
+            _404(res, 'Taluka Not Found')
         });
     }
 
@@ -61,8 +54,6 @@ export class district {
         let offset = (page - 1) * limit;
         getDistrictList({ limit: limit, offset: offset }).then((result) => {
             if (result) {
-
-
                 response['data'] = result;
                 response['page'] = page;
                 response['limit'] = limit;
@@ -87,12 +78,10 @@ export class district {
                 return _404(res, 'District Not Found');
             }
             updateDistrict([districtName, districtId]).then((result) => {
-                 if( result === "exists") {
-                    _409(res, districtName+' District Already Exists. Please choose another district name')
-                } else if( result == null) {
-                     _400(res, 'District Not Updated')
-                }else{
-                    _200(res, districtName+ ' District Updated Successfully');
+                if (result) {
+                    _200(res, 'District Updated Successfully');
+                } else {
+                    _400(res, 'District Not Updated')
                 }
             }).catch((err) => {
 

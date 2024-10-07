@@ -1,47 +1,44 @@
 import e = require("express");
-import { executeQuery } from "../config/db/db";
-import { EMAIL } from "../constants/constant";
-import { logger } from "../logger/Logger";
+import { executeQuery } from "../../config/db/db";
+import { EMAIL } from "../../constants/constant";
+import { logger } from "../../logger/Logger";
 
 
-/**
- * function getDistrict use for fetch district details
- * @param params 
- * @returns 
- */
 export const addTaluka = async (params: object) => {
     try {
-        let sql = `INSERT INTO taluka (DISTRICT_ID, TALUKA_NAME) VALUES (?)`;
+        let sql = `INSERT INTO taluka (DISTRICT_ID, TALUKA_NAME) VALUES (?, ?)`;
         return executeQuery(sql, params).then(result => {
             return (result) ? result : null;
         }).catch(error => {
-            console.error("addDistrict Fetch Data Error: ", error);
+            console.error("addTaluka Fetch Data Error: ", error);
             return null;
         });
     } catch (error) {
-        logger.error("addDistrict :: ", error)
+        logger.error("addTaluka :: ", error)
         throw new Error(error)
     }
 
 }
 
-/**
- * @function getDistrict use for fetch district details
- * @param params 
- * @returns 
- */
-
 export const getTaluka = async (params: object) => {
     try {
-        let sql = `SELECT DISTRICT_ID,DISTRICT_NAME FROM district WHERE DISTRICT_ID = ?`
+        let sql = ` SELECT
+                        TALUKA_ID,
+                        DISTRICT_ID,
+                        DISTRICT_NAME,
+                        TALUKA_NAME
+                    FROM
+                        taluka t
+                    JOIN district d ON t.DISTRICT_ID = d.DISTRICT_ID  
+                    WHERE TALUKA_ID = ?`
         return executeQuery(sql, params).then(result => {
             return (result) ? result[0] : null;
         }).catch(error => {
-            console.error("getDistrict Fetch Data Error: ", error);
+            console.error("Taluka Fetch Data Error: ", error);
             return null;
         });
     } catch (error) {
-        logger.error("getDistrict :: ", error)
+        logger.error("getTaluka :: ", error)
         throw new Error(error)
     }
 }
