@@ -1,0 +1,453 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "ICAD_API",
+    "dateExported": "2023-08-07T14:28:25.002Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "de0ea040-7bf4-4fb8-97d5-9050aa526fc7",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "Login",
+            "url": "192.168.245.239:4444/",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2023-07-11T14:40:57.698Z",
+            "modified": "2023-08-02T15:50:59.078Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"user\": \"7620496003\",\n    \"pass\": \"Password@12345\",\n    \"for_otp_pass\" : \"PASS\",\n    \"email_mobile\":\"MOBILE\",\n     \"device_id\" : \"779F9AAA570631E9F5664A6161C6B473XXGGXXGGXX\",\n     \"country_code\":\"91\",\n     \"otp\":\"4258\",\n     \"api_key\":\"\"\n  }",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "b52e0da4-79a8-4883-b689-df6871f89367",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "ResentOPT",
+            "url": "{{API_URL}}/api/user/resent-otp",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2023-07-16T10:06:40.755Z",
+            "modified": "2023-08-06T07:16:36.449Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"user\": \"9158738445\",\n    \"password\": \"Password@123\",\n    \"for_otp_pass\" : \"OTP\",\n    \"email_mobile\":\"MOBILE\",\n     \"device_id\" : \"\",\n     \"country_code\":\"91\",\n     \"otp\":\"12341\",\n     \"api_key\":\"\"\n  }",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1NywiZW1haWwiOiJ5b2dlc2guZG9uZ2FyZTExMUBpY2FkamVlLmNvbSIsIm1vYmlsZSI6Ijg5ODk4OTg1NTYiLCJpYXQiOjE2ODk1MzAzOTMsImV4cCI6MTY5OTg5ODM5M30.Xjfh3LrC6bOLdja3GGJEnVaMrjxmxTkBvhA2v4op9o8"
+            },
+            "tests": []
+        },
+        {
+            "_id": "cdb7a00c-3abc-4b3d-98a4-8c28b6439957",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "VerifyOtp",
+            "url": "{{API_URL}}/api/user/verify-otp",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-07-17T06:20:18.871Z",
+            "modified": "2023-07-17T09:28:01.093Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"user\": \"7620496003\",\n    \"password\": \"Password@123\",\n    \"for_otp_pass\" : \"OTP\",\n    \"email_mobile\":\"MOBILE\",\n     \"device_id\" : \"779F9AAA570631E9F5664A6161C6B473XXGGXXGGXX\",\n     \"country_code\":\"91\",\n     \"otp\":\"9939\",\n     \"api_key\":\"\"\n  }",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1NywiZW1haWwiOiJ5b2dlc2guZG9uZ2FyZTExMUBpY2FkamVlLmNvbSIsIm1vYmlsZSI6Ijg5ODk4OTg1NTYiLCJpYXQiOjE2ODk1MzAzOTMsImV4cCI6MTY5OTg5ODM5M30.Xjfh3LrC6bOLdja3GGJEnVaMrjxmxTkBvhA2v4op9o8"
+            },
+            "tests": []
+        },
+        {
+            "_id": "2bb44ae4-2d52-43b0-a2da-13749b95dd8e",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "Change Password",
+            "url": "{{API_URL}}/api/user/change-password",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2023-07-17T09:36:09.061Z",
+            "modified": "2023-07-24T15:56:27.772Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user_id\": \"57\",\n  \"Oldpass\": \"Password@123\",\n  \"newpass\": \"Password@12345\",\n  \"device_id\": \"779F9AAA570631E9F5664A6161C6B473XXGGXXGGXX\",\n  \"for_otp_pass\": \"OTP\",\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "1749e06a-ace0-4ed5-9ad4-a56fc40e0ced",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "Forgot Passowd",
+            "url": "{{API_URL}}/api/user/forgot-password",
+            "method": "POST",
+            "sortNum": 45000,
+            "created": "2023-07-26T07:00:50.402Z",
+            "modified": "2023-07-26T07:02:45.828Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user_id\": \"57\",\n  \"Oldpass\": \"Password@123\",\n  \"newpass\": \"Password@12345\",\n  \"device_id\": \"779F9AAA570631E9F5664A6161C6B473XXGGXXGGXX\",\n  \"for_otp_pass\": \"OTP\",\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "f428a99c-f293-4148-ab2f-d00c5549f8df",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "UpdatePassword",
+            "url": "{{API_URL}}/api/user/update-profile",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2023-07-24T16:11:17.307Z",
+            "modified": "2023-07-26T07:31:33.491Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user_id\": \"57\",\n  \"Oldpass\": \"Password@123\",\n  \"newpass\": \"Password@12345\",\n  \"device_id\": \"779F9AAA570631E9F5664A6161C6B473XXGGXXGGXX\",\n  \"for_otp_pass\": \"OTP\",\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "7051210b-f611-4568-b7f0-255546fd3169",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "update-profile",
+            "url": "{{API_URL}}/api/user/update-profile",
+            "method": "POST",
+            "sortNum": 60000,
+            "created": "2023-07-26T07:31:24.729Z",
+            "modified": "2023-07-26T08:46:23.890Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "userId",
+                        "value": "57"
+                    }
+                ],
+                "files": [
+                    {
+                        "name": "mediafile",
+                        "value": "/Users/nitinchandekar/Downloads/1.png"
+                    }
+                ]
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "ec19acc9-04f7-481f-8597-c73da58c5c6a",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "get-course-direct",
+            "url": "{{API_URL}}/api/course/get-course-direct",
+            "method": "POST",
+            "sortNum": 70000,
+            "created": "2023-07-28T09:37:49.834Z",
+            "modified": "2023-07-28T09:52:22.942Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user_id\": \"36\",\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\",\n  \"role\":\"\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "1d70392c-79d2-417c-a0f0-baad32ce0850",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "get-live-classes",
+            "url": "{{API_URL}}/api/class/get-live-class-list",
+            "method": "POST",
+            "sortNum": 80000,
+            "created": "2023-07-28T13:27:21.807Z",
+            "modified": "2023-07-28T17:20:11.547Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user_id\": \"74\",\n  \"curr_date\": \"2022-09-12\",\n   \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\"\n}\n\n",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "193c77f6-03f2-4b2a-87d5-9d22d3f76d73",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "get-live-classes-status",
+            "url": "{{API_URL}}/api/class/get-live-class-status",
+            "method": "POST",
+            "sortNum": 90000,
+            "created": "2023-07-28T14:58:17.021Z",
+            "modified": "2023-07-28T15:41:01.063Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user_id\": 57,\n  \"schedule_start_date\": \"2022-09-11\",\n  \"schedule_end_date\": \"2023-07-29\",\n  \"unique_id\": \"779F9AAA570631E9F5664A6161C6B473XXGGXXGGXX\",\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "e4fa0b7a-d31c-420d-8ef9-00852552c7ba",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "Add-live-classes-status",
+            "url": "{{API_URL}}/api/class/add-live-class-status",
+            "method": "POST",
+            "sortNum": 100000,
+            "created": "2023-07-28T15:47:14.239Z",
+            "modified": "2023-07-28T16:51:28.768Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user_id\": 74,\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\",\n  \"role\": \"\",\n  \"liveClassId\": \"1\",\n  \"courseId\": \"1\",\n  \"uniqueId\": \"779F9AAA570631E9F5664A6161C6B473XXGGXXGGXX\",\n  \"classStatus\": \"COMP\",\n  \"startTime\": \"2022-09-11\",\n  \"endTimeUpdate\": \"2023-07-29\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "6f6da878-743c-4081-bbcc-3aaff71c6eb9",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "get-all-exam-questions",
+            "url": "{{API_URL}}/api/question/get-all-exam-questions",
+            "method": "POST",
+            "sortNum": 110000,
+            "created": "2023-07-28T18:14:53.602Z",
+            "modified": "2023-08-06T08:22:45.511Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"COURSE_ID\": \"\",\n  \"SUBJECT_ID\": \"\",\n  \"TOPIC_ID\": \"\",\n  \"STEP_ID\": \"\",\n  \"STEP_TYPE\": \"\",\n  \"SEL_ACTIVITY\": \"\",\n  \"EXAM_ID\": \"\",\n  \"EXAM_NAME\": \"\",\n  \"CONCEPT_ID\": \"\",\n  \"SUB_CONCEPT_ID\": \"\",\n  \"CONCEPT_TYPE_ID\": \"\",\n  \"QUESTION_ID\": \"41276\",\n  \"user_id\": 74,\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "f7e0c0ea-12b6-42b7-8e66-3fc06e53f867",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "Get QuestionHint",
+            "url": "{{API_URL}}/api/get_question_hint_list",
+            "method": "POST",
+            "sortNum": 115000,
+            "created": "2023-08-07T04:54:00.759Z",
+            "modified": "2023-08-07T05:12:12.292Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n\n  \"question_id\": \"3258\",\n  \"SEL_ACTIVITY\": \"\",\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "d48485a6-cc8c-4e11-87e7-8373f01f9304",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "get-lecture-list",
+            "url": "{{API_URL}}/api/user-get-course-sub-topic-lecture",
+            "method": "POST",
+            "sortNum": 120000,
+            "created": "2023-08-06T08:43:59.430Z",
+            "modified": "2023-08-06T09:20:02.676Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"topic_id\": \"4\",\n  \"subject_id\": \"1\",\n  \"course_id\": \"1\",\n  \"question_id\": \"41276\",\n  \"SEL_ACTIVITY\": \"\",\n  \"user_id\": 37,\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "74360fef-9167-4b28-9d13-8198dc555427",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "user_get_course_sub_topic_lecture_step",
+            "url": "{{API_URL}}/api/user_get_course_sub_topic_lecture_step",
+            "method": "POST",
+            "sortNum": 130000,
+            "created": "2023-08-06T10:25:59.911Z",
+            "modified": "2023-08-07T05:04:57.863Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"topic_id\": \"2\",\n  \"subject_id\": \"1\",\n  \"course_id\": \"1\",\n  \"question_id\": \"41276\",\n  \"lecture_id\":1,\n  \"SEL_ACTIVITY\": \"\",\n  \"user_id\": 37,\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "41d6540b-2924-4f54-83b0-8707762722bb",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "user_get_course_topic_lecture_step_result",
+            "url": "{{API_URL}}/api/user_get_course_topic_lecture_step_result",
+            "method": "POST",
+            "sortNum": 140000,
+            "created": "2023-08-07T05:38:33.555Z",
+            "modified": "2023-08-07T11:51:17.142Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"topic_id\": \"30\",\n  \"subject_id\": \"1\",\n  \"course_id\": \"3\",\n  \"question_id\": \"\",\n  \"step_id\":1,\n  \"lecture_id\":0,\n  \"SEL_ACTIVITY\": \"\",\n  \"user_id\": 10324,\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "0334244a-159f-485a-ad84-133084600e0a",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "user_get_course_topic_lecture_step_result Copy",
+            "url": "{{API_URL}}/api/get-concept-list",
+            "method": "POST",
+            "sortNum": 150000,
+            "created": "2023-08-07T12:09:35.660Z",
+            "modified": "2023-08-07T12:11:09.117Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"topic_id\": \"30\",\n  \"subject_id\": \"1\",\n  \"course_id\": \"3\",\n  \"user_id\": 10324,\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "33fae57a-5820-41e1-9616-46dd5ff4fa91",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "user_get_sub_topic_concept",
+            "url": "{{API_URL}}/api/user_get_sub_topic_concept",
+            "method": "POST",
+            "sortNum": 160000,
+            "created": "2023-08-07T12:49:35.221Z",
+            "modified": "2023-08-07T12:49:49.222Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"topic_id\": \"30\",\n  \"subject_id\": \"1\",\n  \"course_id\": \"3\",\n  \"user_id\": 10324,\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        },
+        {
+            "_id": "dc49e5d6-3353-4904-b150-b5edbdd93b8b",
+            "colId": "d224a379-f475-4a34-b008-4fa1a6dfd01d",
+            "containerId": "",
+            "name": "user_get_sub_topic_concept",
+            "url": "{{API_URL}}/api/user_get_sub_topic_concept_list",
+            "method": "POST",
+            "sortNum": 170000,
+            "created": "2023-08-07T13:13:11.513Z",
+            "modified": "2023-08-07T14:12:41.380Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"topic_id\": \"2\",\n  \"subject_id\": \"1\",\n  \"course_id\": \"1\",\n  \"concept_id\":\"2\",\n  \"user_id\": 10324,\n  \"sync_type\":\"SINGLE\",\n  \"api_key\": \"sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "{{TOKEN}}"
+            },
+            "tests": []
+        }
+    ]
+}

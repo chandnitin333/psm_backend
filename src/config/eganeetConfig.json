@@ -1,0 +1,24 @@
+{
+    "dev": {
+        "api_key" : "sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ",
+        "sms": {
+            "url": "http://sms1.smsresellers.info/websms/sendsms.aspx",
+            "userid": "icadngp",
+            "password": "123@icad",
+            "sender": "ICADSL",
+            "peid": "1701159142098585430",
+            "tpid": "1707166218728664272"
+        }
+    },
+    "prod": {
+        "api_key" : "sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ",
+        "sms": {
+            "url": "http://sms1.smsresellers.info/websms/sendsms.aspx",
+            "userid": "icadngp",
+            "password": "123@icad",
+            "sender": "ICADSL",
+            "peid": "1701159142098585430",
+            "tpid": "1707166218728664272"
+        }
+    }
+}
