@@ -16,29 +16,26 @@ export class GlobalMiddleware {
         }
     }
 
-    static async authenticate(req, res, next) {
+    static async authenticate(req, _res, next) {
         const authHeader = req.headers.authorization;
         const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
         try {
-
             req.errorStatus = 401;
-            jwt.verify(token, getEnvironmentVariable().jwt_secret, ((err, decoded) => {
+            jwt.verify(token, getEnvironmentVariable().jwt_secret, (err, decoded) => {
                 if (err) {
-                    next(err);
+                    return next(err);
                 } else if (!decoded) {
-                    next(new Error('User Not Authorized'));
+                    return next(new Error('User Not Authorized'));
                 } else {
                     req.user = decoded;
-                    next();
+                    return next();
                 }
-            }))
-            next(); // just for this time
-
+            });
         } catch (error) {
-
             next(error);
         }
     }
+
 
 
 
