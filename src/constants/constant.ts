@@ -31,3 +31,5 @@ export const ENV_VAR = {
 export const PAGINATION = {
     LIMIT: 10
 }
+
+export const  DATA_KEY = 'data';
