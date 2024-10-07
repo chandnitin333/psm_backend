@@ -1,46 +1,43 @@
 
 import { PAGINATION } from "../constants/constant";
 import { logger } from "../logger/Logger";
-import {
-    addDistrict,
-    deleteDistrict,
-    getDistrict,
-    getDistrictList,
-    updateDistrict,
-} from "../services/district.service";
+import { addTaluka, deleteTaluka, getTaluka, getTalukaList, updateTaluka } from "../services/taluka.service";
 
-export class district {
-    static async addDistrict(req, res, next) {
-        let districtName = req?.body?.district_name;
+export class taluka {
+    static async addTaluka(req, res, next) {
+        let districtId = req?.body?.district_id;
+        let talukaName = req?.body?.taluka_name;
         let response = {};
         let currentTimestamp = Math.floor(new Date().getTime());
-        let params = [districtName];
-        addDistrict(params).then((result) => {
+        let params = [districtId, talukaName];
+        addTaluka(params).then((result) => {
             if (result) {
                 response = {
-                    "message": districtName+" District added successfully",
+                    "success": 1,
                     "code": 200,
-                    "success": 1
-                }
+                    "message": talukaName+" Taluka added successfully"
+                } 
                 // response['SUCCESS'] = 1
                 // response['code'] = 200
+                // response['message'] = talukaName+" Taluka added successfully"
                 res.status(200).send(response)
             } else {
                 response = {
-                    "message": "Something wrong to insert district: "+districtName,
+                    "success": 0,
                     "code": 400,
-                    "success": 0
+                    "message": "Something wrong to insert taluka: "+talukaName
                 }
                 // response['SUCCESS'] = 0
                 // response['code'] = 400
+                // response['message'] = "Something wrong to insert taluka: "+talukaName
                 res.status(400).send(response)
             }
         }
         ).catch((error) => {
             response = {
-                "message": error,
+                "success": 0,
                 "code": 400,
-                "success": 0
+                "message": error
             }
             // response['SUCCESS'] = 0
             // response['code'] = 400
@@ -49,12 +46,12 @@ export class district {
         });
     }
 
-    static async getDistrict(req, res, next) {
+    static async getTaluka(req, res, next) {
     
         let districtId = req?.params?.id;
         console.log("districtId",districtId)
         let response = {};
-        getDistrict([districtId]).then((result) => {
+        getTaluka([districtId]).then((result) => {
             if (result) {
 
                 response['SUCCESS'] = 1
@@ -74,12 +71,12 @@ export class district {
         });
     }
 
-    static async getDistrictList(req, res, next) {
+    static async getTalukaList(req, res, next) {
         let response = {};
         let page = parseInt(req.body.page_number) || 1;
         let limit = PAGINATION.LIMIT || 10;
         let offset = (page - 1) * limit;
-        getDistrictList({limit:limit, offset:offset}).then((result) => {
+        getTalukaList({limit:limit, offset:offset}).then((result) => {
             if (result) {
                 response['SUCCESS'] = 1;
                 response['code'] = 200;
@@ -100,12 +97,12 @@ export class district {
         });
     }
 
-    static async updateDistrict(req, res, next) {
+    static async updateTaluka(req, res, next) {
         let districtId = req?.body?.district_id;
         let districtName = req?.body?.district_name;
         let response = {};
         let currentTimestamp = Math.floor(new Date().getTime());
-        updateDistrict([districtName,districtId]).then((result) => {
+        updateTaluka([districtName,districtId]).then((result) => {
             if (result) {
                 response['SUCCESS'] = 1
                 response['code'] = 200
@@ -123,10 +120,10 @@ export class district {
         });
     }
 
-    static async deleteDistrict(req, res, next) {
+    static async deleteTaluka(req, res, next) {
         let districtId = req?.params?.id;
         let response = {};
-        deleteDistrict([districtId]).then((result) => {
+        deleteTaluka([districtId]).then((result) => {
             if (result) {
                 response['SUCCESS'] = 1
                 response['code'] = 200

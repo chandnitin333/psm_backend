@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { district } from "../controllers/District.controller";
 import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
+import { district } from "../controllers/district.controller";
 
 export class adminRoutes {
     public router: Router;

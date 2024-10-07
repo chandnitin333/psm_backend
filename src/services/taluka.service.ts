@@ -9,9 +9,9 @@ import { logger } from "../logger/Logger";
  * @param params 
  * @returns 
  */
-export const addDistrict = async (params: object) => {
+export const addTaluka = async (params: object) => {
     try {
-        let sql = `INSERT INTO district (DISTRICT_NAME) VALUES (?)`;
+        let sql = `INSERT INTO taluka (DISTRICT_ID, TALUKA_NAME) VALUES (?)`;
         return executeQuery(sql, params).then(result => {
             return (result) ? result : null;
         }).catch(error => {
@@ -31,7 +31,7 @@ export const addDistrict = async (params: object) => {
  * @returns 
  */
 
-export const getDistrict = async (params: object) => {
+export const getTaluka = async (params: object) => {
     try {
         let sql = `SELECT DISTRICT_ID,DISTRICT_NAME FROM district WHERE DISTRICT_ID = ?`
         return executeQuery(sql, params).then(result => {
@@ -52,7 +52,7 @@ export const getDistrict = async (params: object) => {
  * @returns 
  */
 
-export const getDistrictList = async (params: object) => {
+export const getTalukaList = async (params: object) => {
     try {
         const { limit, offset } = params as { limit: number, offset: number };
         let sql = `SELECT DISTRICT_ID, DISTRICT_NAME FROM district LIMIT ? OFFSET ?`;
@@ -75,7 +75,7 @@ export const getDistrictList = async (params: object) => {
  * @returns 
  */
 
-export const updateDistrict = async (params: object) => {
+export const updateTaluka = async (params: object) => {
     try {
         let sql = `UPDATE district SET DISTRICT_NAME = ? WHERE DISTRICT_ID = ?`
         return executeQuery(sql, params).then(result => {
@@ -96,7 +96,7 @@ export const updateDistrict = async (params: object) => {
  * @returns 
  */
 
-export const deleteDistrict = async (params: object) => {    
+export const deleteTaluka = async (params: object) => {    
     try {
         // let sql = `DELETE FROM district WHERE DISTRICT_ID = ?`
         let sql = `UPDATE district SET IS_DELETE = 1 WHERE DISTRICT_ID = ?`
