@@ -115,3 +115,24 @@ export const deleteDistrict = async (params: object) => {
         throw new Error(error)
     }
 }
+
+/**
+ * @function getDistrictCount use for fetch district count
+ * @param params 
+ * @returns 
+ */
+
+export const getDistrictCount = async (params: object) => {
+    try {
+        let sql = `SELECT COUNT(DISTRICT_ID) AS COUNT FROM district`
+        return executeQuery(sql, params).then(result => {
+            return (result) ? result[0] : null;
+        }).catch(error => {
+            console.error("getDistrictCount Fetch Data Error: ", error);
+            return null;
+        });
+    } catch (error) {
+        logger.error("getDistrictCount :: ", error)
+        throw new Error(error)
+    }
+}
