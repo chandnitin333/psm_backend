@@ -15,7 +15,12 @@ export class GlobalMiddleware {
             next();
         }
     }
-
+/**
+ * 
+ * @param req Request
+ * @param _res 
+ * @param next 
+ */
     static async authenticate(req, _res, next) {
         const authHeader = req.headers.authorization;
         const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
