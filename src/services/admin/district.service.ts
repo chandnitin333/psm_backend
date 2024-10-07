@@ -1,10 +1,7 @@
 
 
-
-import e = require("express");
-import { executeQuery } from "../config/db/db";
-import { EMAIL } from "../constants/constant";
-import { logger } from "../logger/Logger";
+import { executeQuery } from "../../config/db/db";
+import { logger } from "../../logger/Logger";
 
 
 
@@ -101,7 +98,7 @@ export const updateDistrict = async (params: object) => {
  * @returns 
  */
 
-export const deleteDistrict = async (params: object) => {    
+export const deleteDistrict = async (params: object) => {
     try {
         // let sql = `DELETE FROM district WHERE DISTRICT_ID = ?`
         let sql = `UPDATE district SET IS_DELETE = 1 WHERE DISTRICT_ID = ?`

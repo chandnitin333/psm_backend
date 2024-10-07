@@ -33,3 +33,5 @@ export const PAGINATION = {
 }
 
 export const  DATA_KEY = 'data';
+
+export const  ADMIN_EMAIL = 'admin@gmail.com';

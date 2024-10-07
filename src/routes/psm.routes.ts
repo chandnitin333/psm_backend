@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { district } from "../controllers/District.controller";
+import { district } from "../controllers/admin/district.controller";
 import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
 
 export class psmRoutes {
