@@ -24,6 +24,7 @@ export const _202 = (res: Response, msg: string = '', data: any = null,) => {
         resData[DATA_KEY] = data
     }
     resData = { ...resData, ...data }
+    // console.log('resDatahere ====', resData)
     return res.status(202).json(resData);
 }
 export const _201 = (res: Response, msg = '', data = null,) => {

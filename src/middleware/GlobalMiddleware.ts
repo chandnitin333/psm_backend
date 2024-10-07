@@ -1,7 +1,6 @@
 
 import { validationResult } from "express-validator";
 import * as jwt from 'jsonwebtoken';
-import { decode } from "punycode";
 import { getEnvironmentVariable } from "../environments/env";
 
 import multer = require('multer');
@@ -16,30 +15,32 @@ export class GlobalMiddleware {
             next();
         }
     }
-
-    static async authenticate(req, res, next) {
+/**
+ * 
+ * @param req Request
+ * @param _res 
+ * @param next 
+ */
+    static async authenticate(req, _res, next) {
         const authHeader = req.headers.authorization;
         const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
         try {
-
-            // req.errorStatus = 401;
-            // jwt.verify(token, getEnvironmentVariable().jwt_secret, ((err, decoded) => {
-            //     if (err) {
-            //         next(err);
-            //     } else if (!decoded) {
-            //         next(new Error('User Not Authorized'));
-            //     } else {
-            //         req.user = decoded;
-            //         next();
-            //     }
-            // }))
-            next(); // just for this time
-
+            req.errorStatus = 401;
+            jwt.verify(token, getEnvironmentVariable().jwt_secret, (err, decoded) => {
+                if (err) {
+                    return next(err);
+                } else if (!decoded) {
+                    return next(new Error('User Not Authorized'));
+                } else {
+                    req.user = decoded;
+                    return next();
+                }
+            });
         } catch (error) {
-
             next(error);
         }
     }
+
 
 
 

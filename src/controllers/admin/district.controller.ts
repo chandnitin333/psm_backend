@@ -1,14 +1,14 @@
 
-import { PAGINATION } from "../constants/constant";
-import { logger } from "../logger/Logger";
+import { PAGINATION } from "../../constants/constant";
+import { logger } from "../../logger/Logger";
 import {
     addDistrict,
     deleteDistrict,
     getDistrict,
     getDistrictList,
     updateDistrict,
-} from "../services/district.service";
-import { _200, _201, _400, _404 } from "../utils/ApiResponse";
+} from "../../services/admin/district.service";
+import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
 
 export class district {
     static async addDistrict(req, res, next) {
