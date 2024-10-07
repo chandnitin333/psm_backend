@@ -1,5 +1,5 @@
 
-# Eganeet API  
+# PSM API  
 
 # Requirement:
     Node : 16.17 
