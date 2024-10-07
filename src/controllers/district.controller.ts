@@ -40,7 +40,7 @@ export class district {
         });
     }
 
-    static async getDistrict(req, res, next) {
+    static async getSingleDistrict(req, res, next) {
     
         let districtId = req?.params?.id;
         console.log("districtId",districtId)
@@ -66,7 +66,7 @@ export class district {
     }
 
 
-    static async getDistrictList(req, res, next) {
+    static async getAllDistrictList(req, res, next) {
         let response = {};
         let page = parseInt(req.body.page_number) || 1;
         let limit = PAGINATION.LIMIT || 10;

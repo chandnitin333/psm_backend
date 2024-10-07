@@ -103,7 +103,8 @@ export const updateDistrict = async (params: object) => {
 
 export const deleteDistrict = async (params: object) => {    
     try {
-        let sql = `DELETE FROM district WHERE DISTRICT_ID = ?`
+        // let sql = `DELETE FROM district WHERE DISTRICT_ID = ?`
+        let sql = `UPDATE district SET IS_DELETE = 1 WHERE DISTRICT_ID = ?`
         return executeQuery(sql, params).then(result => {
             return (result) ? result : null;
         }).catch(error => {
