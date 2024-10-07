@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { district } from "../controllers/District.controller";
+import { district } from "../controllers/admin/district.controller";
 import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
+import { AuthController } from "../controllers/admin/auth.controlle";
 
 export class adminRoutes {
     public router: Router;
@@ -21,6 +22,8 @@ export class adminRoutes {
     postRoutes() {
         this.router.post('/district', GlobalMiddleware.checkError, district.addDistrict);
         this.router.post('/district-list', GlobalMiddleware.checkError, district.getDistrictList);
+
+        this.router.post('/sign-in', GlobalMiddleware.checkError, AuthController.authenticate);
     }
 
     deleteRoute() {
