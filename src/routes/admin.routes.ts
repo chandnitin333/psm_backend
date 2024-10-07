@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { AuthController } from "../controllers/admin/auth.controlle";
+import { AuthController } from "../controllers/admin/auth.controller";
 import { district } from "../controllers/admin/district.controller";
 import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
 
