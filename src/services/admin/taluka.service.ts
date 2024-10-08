@@ -6,7 +6,7 @@ import { logger } from "../../logger/Logger";
 
 export const addTaluka = async (params: object) => {
      try {
-        let sql = `SELECT DISTRICT_ID FROM taluka WHERE DISTRICT_ID = ? AND TALUKA_NAME=? AND IS_DELETE = 0`;
+        let sql = `SELECT DISTRICT_ID FROM taluka WHERE DISTRICT_ID = ? AND RTRIM(TALUKA_NAME)=? AND IS_DELETE = 0`;
         return executeQuery(sql, params).then(result => {
             if (result && (result as any[]).length > 0) {
                 return "exists";
@@ -18,7 +18,6 @@ export const addTaluka = async (params: object) => {
                         console.error("addTaluka fetch data error: ", error);
                         return null;
                     });
-                return true;
             }
         }).catch(error => {
             console.error("addTaluka fetch data error: ", error);
@@ -33,7 +32,7 @@ export const addTaluka = async (params: object) => {
 
 export const getTaluka = async (params: object) => {
     try {
-        let sql = ` select t.TALUKA_ID,t.TALUKA_NAME,d.DISTRICT_NAME,t.DISTRICT_ID from taluka t join district d on t.DISTRICT_ID = d.DISTRICT_ID where t.TALUKA_ID = ?`
+        let sql = ` select t.TALUKA_ID,RTRIM(t.TALUKA_NAME),RTRIM(d.DISTRICT_NAME),t.DISTRICT_ID from taluka t join district d on t.DISTRICT_ID = d.DISTRICT_ID where t.TALUKA_ID = ?`
         return executeQuery(sql, params).then(result => {
             return (result) ? result[0] : null;
         }).catch(error => {
@@ -49,7 +48,7 @@ export const getTaluka = async (params: object) => {
 export const getTalukaList = async (params: object) => {
     try {
         const { limit, offset } = params as { limit: number, offset: number };
-        let sql = `select t.TALUKA_ID,t.TALUKA_NAME,d.DISTRICT_NAME,t.DISTRICT_ID from taluka t join district d on t.DISTRICT_ID = d.DISTRICT_ID WHERE t.IS_DELETE=0 ORDER BY t.TALUKA_ID DESC LIMIT ? OFFSET ?`;
+        let sql = `select t.TALUKA_ID,RTRIM(t.TALUKA_NAME),RTRIM(d.DISTRICT_NAME),t.DISTRICT_ID from taluka t join district d on t.DISTRICT_ID = d.DISTRICT_ID WHERE t.IS_DELETE=0 ORDER BY t.TALUKA_ID DESC LIMIT ? OFFSET ?`;
         return executeQuery(sql, [limit, offset]).then(result => {
             return (result) ? result : null;
         }).catch(error => {
@@ -65,7 +64,7 @@ export const getTalukaList = async (params: object) => {
 
 export const updateTaluka = async (params: object) => {
     try {
-        let sql = `SELECT DISTRICT_ID FROM taluka WHERE DISTRICT_ID = ? AND TALUKA_NAME=? AND IS_DELETE = 0`;
+        let sql = `SELECT DISTRICT_ID FROM taluka WHERE DISTRICT_ID = ? AND RTRIM(TALUKA_NAME)=? AND IS_DELETE = 0`;
         return executeQuery(sql, params).then(result => {
             if (result && (result as any[]).length > 0) {
                 return "exists";
@@ -101,4 +100,22 @@ export const deleteTaluka = async (params: object) => {
         logger.error("deleteTaluka :: ", error)
         throw new Error(error)
     }
+}
+
+export const getTalukaListBYDistrictID = async (params: object) => {
+    try {
+        // console.log("params",params)
+        // const { limit, offset } = params as { limit: number, offset: number };
+        let sql = `select t.TALUKA_ID,RTRIM(t.TALUKA_NAME),RTRIM(d.DISTRICT_NAME),t.DISTRICT_ID from taluka t join district d on t.DISTRICT_ID = d.DISTRICT_ID WHERE t.IS_DELETE=0  AND t.DISTRICT_ID=? ORDER BY t.TALUKA_ID DESC`;
+        return executeQuery(sql, [params]).then(result => {
+            return (result) ? result : null;
+        }).catch(error => {
+            console.error("getTalukaList fetch data error: ", error);
+            return null;
+        });
+    } catch (error) {
+        logger.error("getTalukaList :: ", error);
+        throw new Error(error);
+    }
+
 }

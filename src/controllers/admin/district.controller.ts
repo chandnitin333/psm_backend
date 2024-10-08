@@ -1,11 +1,13 @@
 
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
+import { getTotalCount } from "../../services/admin/auth.service";
 import {
     addDistrict,
     deleteDistrict,
     getDistrict,
     getDistrictList,
+    getDistrictListForDDL,
     updateDistrict,
 } from "../../services/admin/district.service";
 import { _200, _201, _400, _404, _409 } from "../../utils/ApiResponse";
@@ -18,7 +20,6 @@ export class district {
         let params = [districtName];
         addDistrict(params).then((result) => {
             if( result === "exists") {
-                console.log('test');
                 _409(res, districtName+' District Already Exists')
             } else if( result == null) {
                 _400(res, 'District Not Added')
@@ -58,10 +59,10 @@ export class district {
         let page = parseInt(req.body.page_number) || 1;
         let limit = PAGINATION.LIMIT || 10;
         let offset = (page - 1) * limit;
+        let totalCount =  await  getTotalCount(['district']);
         getDistrictList({ limit: limit, offset: offset }).then((result) => {
             if (result) {
-
-
+                response['totalRecords'] = totalCount?.total_count;
                 response['data'] = result;
                 response['page'] = page;
                 response['limit'] = limit;
@@ -124,6 +125,24 @@ export class district {
         }).catch((error) => {
             logger.error("deleteDistrict :: ", error);
             _404(res, 'District Not Found');
+        });
+    }
+
+    static async getAllDistrictDDL(req: any, res: any, next: any) {
+        let response = {};
+        let params = [];
+        // console.log("Test",params);
+        getDistrictListForDDL(params).then((result) => {
+            if (result) {
+                response['data'] = result;
+                _200(res, 'District list found successfully', response)
+            } else {
+                _400(res, 'District list not found')
+            }
+        }).catch((error) => {
+
+            logger.error("getDistrictList :: ", error);
+            _400(res, 'District list not found')
         });
     }
 }
