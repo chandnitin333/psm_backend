@@ -17,7 +17,6 @@ export class district {
         let currentTimestamp = Math.floor(new Date().getTime());
         let params = [districtName];
         addDistrict(params).then((result) => {
-            console.log('result', result);
             if( result === "exists") {
                 console.log('test');
                 _409(res, districtName+' District Already Exists')
@@ -87,7 +86,7 @@ export class district {
                 return _404(res, 'District Not Found');
             }
             updateDistrict([districtName, districtId]).then((result) => {
-                 if( result === "exists") {
+                if( result === "exists") {
                     _409(res, districtName+' District Already Exists. Please choose another district name')
                 } else if( result == null) {
                      _400(res, 'District Not Updated')

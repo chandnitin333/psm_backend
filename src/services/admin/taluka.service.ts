@@ -5,12 +5,23 @@ import { logger } from "../../logger/Logger";
 
 
 export const addTaluka = async (params: object) => {
-    try {
-        let sql = `INSERT INTO taluka (DISTRICT_ID, TALUKA_NAME) VALUES (?, ?)`;
+     try {
+        let sql = `SELECT DISTRICT_ID FROM taluka WHERE DISTRICT_ID = ? AND TALUKA_NAME=? AND IS_DELETE = 0`;
         return executeQuery(sql, params).then(result => {
-            return (result) ? result : null;
+            if (result && (result as any[]).length > 0) {
+                return "exists";
+            } else {
+                    sql = `INSERT INTO taluka (DISTRICT_ID, TALUKA_NAME) VALUES (?, ?)`;
+                    return executeQuery(sql, params).then(result => {
+                        return (result) ? result : null;
+                    }).catch(error => {
+                        console.error("addTaluka fetch data error: ", error);
+                        return null;
+                    });
+                return true;
+            }
         }).catch(error => {
-            console.error("addTaluka Fetch Data Error: ", error);
+            console.error("addTaluka fetch data error: ", error);
             return null;
         });
     } catch (error) {
@@ -22,19 +33,11 @@ export const addTaluka = async (params: object) => {
 
 export const getTaluka = async (params: object) => {
     try {
-        let sql = ` SELECT
-                        TALUKA_ID,
-                        DISTRICT_ID,
-                        DISTRICT_NAME,
-                        TALUKA_NAME
-                    FROM
-                        taluka t
-                    JOIN district d ON t.DISTRICT_ID = d.DISTRICT_ID  
-                    WHERE TALUKA_ID = ?`
+        let sql = ` select t.TALUKA_ID,t.TALUKA_NAME,d.DISTRICT_NAME,t.DISTRICT_ID from taluka t join district d on t.DISTRICT_ID = d.DISTRICT_ID where t.TALUKA_ID = ?`
         return executeQuery(sql, params).then(result => {
             return (result) ? result[0] : null;
         }).catch(error => {
-            console.error("Taluka Fetch Data Error: ", error);
+            console.error("Taluka fetch data error: ", error);
             return null;
         });
     } catch (error) {
@@ -43,68 +46,59 @@ export const getTaluka = async (params: object) => {
     }
 }
 
-/**
- * @function getDistrictList use for fetch district list
- * @param params 
- * @returns 
- */
-
 export const getTalukaList = async (params: object) => {
     try {
         const { limit, offset } = params as { limit: number, offset: number };
-        let sql = `SELECT DISTRICT_ID, DISTRICT_NAME FROM district LIMIT ? OFFSET ?`;
+        let sql = `select t.TALUKA_ID,t.TALUKA_NAME,d.DISTRICT_NAME,t.DISTRICT_ID from taluka t join district d on t.DISTRICT_ID = d.DISTRICT_ID WHERE t.IS_DELETE=0 ORDER BY t.TALUKA_ID DESC LIMIT ? OFFSET ?`;
         return executeQuery(sql, [limit, offset]).then(result => {
             return (result) ? result : null;
         }).catch(error => {
-            console.error("getDistrictList Fetch Data Error: ", error);
+            console.error("getTalukaList fetch data error: ", error);
             return null;
         });
     } catch (error) {
-        logger.error("getDistrictList :: ", error);
+        logger.error("getTalukaList :: ", error);
         throw new Error(error);
     }
 
 }
 
-/**
- * @function updateDistrict use for update district details
- * @param params 
- * @returns 
- */
-
 export const updateTaluka = async (params: object) => {
     try {
-        let sql = `UPDATE district SET DISTRICT_NAME = ? WHERE DISTRICT_ID = ?`
+        let sql = `SELECT DISTRICT_ID FROM taluka WHERE DISTRICT_ID = ? AND TALUKA_NAME=? AND IS_DELETE = 0`;
         return executeQuery(sql, params).then(result => {
-            return (result) ? result : null;
+            if (result && (result as any[]).length > 0) {
+                return "exists";
+            } else {
+                let sql = `UPDATE taluka SET DISTRICT_ID = ?, TALUKA_NAME=? WHERE TALUKA_ID = ? and IS_DELETE = 0`
+                return executeQuery(sql, params).then(result => {
+                    return (result) ? result : null;
+                }).catch(error => {
+                    console.error("updateTaluka fetch data error: ", error);
+                    return null;
+                });
+            }
         }).catch(error => {
-            console.error("updateDistrict Fetch Data Error: ", error);
+            console.error("addTaluka fetch data error: ", error);
             return null;
         });
     } catch (error) {
-        logger.error("updateDistrict :: ", error)
+        logger.error("updateTaluka :: ", error)
         throw new Error(error)
     }
 }
 
-/**
- * @function deleteDistrict use for delete district details
- * @param params 
- * @returns 
- */
-
 export const deleteTaluka = async (params: object) => {    
     try {
-        // let sql = `DELETE FROM district WHERE DISTRICT_ID = ?`
-        let sql = `UPDATE district SET IS_DELETE = 1 WHERE DISTRICT_ID = ?`
+        let sql = `UPDATE taluka SET IS_DELETE = 1 WHERE TALUKA_ID = ?`
         return executeQuery(sql, params).then(result => {
             return (result) ? result : null;
         }).catch(error => {
-            console.error("deleteDistrict Fetch Data Error: ", error);
+            console.error("deleteTaluka fetch data error: ", error);
             return null;
         });
     } catch (error) {
-        logger.error("deleteDistrict :: ", error)
+        logger.error("deleteTaluka :: ", error)
         throw new Error(error)
     }
 }
