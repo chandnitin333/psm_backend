@@ -8,27 +8,22 @@ import {
     getDistrictList,
     updateDistrict,
 } from "../../services/admin/district.service";
-import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
-
-
-
+import { _200, _201, _400, _404, _409 } from "../../utils/ApiResponse";
 
 export class district {
-
-
     static async addDistrict(req, res, next) {
         let districtName = req?.body?.district_name;
         let response = {};
         let currentTimestamp = Math.floor(new Date().getTime());
-
-
-        addDistrict([districtName, currentTimestamp]).then((result) => {
-            if (result) {
-
-                _201(res, 'District Added Successfully')
-            } else {
-
+        let params = [districtName];
+        addDistrict(params).then((result) => {
+            if( result === "exists") {
+                console.log('test');
+                _409(res, districtName+' District Already Exists')
+            } else if( result == null) {
                 _400(res, 'District Not Added')
+            }else{
+                _201(res, districtName+' District Added Successfully')
             }
         }
         ).catch((error) => {
@@ -57,7 +52,6 @@ export class district {
 
         });
     }
-
 
     static async getDistrictList(req, res, next) {
         let response = {};
@@ -92,10 +86,12 @@ export class district {
                 return _404(res, 'District Not Found');
             }
             updateDistrict([districtName, districtId]).then((result) => {
-                if (result) {
-                    _200(res, 'District Updated Successfully');
-                } else {
-                    _400(res, 'District Not Updated')
+                if( result === "exists") {
+                    _409(res, districtName+' District Already Exists. Please choose another district name')
+                } else if( result == null) {
+                     _400(res, 'District Not Updated')
+                }else{
+                    _200(res, districtName+ ' District Updated Successfully');
                 }
             }).catch((err) => {
 
@@ -130,7 +126,4 @@ export class district {
             _404(res, 'District Not Found');
         });
     }
-
-
-
 }

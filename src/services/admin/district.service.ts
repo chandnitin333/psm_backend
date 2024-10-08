@@ -1,8 +1,5 @@
-
-
 import { executeQuery } from "../../config/db/db";
 import { logger } from "../../logger/Logger";
-
 
 
 /**
@@ -12,11 +9,21 @@ import { logger } from "../../logger/Logger";
  */
 export const addDistrict = async (params: object) => {
     try {
-        let sql = `INSERT INTO district (DISTRICT_NAME) VALUES (?)`;
+        let sql = `SELECT DISTRICT_ID FROM district WHERE DISTRICT_NAME = ? AND IS_DELETE = 0`;
         return executeQuery(sql, params).then(result => {
-            return (result) ? result : null;
+            if (result && (result as any[]).length > 0) {
+                return "exists";
+            } else {
+                sql = `INSERT INTO district (DISTRICT_NAME) VALUES (?)`;
+                return executeQuery(sql, params).then(result => {
+                    return (result) ? result : null;
+                }).catch(error => {
+                    console.error("addDistrict fetch data error: ", error);
+                    return null;
+                });
+            }
         }).catch(error => {
-            console.error("addDistrict Fetch Data Error: ", error);
+            console.error("addDistrict fetch data error: ", error);
             return null;
         });
     } catch (error) {
@@ -34,11 +41,11 @@ export const addDistrict = async (params: object) => {
 
 export const getDistrict = async (params: object) => {
     try {
-        let sql = `SELECT DISTRICT_ID,DISTRICT_NAME FROM district WHERE DISTRICT_ID = ?`
+        let sql = `SELECT DISTRICT_ID,DISTRICT_NAME FROM district WHERE DISTRICT_ID = ? AND IS_DELETE = 0`
         return executeQuery(sql, params).then(result => {
             return (result) ? result[0] : null;
         }).catch(error => {
-            console.error("getDistrict Fetch Data Error: ", error);
+            console.error("getDistrict fetch data error: ", error);
             return null;
         });
     } catch (error) {
@@ -46,7 +53,6 @@ export const getDistrict = async (params: object) => {
         throw new Error(error)
     }
 }
-
 
 /**
  * @function getDistrictList use for fetch district list
@@ -57,11 +63,11 @@ export const getDistrict = async (params: object) => {
 export const getDistrictList = async (params: object) => {
     try {
         const { limit, offset } = params as { limit: number, offset: number };
-        let sql = `SELECT DISTRICT_ID, DISTRICT_NAME FROM district LIMIT ? OFFSET ?`;
+        let sql = `SELECT DISTRICT_ID, DISTRICT_NAME FROM district WHERE IS_DELETE = 0 ORDER BY DISTRICT_ID DESC LIMIT ? OFFSET ?`;
         return executeQuery(sql, [limit, offset]).then(result => {
             return (result) ? result : null;
         }).catch(error => {
-            console.error("getDistrictList Fetch Data Error: ", error);
+            console.error("getDistrictList fetch data error: ", error);
             return null;
         });
     } catch (error) {
@@ -79,11 +85,21 @@ export const getDistrictList = async (params: object) => {
 
 export const updateDistrict = async (params: object) => {
     try {
-        let sql = `UPDATE district SET DISTRICT_NAME = ? WHERE DISTRICT_ID = ?`
+        let sql = `SELECT DISTRICT_ID FROM district WHERE DISTRICT_NAME = ?  AND IS_DELETE = 0`;
         return executeQuery(sql, params).then(result => {
-            return (result) ? result : null;
+            if (result && (result as any[]).length > 0) {
+                return "exists";
+            } else {
+                let sql = `UPDATE district SET DISTRICT_NAME = ? WHERE DISTRICT_ID = ?`
+                return executeQuery(sql, params).then(result => {
+                    return (result) ? result : null;
+                }).catch(error => {
+                    console.error("updateDistrict fetch data error: ", error);
+                    return null;
+                });
+            }
         }).catch(error => {
-            console.error("updateDistrict Fetch Data Error: ", error);
+            console.error("addDistrict fetch data error: ", error);
             return null;
         });
     } catch (error) {
@@ -100,12 +116,11 @@ export const updateDistrict = async (params: object) => {
 
 export const deleteDistrict = async (params: object) => {
     try {
-        // let sql = `DELETE FROM district WHERE DISTRICT_ID = ?`
         let sql = `UPDATE district SET IS_DELETE = 1 WHERE DISTRICT_ID = ?`
         return executeQuery(sql, params).then(result => {
             return (result) ? result : null;
         }).catch(error => {
-            console.error("deleteDistrict Fetch Data Error: ", error);
+            console.error("deleteDistrict fetch data error: ", error);
             return null;
         });
     } catch (error) {
