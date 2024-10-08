@@ -104,9 +104,7 @@ export const deleteTaluka = async (params: object) => {
 
 export const getTalukaListBYDistrictID = async (params: object) => {
     try {
-        // console.log("params",params)
-        // const { limit, offset } = params as { limit: number, offset: number };
-        let sql = `select t.TALUKA_ID,RTRIM(t.TALUKA_NAME),RTRIM(d.DISTRICT_NAME),t.DISTRICT_ID from taluka t join district d on t.DISTRICT_ID = d.DISTRICT_ID WHERE t.IS_DELETE=0  AND t.DISTRICT_ID=? ORDER BY t.TALUKA_ID DESC`;
+        let sql = `select TALUKA_ID,TALUKA_NAME from taluka t where DISTRICT_ID = ? and IS_DELETE =0 order by TALUKA_ID desc`;
         return executeQuery(sql, [params]).then(result => {
             return (result) ? result : null;
         }).catch(error => {
