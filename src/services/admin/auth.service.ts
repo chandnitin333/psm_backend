@@ -12,3 +12,16 @@ export const isUserExists = async (params: Object) => {
     }
 }
 
+export const getTotalCount = (params:object)=>{
+    try {
+        let sql = `SELECT COUNT(*) AS total_count from `+params[0]+` WHERE  IS_DELETE = 0`;
+        return executeQuery(sql, []).then(result => {
+            return (result) ? result[0] : null;
+        }).catch(error => {
+            console.error("total Count Fetch Data Error: ", error);
+            return null;
+        });
+    } catch (err) {
+        logger.error("total counT Error::", err)
+    }
+}

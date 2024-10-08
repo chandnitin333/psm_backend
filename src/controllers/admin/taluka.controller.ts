@@ -1,7 +1,8 @@
 
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
-import { addTaluka, deleteTaluka, getTaluka, getTalukaList, updateTaluka } from "../../services/admin/taluka.service";
+import { getTotalCount } from "../../services/admin/auth.service";
+import { addTaluka, deleteTaluka, getTaluka, getTalukaList, getTalukaListBYDistrictID, updateTaluka } from "../../services/admin/taluka.service";
 import { _200, _201, _400, _404, _409 } from "../../utils/ApiResponse";
 
 export class taluka {
@@ -13,7 +14,6 @@ export class taluka {
         let params = [districtId, talukaName];
         addTaluka(params).then((result) => {
             if( result === "exists") {
-                console.log('test');
                 _409(res, talukaName+' taluka Already Exists')
             } else if( result == null) {
                 _400(res, talukaName+' taluka Not Added')
@@ -48,11 +48,13 @@ export class taluka {
         let page = parseInt(req.body.page_number) || 1;
         let limit = PAGINATION.LIMIT || 10;
         let offset = (page - 1) * limit;
+        let totalCount =  await  getTotalCount(['taluka']);
         getTalukaList({ limit: limit, offset: offset }).then((result) => {
             if (result) {
-                response['data'] = result;
-                response['page'] = page;
+                response['totalRecords'] = totalCount?.total_count;
                 response['limit'] = limit;
+                response['page'] = page;
+                response['data'] = result;
                 _200(res, 'Taluka list found successfully', response)
             } else {
                 _400(res, 'Taluka list not found')
@@ -114,6 +116,25 @@ export class taluka {
         }).catch((error) => {
             logger.error("deleteTaluka :: ", error);
             _404(res, 'Taluka not found');
+        });
+    }
+
+    static async getTalukaByDistrict(req: any, res: any, next: any) {
+        let districtId = req?.body?.id;
+        let response = {};
+        let params = [districtId];
+        // console.log("Test",params);
+        getTalukaListBYDistrictID(params).then((result) => {
+            if (result) {
+                response['data'] = result;
+                _200(res, 'Taluka list found successfully', response)
+            } else {
+                _400(res, 'Taluka list not found')
+            }
+        }).catch((error) => {
+
+            logger.error("getTalukaList :: ", error);
+            _400(res, 'Taluka list not found')
         });
     }
 }

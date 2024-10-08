@@ -1,0 +1,530 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "psm with existing database",
+    "collectionId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+    "dateExported": "2024-10-08T16:00:38.957Z",
+    "version": "1.2",
+    "folders": [
+        {
+            "_id": "0660f479-a727-4239-907a-4a12a6e7ff05",
+            "name": "District",
+            "containerId": "",
+            "created": "2024-10-07T17:35:01.550Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "d7ae58f3-9744-4cde-826f-fe24471a29b9",
+            "name": "Taluka",
+            "containerId": "",
+            "created": "2024-10-08T02:37:00.181Z",
+            "sortNum": 15000
+        },
+        {
+            "_id": "39096348-4961-4c4b-bae1-710ff38054fc",
+            "name": "Gram Panchayat API",
+            "containerId": "",
+            "created": "2024-10-08T11:26:35.393Z",
+            "sortNum": 17500
+        },
+        {
+            "_id": "d893c857-e543-44cc-a6aa-cff649946365",
+            "name": "gat Gram Panchayat API",
+            "containerId": "",
+            "created": "2024-10-08T15:13:14.744Z",
+            "sortNum": 18750
+        },
+        {
+            "_id": "d7ab8236-ad1f-404f-9232-fdf2d440ec84",
+            "name": "Authunticate",
+            "containerId": "",
+            "created": "2024-10-07T17:35:21.756Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "224664dd-3fc5-455c-8b3a-44ab31a7eee7",
+            "name": "drop down  APIs",
+            "containerId": "",
+            "created": "2024-10-08T10:10:22.712Z",
+            "sortNum": 30000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "eedf3228-cdf9-4737-b1f0-0cd0546d7c4a",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "0660f479-a727-4239-907a-4a12a6e7ff05",
+            "name": "get all distriict list",
+            "url": "{{API_URL}}/api/admin/district-list",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-10-07T13:38:27.041Z",
+            "modified": "2024-10-07T17:38:52.425Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"page_number\": 1\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "6dcb275b-1724-446f-95ce-e62aae272b64",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "d7ab8236-ad1f-404f-9232-fdf2d440ec84",
+            "name": "Sign In",
+            "url": "{{API_URL}}/api/admin/sign-in",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-10-07T17:34:44.132Z",
+            "modified": "2024-10-07T17:37:29.252Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user_id\": \"admin\",\n  \"password\": \"admin\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "75c76db6-51b1-4c1d-acee-143b5237dd15",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "d7ae58f3-9744-4cde-826f-fe24471a29b9",
+            "name": "get all talukas list",
+            "url": "{{API_URL}}/api/admin/taluka-list",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-10-08T02:37:00.181Z",
+            "modified": "2024-10-08T03:01:41.735Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"page_number\": 1\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "0d48621c-3041-40d1-8372-7e3af9d423e9",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "224664dd-3fc5-455c-8b3a-44ab31a7eee7",
+            "name": "get all talukas list by district selection",
+            "url": "{{API_URL}}/api/admin/taluka-list-by-district-id",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-10-08T08:20:55.283Z",
+            "modified": "2024-10-08T10:11:04.222Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"id\": 1\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "f10d5ae0-c641-42dc-bc9c-dd55cb844a9b",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "39096348-4961-4c4b-bae1-710ff38054fc",
+            "name": "get all grampanchayat list",
+            "url": "{{API_URL}}/api/admin/gram-panchayat-list",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-10-08T11:26:35.393Z",
+            "modified": "2024-10-08T11:41:07.590Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"page_number\": 1\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "bf2ee10f-992b-42ef-a3fb-d5ad3898f18f",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "d893c857-e543-44cc-a6aa-cff649946365",
+            "name": "get all gat grampanchayat list",
+            "url": "{{API_URL}}/api/admin/gat-gram-panchayat-list",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-10-08T15:13:14.744Z",
+            "modified": "2024-10-08T15:13:34.431Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"page_number\": 1\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "20020180-6617-4763-ae76-0ac7cce3960a",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "0660f479-a727-4239-907a-4a12a6e7ff05",
+            "name": "Add new district",
+            "url": "{{API_URL}}/api/admin/district",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-10-07T17:48:51.335Z",
+            "modified": "2024-10-07T18:55:48.281Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"district_name\": \"Testing3 Kundan\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "810cafac-269a-4f15-a451-11b3aac5ee45",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "d7ae58f3-9744-4cde-826f-fe24471a29b9",
+            "name": "Add new taluka",
+            "url": "{{API_URL}}/api/admin/taluka",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-10-08T02:37:00.182Z",
+            "modified": "2024-10-08T02:45:14.224Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"district_id\": 1,\n  \"taluka_name\": \"Test Kundan\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "d9e9bbd6-12e1-4429-bf4d-13e9ea95c1c9",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "224664dd-3fc5-455c-8b3a-44ab31a7eee7",
+            "name": "all district list for dropdown",
+            "url": "{{API_URL}}/api/admin/district-list-ddl",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-10-08T10:12:36.585Z",
+            "modified": "2024-10-08T10:19:32.881Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "e7ea7320-a139-407c-9846-a45ff079a121",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "39096348-4961-4c4b-bae1-710ff38054fc",
+            "name": "add new gram panchayat",
+            "url": "{{API_URL}}/api/admin/gram-panchayat",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-10-08T11:26:35.394Z",
+            "modified": "2024-10-08T11:42:12.339Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"district_id\": 1,\n  \"taluka_id\": 1,\n  \"name\": \"Test Kundan\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "971ffb93-c272-4c72-a8a4-a4862f353bad",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "d893c857-e543-44cc-a6aa-cff649946365",
+            "name": "add new gatgram panchayat",
+            "url": "{{API_URL}}/api/admin/gat-gram-panchayat",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-10-08T15:13:14.745Z",
+            "modified": "2024-10-08T15:19:30.647Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"district_id\": 1,\n  \"taluka_id\": 1,\n  \"grampanchayat_id\":1,\n  \"name\": \"Test Kundan\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "6f7899d5-5910-478e-a2b4-f3a12a3d4ff8",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "224664dd-3fc5-455c-8b3a-44ab31a7eee7",
+            "name": "get all grampanchayat by taluka id",
+            "url": "{{API_URL}}/api/admin/panchayat-list-by-taluka-id",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-10-08T15:46:35.705Z",
+            "modified": "2024-10-08T15:49:24.408Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"id\": 1\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "19659bb6-1b56-4c9a-9444-a7540a911841",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "0660f479-a727-4239-907a-4a12a6e7ff05",
+            "name": "get district by id",
+            "url": "{{API_URL}}/api/admin/get-district/48",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2024-10-07T17:50:44.382Z",
+            "modified": "2024-10-07T17:51:34.342Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "7d155908-9b46-4583-bd45-5172685c0a9e",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "d7ae58f3-9744-4cde-826f-fe24471a29b9",
+            "name": "get taluka by id",
+            "url": "{{API_URL}}/api/admin/get-taluka/19",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2024-10-08T02:37:00.183Z",
+            "modified": "2024-10-08T02:47:01.607Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "fce842d8-5396-4414-8eea-cc8939c6b54e",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "39096348-4961-4c4b-bae1-710ff38054fc",
+            "name": "get grampanchayat by id",
+            "url": "{{API_URL}}/api/admin/get-gram-panchayat/1080",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2024-10-08T11:26:35.395Z",
+            "modified": "2024-10-08T11:49:27.329Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "484995de-fac0-4a0f-93f8-5275ac8bc949",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "d893c857-e543-44cc-a6aa-cff649946365",
+            "name": "get gatgrampanchayat by id",
+            "url": "{{API_URL}}/api/admin/get-gat-gram-panchayat/2167",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2024-10-08T15:13:14.746Z",
+            "modified": "2024-10-08T15:19:57.328Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "91840156-2afc-4e5d-bd08-5ec92cc0db70",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "224664dd-3fc5-455c-8b3a-44ab31a7eee7",
+            "name": "get all gatgrampanchayat by grampanchayat id",
+            "url": "{{API_URL}}/api/admin/gat-gram-panchayat-list-by-panchayat-id",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2024-10-08T15:53:10.335Z",
+            "modified": "2024-10-08T15:53:58.462Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"id\": 11\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "3d92123f-b76c-4475-a36d-d7db6cac2c30",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "0660f479-a727-4239-907a-4a12a6e7ff05",
+            "name": "Update district by id",
+            "url": "{{API_URL}}/api/admin/update-district",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2024-10-07T17:51:40.221Z",
+            "modified": "2024-10-07T17:52:45.754Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"district_id\" : 48,\n  \"district_name\": \"Testing Kundan\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "1248ab04-3e7d-405f-9dad-4f9b589b65f7",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "0660f479-a727-4239-907a-4a12a6e7ff05",
+            "name": "delete disctrict by id",
+            "url": "{{API_URL}}/api/admin//district/48",
+            "method": "DELETE",
+            "sortNum": 40000,
+            "created": "2024-10-07T19:01:53.061Z",
+            "modified": "2024-10-07T19:02:26.244Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "a099cc29-3c94-4e4d-ad8d-0d2de83c30c5",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "d7ae58f3-9744-4cde-826f-fe24471a29b9",
+            "name": "Update taluka by id",
+            "url": "{{API_URL}}/api/admin/update-taluka",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2024-10-08T02:37:00.184Z",
+            "modified": "2024-10-08T03:16:09.171Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"taluka_id\": 19,\n  \"district_id\" : 1,\n  \"taluka_name\": \"Test Kundan1\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "1efd6b07-79d3-4775-9eae-83e0b098644b",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "d7ae58f3-9744-4cde-826f-fe24471a29b9",
+            "name": "delete taluka by id",
+            "url": "{{API_URL}}/api/admin//taluka/19",
+            "method": "DELETE",
+            "sortNum": 40000,
+            "created": "2024-10-08T02:37:00.185Z",
+            "modified": "2024-10-08T03:21:18.526Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "fcf547ab-2cfa-4e41-897c-1f521a7d5319",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "39096348-4961-4c4b-bae1-710ff38054fc",
+            "name": "Update grampanchayat by id",
+            "url": "{{API_URL}}/api/admin/update-gram-panchayat",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2024-10-08T11:26:35.396Z",
+            "modified": "2024-10-08T11:51:15.215Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"grampanchayat_id\":1080,\n  \"taluka_id\": 1,\n  \"district_id\" : 1,\n  \"name\": \"Test Kundan1\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "2373849c-fd86-45cb-ba78-b590015046c7",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "39096348-4961-4c4b-bae1-710ff38054fc",
+            "name": "delete grampanchayat",
+            "url": "{{API_URL}}/api/admin/gram-panchayat/1080",
+            "method": "DELETE",
+            "sortNum": 40000,
+            "created": "2024-10-08T11:26:35.397Z",
+            "modified": "2024-10-08T15:25:00.911Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "24b70512-6dcc-4b70-aca6-3d93dfe90b86",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "d893c857-e543-44cc-a6aa-cff649946365",
+            "name": "Update gatgrampanchayat by id",
+            "url": "{{API_URL}}/api/admin/update-gat-gram-panchayat",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2024-10-08T15:13:14.747Z",
+            "modified": "2024-10-08T15:24:16.111Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"gatgrampanchayat_id\":2167,\n  \"grampanchayat_id\":1,\n  \"taluka_id\": 1,\n  \"district_id\" : 1,\n  \"name\": \"Test Kundan1\"\n}",
+                "form": []
+            },
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        },
+        {
+            "_id": "0679c4ba-8668-4ca4-96c1-45f8f1ba24b3",
+            "colId": "635d58bc-dc3e-41e3-a1ed-90dd6b35c2ce",
+            "containerId": "d893c857-e543-44cc-a6aa-cff649946365",
+            "name": "delete gat grampanchayat",
+            "url": "{{API_URL}}/api/admin/gat-gram-panchayat/2167",
+            "method": "DELETE",
+            "sortNum": 40000,
+            "created": "2024-10-08T15:13:14.748Z",
+            "modified": "2024-10-08T15:24:50.531Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbiIsImVtYWlsSWQiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MjgzMjI2NDksImV4cCI6MTczODY5MDY0OX0.rNFBxNHYW6arAfQpW0s-pK7I_BmhIVqB6tP8yrHYY9c"
+            }
+        }
+    ],
+    "ref": "YiHlRTbKI53rvK5rackuc6hspwISk0OgJ_QG6H6sxydSBK8MGUAhiOhaF_tFE-a6l0EwukkaNm9IsIxs0Y2tZw"
+}
