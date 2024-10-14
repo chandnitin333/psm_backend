@@ -16,11 +16,11 @@ export const USER_ROLE = {
     ROLE_USER_PARENT: 'ROLE_USER_PARENT'
 }
 
-export  const  API_KEY ='sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ'
-export const  CLIENT_ID ='testclient'
-export const  CLIENT_SECRET ='testsecret'
+export const API_KEY = 'sdsd8888sd8s_djdjdjd11222BBhjhiusjs909jjJJ'
+export const CLIENT_ID = 'testclient'
+export const CLIENT_SECRET = 'testsecret'
 
-export  const TOKEN_API='http://restapi.eganeet.net/user/login'
+export const TOKEN_API = 'http://restapi.eganeet.net/user/login'
 
 export const ENV_VAR = {
     dev: 'dev',
@@ -32,6 +32,6 @@ export const PAGINATION = {
     LIMIT: 10
 }
 
-export const  DATA_KEY = 'data';
+export const DATA_KEY = 'data';
 
-export const  ADMIN_EMAIL = 'admin@gmail.com';
+export const ADMIN_EMAIL = 'admin@gmail.com';
