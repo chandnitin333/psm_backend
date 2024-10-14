@@ -6,6 +6,7 @@ import {
     addDistrict,
     deleteDistrict,
     getDistrict,
+    getDistrictCount,
     getDistrictList,
     getDistrictListForDDL,
     updateDistrict,
@@ -19,12 +20,14 @@ export class district {
         let currentTimestamp = Math.floor(new Date().getTime());
         let params = [districtName];
         addDistrict(params).then((result) => {
-            if( result === "exists") {
-                _409(res, districtName+' District Already Exists')
-            } else if( result == null) {
+            if (result === "exists") {
+                console.log('test');
+                _409(res, districtName + ' District Already Exists')
+            } else if (result == null) {
+
                 _400(res, 'District Not Added')
-            }else{
-                _201(res, districtName+' District Added Successfully')
+            } else {
+                _201(res, districtName + ' District Added Successfully')
             }
         }
         ).catch((error) => {
@@ -57,24 +60,32 @@ export class district {
     static async getDistrictList(req, res, next) {
         let response = {};
         let page = parseInt(req.body.page_number) || 1;
-        let limit = PAGINATION.LIMIT || 10;
+        let limit = req.body.limit || PAGINATION.LIMIT;
         let offset = (page - 1) * limit;
-        let totalCount =  await  getTotalCount(['district']);
-        getDistrictList({ limit: limit, offset: offset }).then((result) => {
+        let searchText = req.body?.searchText || '';
+        let resultData = await getDistrictCount();
+        if (resultData) {
+            response['total_count'] = resultData?.total_count ?? 0;
+
+        }
+
+        await getDistrictList({ limit: limit, offset: offset, searchText: searchText }).then((result) => {
+            let totalCount = response['total_count'];
             if (result) {
                 response['totalRecords'] = totalCount?.total_count;
                 response['data'] = result;
                 response['page'] = page;
                 response['limit'] = limit;
+                   
                 _200(res, 'District List Found Successfully', response)
             } else {
                 _400(res, 'District List Not Found')
             }
-        }).catch((error) => {
+            }).catch((error:any) => {
 
-            logger.error("getDistrictList :: ", error);
-            _400(res, 'District List Not Found')
-        });
+                logger.error("getDistrictList :: ", error);
+                _400(res, 'District List Not Found')
+            });
     }
 
     static async updateDistrict(req, res, next) {
@@ -87,12 +98,12 @@ export class district {
                 return _404(res, 'District Not Found');
             }
             updateDistrict([districtName, districtId]).then((result) => {
-                if( result === "exists") {
-                    _409(res, districtName+' District Already Exists. Please choose another district name')
-                } else if( result == null) {
-                     _400(res, 'District Not Updated')
-                }else{
-                    _200(res, districtName+ ' District Updated Successfully');
+                if (result === "exists") {
+                    _409(res, districtName + ' District Already Exists. Please choose another district name')
+                } else if (result == null) {
+                    _400(res, 'District Not Updated')
+                } else {
+                    _200(res, districtName + ' District Updated Successfully');
                 }
             }).catch((err) => {
 

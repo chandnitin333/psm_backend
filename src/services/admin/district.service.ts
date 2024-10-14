@@ -1,3 +1,4 @@
+import { error } from "console";
 import { executeQuery } from "../../config/db/db";
 import { logger } from "../../logger/Logger";
 
@@ -41,7 +42,7 @@ export const addDistrict = async (params: object) => {
 
 export const getDistrict = async (params: object) => {
     try {
-        let sql = `SELECT DISTRICT_ID,RTRIM(DISTRICT_NAME) FROM district WHERE DISTRICT_ID = ? AND IS_DELETE = 0`
+        let sql = `SELECT DISTRICT_ID,DISTRICT_NAME FROM district WHERE DISTRICT_ID = ? AND IS_DELETE = 0`
         return executeQuery(sql, params).then(result => {
             return (result) ? result[0] : null;
         }).catch(error => {
@@ -62,9 +63,24 @@ export const getDistrict = async (params: object) => {
 
 export const getDistrictList = async (params: object) => {
     try {
-        const { limit, offset } = params as { limit: number, offset: number };
-        let sql = `SELECT DISTRICT_ID, RTRIM(DISTRICT_NAME) FROM district WHERE IS_DELETE = 0 ORDER BY DISTRICT_ID DESC LIMIT ? OFFSET ?`;
-        return executeQuery(sql, [limit, offset]).then(result => {
+
+        const { limit, offset,searchText } = params as { limit: number, offset: number ,searchText:string};
+        let sql = `SELECT DISTRICT_ID, DISTRICT_NAME FROM district WHERE IS_DELETE = 0 ORDER BY DISTRICT_ID DESC LIMIT ? OFFSET ?`;
+        let values: Array<string | number> = [ limit, offset];
+      
+        if(searchText){
+        
+             sql = `SELECT DISTRICT_ID, DISTRICT_NAME 
+            FROM district 
+            WHERE IS_DELETE = 0 
+            AND DISTRICT_NAME LIKE ? 
+            ORDER BY DISTRICT_ID DESC 
+            LIMIT ? OFFSET ?`;
+            
+             values = [`%${searchText}%`, limit, offset];
+
+        }
+        return executeQuery(sql, values).then(result => {
             return (result) ? result : null;
         }).catch(error => {
             console.error("getDistrictList fetch data error: ", error);
@@ -85,7 +101,7 @@ export const getDistrictList = async (params: object) => {
 
 export const updateDistrict = async (params: object) => {
     try {
-        let sql = `SELECT DISTRICT_ID FROM district WHERE RTRIM(DISTRICT_NAME) = ?  AND IS_DELETE = 0`;
+        let sql = `SELECT DISTRICT_ID FROM district WHERE DISTRICT_NAME = ?  AND IS_DELETE = 0`;
         return executeQuery(sql, params).then(result => {
             if (result && (result as any[]).length > 0) {
                 return "exists";
@@ -130,17 +146,38 @@ export const deleteDistrict = async (params: object) => {
 }
 
 
+
 export const getDistrictListForDDL = async (params: object) => {
     try {
         let sql = `SELECT DISTRICT_ID,RTRIM(DISTRICT_NAME) FROM district WHERE IS_DELETE = 0`;
         return executeQuery(sql, params).then(result => {
             return (result) ? result : null;
+
+
+    }).catch ((error) => {
+        console.error("getDistrictListForDDL fetch data error: ", error);
+        return null;
+    }
+    );
+    } catch (error) {
+        logger.error("getDistrictListForDDL :: ", error)
+        throw new Error(error)
+    }     
+}
+
+export const getDistrictCount = async () => {
+    try {
+        let sql = `SELECT COUNT(DISTRICT_ID) AS total_count FROM district`
+        return executeQuery(sql, []).then(result => {
+            return (result) ? result[0] : null;
         }).catch(error => {
             console.error("getDistrictCount Fetch Data Error: ", error);
             return null;
         });
+
     } catch (error) {
         logger.error("getDistrictCount :: ", error)
         throw new Error(error)
     }
+
 }
