@@ -1,7 +1,6 @@
 
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
-import { getTotalCount } from "../../services/admin/auth.service";
 import {
     addDistrict,
     deleteDistrict,
@@ -21,7 +20,7 @@ export class district {
         let params = [districtName];
         addDistrict(params).then((result) => {
             if (result === "exists") {
-                console.log('test');
+                
                 _409(res, districtName + ' District Already Exists')
             } else if (result == null) {
 
@@ -76,16 +75,16 @@ export class district {
                 response['data'] = result;
                 response['page'] = page;
                 response['limit'] = limit;
-                   
+
                 _200(res, 'District List Found Successfully', response)
             } else {
                 _400(res, 'District List Not Found')
             }
-            }).catch((error:any) => {
+        }).catch((error: any) => {
 
-                logger.error("getDistrictList :: ", error);
-                _400(res, 'District List Not Found')
-            });
+            logger.error("getDistrictList :: ", error);
+            _400(res, 'District List Not Found')
+        });
     }
 
     static async updateDistrict(req, res, next) {
@@ -156,4 +155,6 @@ export class district {
             _400(res, 'District list not found')
         });
     }
+
+
 }
