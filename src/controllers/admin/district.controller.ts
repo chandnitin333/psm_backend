@@ -20,7 +20,7 @@ export class district {
         let params = [districtName];
         addDistrict(params).then((result) => {
             if (result === "exists") {
-                console.log('test');
+                
                 _409(res, districtName + ' District Already Exists')
             } else if (result == null) {
 
