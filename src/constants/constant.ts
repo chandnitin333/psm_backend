@@ -35,3 +35,5 @@ export const PAGINATION = {
 export const DATA_KEY = 'data';
 
 export const ADMIN_EMAIL = 'admin@gmail.com';
+
+export const UPLOAD_PATH ='/uploads/photos';
