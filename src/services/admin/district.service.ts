@@ -1,4 +1,3 @@
-import { error } from "console";
 import { executeQuery } from "../../config/db/db";
 import { logger } from "../../logger/Logger";
 
@@ -64,22 +63,22 @@ export const getDistrict = async (params: object) => {
 export const getDistrictList = async (params: object) => {
     try {
 
-        const { limit, offset,searchText } = params as { limit: number, offset: number ,searchText:string};
+       
+        const { limit, offset, searchText } = params as { limit: number, offset: number, searchText: string };
         let sql = `SELECT DISTRICT_ID, DISTRICT_NAME FROM district WHERE IS_DELETE = 0 ORDER BY DISTRICT_ID DESC LIMIT ? OFFSET ?`;
-        let values: Array<string | number> = [ limit, offset];
-      
-        if(searchText){
-        
-             sql = `SELECT DISTRICT_ID, DISTRICT_NAME 
+        let values: Array<string | number> = [limit, offset];
+
+        if (searchText) {
+            sql = `SELECT DISTRICT_ID, DISTRICT_NAME 
             FROM district 
             WHERE IS_DELETE = 0 
-            AND DISTRICT_NAME LIKE ? 
+            AND LOWER(DISTRICT_NAME) LIKE LOWER(?) 
             ORDER BY DISTRICT_ID DESC 
             LIMIT ? OFFSET ?`;
-            
-             values = [`%${searchText}%`, limit, offset];
 
+            values = [`%${searchText}%`, limit, offset];
         }
+
         return executeQuery(sql, values).then(result => {
             return (result) ? result : null;
         }).catch(error => {
@@ -154,20 +153,20 @@ export const getDistrictListForDDL = async (params: object) => {
             return (result) ? result : null;
 
 
-    }).catch ((error) => {
-        console.error("getDistrictListForDDL fetch data error: ", error);
-        return null;
-    }
-    );
+        }).catch((error) => {
+            console.error("getDistrictListForDDL fetch data error: ", error);
+            return null;
+        }
+        );
     } catch (error) {
         logger.error("getDistrictListForDDL :: ", error)
         throw new Error(error)
-    }     
+    }
 }
 
 export const getDistrictCount = async () => {
     try {
-        let sql = `SELECT COUNT(DISTRICT_ID) AS total_count FROM district`
+        let sql = `SELECT COUNT(DISTRICT_ID) AS total_count FROM district WHERE IS_DELETE = 0 `;
         return executeQuery(sql, []).then(result => {
             return (result) ? result[0] : null;
         }).catch(error => {

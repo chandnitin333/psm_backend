@@ -73,7 +73,7 @@ export class district {
             if (result) {
                 response['totalRecords'] = totalCount?.total_count;
                 response['data'] = result;
-                response['page'] = page;
+                response['page'] = (searchText) ? 1 : page;
                 response['limit'] = limit;
 
                 _200(res, 'District List Found Successfully', response)
