@@ -1,4 +1,4 @@
-import e = require("express");
+
 import { executeQuery } from "../../config/db/db";
 import { logger } from "../../logger/Logger";
 

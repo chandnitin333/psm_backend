@@ -1,9 +1,9 @@
 import * as Bcrypt from "bcrypt";
+import { configData } from '../environments/env';
+import { httpService } from "../helper/httpService";
+import { logger } from "../logger/Logger";
 let dateTime = require('node-datetime');
 const sendmail = require('sendmail')();
-import { httpService } from "../helper/httpService";
-import { configData } from '../environments/env';
-import { logger } from "../logger/Logger";
 
 const fs = require('fs')
 export class Utils {
@@ -143,7 +143,7 @@ export class Utils {
 
     }
 
-    static async moveFile(sourcePath: string, destinationPath: string,subdirectory:string): Promise<void> {
+    static async moveFile(sourcePath: string, destinationPath: string, subdirectory: string): Promise<void> {
         await fs.promises.mkdir(subdirectory, { recursive: true })
         return new Promise((resolve, reject) => {
 
@@ -151,7 +151,7 @@ export class Utils {
                 if (err) {
                     reject(err);
                 } else {
-                    
+
                     resolve();
                 }
             });
@@ -168,6 +168,10 @@ export class Utils {
                 }
             });
         });
+    }
+
+    static async getCurrentDateTime() {
+        return new Date(Date.now()).toISOString().replace('T', ' ').split('.')[0];
     }
 
 }

@@ -61,8 +61,7 @@ export class DashboardUpload {
                 });
 
                 const uploadId = Number(req.params.id);
-                console.log("uploadId", req);
-
+               
                 if (!uploadId) {
                     return _400(res, "Upload Data ID is required");
                 }

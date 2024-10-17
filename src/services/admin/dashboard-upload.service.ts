@@ -1,24 +1,9 @@
 import { executeQuery } from "../../config/db/db";
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
+import { Utils } from "../../utils/util";
 
 
-
-/*
-UPLOAD_ID
-TALUKA_ID
-PANCHAYAT_ID
-FILE_NAME
-R_PATH
-TDATE
-TTIME
-DISTRICT_ID
-
-
-SELECT UPLOAD_ID, TALUKA_ID, PANCHAYAT_ID, FILE_NAME, R_PATH, TDATE, TTIME, DISTRICT_ID
-FROM uploaddatadashboard;
-
-*/
 interface UploadDataDashboard {
     UPLOAD_ID: number;
     TALUKA_ID: number;
@@ -56,10 +41,17 @@ export const getUploadDataById = async (id: number): Promise<UploadDataDashboard
 
 export const createUploadData = async (data: any): Promise<void> => {
     try {
-        const dateNow = new Date(Date.now()).toISOString().replace('T', ' ').split('.')[0];
+        const { taluka_id, panchayat_id, file_name, r_path, district_id } = data;
 
-        const query = `INSERT INTO uploaddatadashboard ( TALUKA_ID, PANCHAYAT_ID, FILE_NAME, R_PATH, TDATE, TTIME, DISTRICT_ID) VALUES ( ?, ?, ?, ?, ?, ?, ?)`;
-        const values = [data.taluka_id, data.panchayat_id, data.file_name, data.r_path, dateNow, dateNow, data.district_id];
+        if (!taluka_id || !panchayat_id || !file_name || !r_path || !district_id) {
+            throw new Error("Missing required fields");
+        }
+        
+        const dateNow = await Utils.getCurrentDateTime();
+
+        console.log("dateNow=====",dateNow);
+        const query = `INSERT INTO uploaddatadashboard (TALUKA_ID, PANCHAYAT_ID, FILE_NAME, R_PATH, TDATE, TTIME, DISTRICT_ID) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const values = [taluka_id, panchayat_id, file_name, r_path, dateNow, dateNow, district_id];
         await executeQuery(query, values);
     } catch (error) {
         logger.error(`Error creating upload data: ${error}`);
@@ -69,7 +61,7 @@ export const createUploadData = async (data: any): Promise<void> => {
 
 export const updateUploadData = async (id: number, data: any): Promise<void> => {
     try {
-        const dateNow = new Date(Date.now()).toISOString().replace('T', ' ').split('.')[0];
+        const dateNow = await Utils.getCurrentDateTime();
         const query = `UPDATE uploaddatadashboard SET TALUKA_ID = ?, PANCHAYAT_ID = ?, FILE_NAME = ?, R_PATH = ?, TDATE = ?, TTIME = ?, DISTRICT_ID = ? WHERE UPLOAD_ID = ?`;
         const values = [data.taluka_id, data.panchayat_id, data.file_name, data.r_path, dateNow, dateNow, data.district_id, id];
         await executeQuery(query, values);
