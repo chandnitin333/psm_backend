@@ -21,12 +21,12 @@ export class district {
         addDistrict(params).then((result) => {
             if (result === "exists") {
                 
-                _409(res, districtName + ' District Already Exists')
+                _409(res, districtName + ' District Already Exists.')
             } else if (result == null) {
 
-                _400(res, 'District Not Added')
+                _400(res, 'District Not Added.')
             } else {
-                _201(res, districtName + ' District Added Successfully')
+                _201(res, districtName + ' District Added Successfully.')
             }
         }
         ).catch((error) => {
