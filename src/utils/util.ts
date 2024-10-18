@@ -174,6 +174,15 @@ export class Utils {
         return new Date(Date.now()).toISOString().replace('T', ' ').split('.')[0];
     }
 
+    static validateRequestBody = (body: any, requiredFields: string[]): string | null => {
+        for (const field of requiredFields) {
+            if (!body[field]) {
+                return `Field ${field} is required`;
+            }
+        }
+        return null;
+    };
+
 }
 
 
