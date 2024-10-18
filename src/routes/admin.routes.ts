@@ -7,6 +7,7 @@ import { grampanchayat } from "../controllers/admin/grampanchayat.controller";
 import { Memeber } from "../controllers/admin/member.controller";
 import { MilkatVapar } from "../controllers/admin/milkat-vapar.controller";
 import { Milkat } from "../controllers/admin/milkat.controller";
+import { OpenPlotController } from "../controllers/admin/openplot.controller";
 import { taluka } from "../controllers/admin/taluka.controller";
 import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
 
@@ -38,6 +39,8 @@ export class adminRoutes {
         this.router.get('/member/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Memeber.getMember);
 
         this.router.get('/get-dashboard-data/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.getUploadData);
+
+        this.router.get('/get-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.getOpenPlotInfoById);
     }
 
     postRoutes() {
@@ -71,6 +74,12 @@ export class adminRoutes {
         this.router.post('/add-dashboard-data', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.addUploadData);
         this.router.post('/get-dashboard-data-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.getAllUploadData);
 
+
+        this.router.post('/add-open-plot-info', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.createOpenPlotInfo);
+        this.router.post('/get-open-plot-info-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.getOpenPlotInfoList);
+
+
+
         this.router.post('/sign-in', GlobalMiddleware.checkError, AuthController.authenticate);
 
 
@@ -90,6 +99,8 @@ export class adminRoutes {
         this.router.delete('/delete-member/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Memeber.deleteMember);
         this.router.delete('/delete-dashboard-data/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.deleteUploadData);
 
+        this.router.delete('/delete-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.deleteOpenPlotInfo);
+
 
 
     }
@@ -103,6 +114,8 @@ export class adminRoutes {
         this.router.put('/update-milkat-vapar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MilkatVapar.updateMilkatVaparInfo);
         this.router.put('/update-member/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Memeber.updateMember);
         this.router.put('/update-dashboard-data/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.updateUploadDataInfo);
+
+        this.router.put('/update-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.updateOpenPlotInfo);
 
     }
 }
