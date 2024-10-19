@@ -62,6 +62,7 @@ export const getGramPanchayatList = async (params: object) => {
         }
 
         let total_count = await getGramPanchayaCount(sql, data);
+       
         sql += ` ORDER BY p.PANCHAYAT_ID DESC LIMIT ? OFFSET ?`;
         return executeQuery(sql, data).then(result => {
             return (result) ? { 'data': result, 'total_count': total_count } : null;
