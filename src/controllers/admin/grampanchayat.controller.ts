@@ -49,13 +49,14 @@ export class grampanchayat {
         let page = parseInt(req.body.page_number) || 1;
         let limit = PAGINATION.LIMIT || 10;
         let offset = (page - 1) * limit;
+        let searchText = req?.body?.search_text || '';
         let totalCount =  await  getTotalCount(['panchayat']);
-        getGramPanchayatList({ limit: limit, offset: offset }).then((result) => {
+        getGramPanchayatList({ limit: limit, offset: offset,searchValue:searchText }).then((result) => {
             if (result) {
                 response['totalRecords'] = totalCount?.total_count;
                 response['limit'] = limit;
                 response['page'] = page;
-                response['data'] = result;
+                response['data'] = result?.data;
                 _200(res, 'GramPanchayat list found successfully', response)
             } else {
                 _400(res, 'GramPanchayat list not found')
