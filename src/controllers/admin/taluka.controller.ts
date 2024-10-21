@@ -2,7 +2,7 @@
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
 import { getTotalCount } from "../../services/admin/auth.service";
-import { addTaluka, deleteTaluka, getTaluka, getTalukaList, getTalukaListBYDistrictID, updateTaluka } from "../../services/admin/taluka.service";
+import { addTaluka, deleteTaluka, getTaluka, getTalukaList, getTalukaListBYDistrictID, getTalukaListCount, updateTaluka } from "../../services/admin/taluka.service";
 import { _200, _201, _400, _404, _409 } from "../../utils/ApiResponse";
 
 export class taluka {
@@ -46,15 +46,17 @@ export class taluka {
     static async getTalukatList(req, res, next) {
         let response = {};
         let page = parseInt(req.body.page_number) || 1;
+        let searchText= req.body.search_text || '';
         let limit = PAGINATION.LIMIT || 10;
         let offset = (page - 1) * limit;
-        let totalCount =  await  getTotalCount(['taluka']);
-        getTalukaList({ limit: limit, offset: offset }).then((result) => {
-            if (result) {
-                response['totalRecords'] = totalCount?.total_count;
+        
+        getTalukaList({ limit: limit, offset: offset,search:searchText }).then((data:any) => {
+            if (data?.result) {
+            
+                response['totalRecords'] = data.totalCount;
                 response['limit'] = limit;
                 response['page'] = page;
-                response['data'] = result;
+                response['data'] = data.result;
                 _200(res, 'Taluka list found successfully', response)
             } else {
                 _400(res, 'Taluka list not found')
