@@ -35,7 +35,7 @@ export const getMilkatList = async (offset: number, search: string) => {
         const params: any[] = [];
 
         if (search) {
-            query += ' AND  MILKAT_NAME LIKE ?';
+            query += ' AND LOWER(MILKAT_NAME) LIKE LOWER(?)';
 
             params.push(`%${search}%`);
         }
