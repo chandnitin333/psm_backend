@@ -1,7 +1,6 @@
 
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
-import { getTotalCount } from "../../services/admin/auth.service";
 import { addGramPanchayat, deleteGramPanchayat, getGramPanchayat, getGramPanchayatList, updateGramPanchayat } from "../../services/admin/grampanchayat.service";
 import { _200, _201, _400, _404, _409 } from "../../utils/ApiResponse";
 
@@ -14,12 +13,12 @@ export class grampanchayat {
         let currentTimestamp = Math.floor(new Date().getTime());
         let params = [districtId, talukaid, gramPanchayatName];
         addGramPanchayat(params).then((result) => {
-            if( result === "exists") {
-                _409(res, gramPanchayatName+' Gram Panchayat Already Exists')
-            } else if( result == null) {
-                _400(res, gramPanchayatName+' Gram Panchayat Not Added')
-            }else{
-                _201(res, gramPanchayatName+' Gram Panchayat Added Successfully')
+            if (result === "exists") {
+                _409(res, gramPanchayatName + ' Gram Panchayat Already Exists')
+            } else if (result == null) {
+                _400(res, gramPanchayatName + ' Gram Panchayat Not Added')
+            } else {
+                _201(res, gramPanchayatName + ' Gram Panchayat Added Successfully')
             }
         }
         ).catch((error) => {
@@ -49,13 +48,13 @@ export class grampanchayat {
         let page = parseInt(req.body.page_number) || 1;
         let limit = PAGINATION.LIMIT || 10;
         let offset = (page - 1) * limit;
-        let totalCount =  await  getTotalCount(['panchayat']);
-        getGramPanchayatList({ limit: limit, offset: offset }).then((result) => {
+        let searchText = req?.body?.search_text || '';
+        getGramPanchayatList({ limit: limit, offset: offset, searchValue: searchText }).then((result) => {
             if (result) {
-                response['totalRecords'] = totalCount?.total_count;
+                response['totalRecords'] = result?.total_count;
                 response['limit'] = limit;
                 response['page'] = page;
-                response['data'] = result;
+                response['data'] = result?.data;
                 _200(res, 'GramPanchayat list found successfully', response)
             } else {
                 _400(res, 'GramPanchayat list not found')
@@ -74,18 +73,18 @@ export class grampanchayat {
         let gramPanchayatName = req?.body?.name;
         let response = {};
         let currentTimestamp = Math.floor(new Date().getTime());
-        let params = [districtId, talukaId,gramPanchayatName, grampanchayatId];
+        let params = [districtId, talukaId, gramPanchayatName, grampanchayatId];
         getGramPanchayat([grampanchayatId]).then((result) => {
             if (!result) {
                 return _404(res, 'Grampanchayat Not Found');
             }
             updateGramPanchayat(params).then((result) => {
-                if( result === "exists") {
-                    _409(res, gramPanchayatName+' Grampanchayat already exists. Please choose another gram panchayat name')
-                } else if( result == null) {
-                     _400(res, 'GramPanchayat Not Updated')
-                }else{
-                    _200(res, gramPanchayatName+ ' GramPanchayat Updated Successfully');
+                if (result === "exists") {
+                    _409(res, gramPanchayatName + ' Grampanchayat already exists. Please choose another gram panchayat name')
+                } else if (result == null) {
+                    _400(res, 'GramPanchayat Not Updated')
+                } else {
+                    _200(res, gramPanchayatName + ' GramPanchayat Updated Successfully');
                 }
             }).catch((err) => {
 

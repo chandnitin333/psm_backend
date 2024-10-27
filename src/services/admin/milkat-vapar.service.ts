@@ -7,7 +7,7 @@ import { logger } from "../../logger/Logger";
 
 export const createMilkatVapar = async (milkat: any) => {
     try {
-        const existingMilkat: any[] = await executeQuery('SELECT * FROM milkat_vapar WHERE MILKAT_VAPAR_ID = ?', [milkat.id]);
+        const existingMilkat: any[] = await executeQuery('SELECT * FROM milkat_vapar WHERE MILKAT_VAPAR_NAME = ?', [milkat.id]);
         if (existingMilkat.length > 0) {
             throw new Error('Milkat already exists');
         }

@@ -2,6 +2,7 @@ import * as Bcrypt from "bcrypt";
 import { configData } from '../environments/env';
 import { httpService } from "../helper/httpService";
 import { logger } from "../logger/Logger";
+import { executeQuery } from "../config/db/db";
 let dateTime = require('node-datetime');
 const sendmail = require('sendmail')();
 
@@ -172,6 +173,29 @@ export class Utils {
 
     static async getCurrentDateTime() {
         return new Date(Date.now()).toISOString().replace('T', ' ').split('.')[0];
+    }
+
+    static validateRequestBody = (body: any, requiredFields: string[]): string | null => {
+        for (const field of requiredFields) {
+            if (!body[field]) {
+                return `Field ${field} is required`;
+            }
+        }
+        return null;
+    };
+
+     static getTotalCount = (params:object)=>{
+        try {
+            let sql = `SELECT COUNT(*) AS total_count from `+params[0]+` WHERE  IS_DELETE = 0`;
+            return executeQuery(sql, []).then(result => {
+                return (result) ? result[0] : null;
+            }).catch(error => {
+                console.error("total Count Fetch Data Error: ", error);
+                return null;
+            });
+        } catch (err) {
+            logger.error("total counT Error::", err)
+        }
     }
 
 }

@@ -148,7 +148,7 @@ export const deleteDistrict = async (params: object) => {
 
 export const getDistrictListForDDL = async (params: object) => {
     try {
-        let sql = `SELECT DISTRICT_ID,RTRIM(DISTRICT_NAME) FROM district WHERE IS_DELETE = 0`;
+        let sql = `SELECT DISTRICT_ID,RTRIM(DISTRICT_NAME)  AS DISTRICT_NAME FROM district WHERE IS_DELETE = 0`;
         return executeQuery(sql, params).then(result => {
             return (result) ? result : null;
 

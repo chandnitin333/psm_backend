@@ -7,6 +7,7 @@ import { grampanchayat } from "../controllers/admin/grampanchayat.controller";
 import { Memeber } from "../controllers/admin/member.controller";
 import { MilkatVapar } from "../controllers/admin/milkat-vapar.controller";
 import { Milkat } from "../controllers/admin/milkat.controller";
+import { OpenPlotController } from "../controllers/admin/openplot.controller";
 import { taluka } from "../controllers/admin/taluka.controller";
 import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
 import { Floor } from "../controllers/admin/floor.controller";
@@ -56,6 +57,7 @@ export class adminRoutes {
 
         // Annual Tax
         this.router.get('/get-annual-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getAnnualTax);
+        this.router.get('/get-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.getOpenPlotInfoById);
     }
 
     postRoutes() {
@@ -109,6 +111,11 @@ export class adminRoutes {
         this.router.post('/add-annual-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.addAnnualTax);
         this.router.post('/get-annual-tax-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getAllAnnualTax);
 
+        this.router.post('/add-open-plot-info', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.createOpenPlotInfo);
+        this.router.post('/get-open-plot-info-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.getOpenPlotInfoList);
+
+
+
         this.router.post('/sign-in', GlobalMiddleware.checkError, AuthController.authenticate);
 
 
@@ -143,6 +150,7 @@ export class adminRoutes {
         // Annual Tax
         this.router.delete('/delete-annual-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.deleteAnnualTax);
 
+        this.router.delete('/delete-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.deleteOpenPlotInfo);
 
 
 
@@ -172,6 +180,8 @@ export class adminRoutes {
 
         // Annual Tax
         this.router.put('/update-annual-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.updateAnnualTaxInfo);
+        this.router.put('/update-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.updateOpenPlotInfo);
+
     }
 }
 
