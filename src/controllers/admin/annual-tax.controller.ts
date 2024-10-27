@@ -39,11 +39,19 @@ export class AnnualTax {
             const { page_number, search_text } = req.body;
 
             const result = await getAnnualTaxList(Number(page_number - 1), search_text as string);
+
             if(search_text){
                 response['totalRecords'] = await getTotalAnnualTaxCount(search_text); // need to do later getting inproper counts
             }else{
                 response['totalRecords'] = await getTotalAnnualTaxCount();
             }
+
+            // if(search_text){
+            //     response['totalRecords'] = await getTotalAnnualTaxCount(search_text); // need to do later getting inproper counts
+            // }else{
+                response['totalRecords'] = await getTotalAnnualTaxCount();
+            // }
+
             
             response['data'] = result;
             return _200(res, "Annual Tax list retrieved successfully", response);
