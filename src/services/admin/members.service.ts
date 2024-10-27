@@ -61,7 +61,7 @@ async function getMembersList(page: number = 1, memberName?: string): Promise<an
     const values: any[] = [];
 
     if (memberName) {
-        query += ` AND NAME_NAME LIKE ?`;
+        query += ` AND LOWER(NAME_NAME) LIKE LOWER(?)`;
         values.push(`%${memberName}%`);
     }
 

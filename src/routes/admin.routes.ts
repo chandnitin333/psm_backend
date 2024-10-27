@@ -10,6 +10,11 @@ import { Milkat } from "../controllers/admin/milkat.controller";
 import { OpenPlotController } from "../controllers/admin/openplot.controller";
 import { taluka } from "../controllers/admin/taluka.controller";
 import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
+import { Floor } from "../controllers/admin/floor.controller";
+import { Prakar } from "../controllers/admin/prakar.controller";
+import { Tax } from "../controllers/admin/tax.controller";
+import { OtherTax } from "../controllers/admin/other-tax.controller";
+import { AnnualTax } from "../controllers/admin/annual-tax.controller";
 
 export class adminRoutes {
     public router: Router;
@@ -32,14 +37,26 @@ export class adminRoutes {
 
         this.router.get('/get-gat-gram-panchayat/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, gatgrampanchayat.getGatGramPanchayat);
 
-
-
         this.router.get('/milkat/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Milkat.getMilkat);
         this.router.get('/milkat-vapar/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MilkatVapar.getMilkatVapar);
         this.router.get('/member/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Memeber.getMember);
 
         this.router.get('/get-dashboard-data/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.getUploadData);
 
+        // floor
+        this.router.get('/floor/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.getFloor);
+
+        // prakar
+        this.router.get('/prakar/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Prakar.getPrakar);
+
+        // Tax
+        this.router.get('/tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tax.getTax);
+
+        // Other Tax
+        this.router.get('/get-other-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.getOtherTax);
+
+        // Annual Tax
+        this.router.get('/get-annual-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getAnnualTax);
         this.router.get('/get-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.getOpenPlotInfoById);
     }
 
@@ -74,6 +91,25 @@ export class adminRoutes {
         this.router.post('/add-dashboard-data', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.addUploadData);
         this.router.post('/get-dashboard-data-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.getAllUploadData);
 
+        // floor
+        this.router.post('/floor', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.addFloor);
+        this.router.post('/get-floor-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.getAllFloor);
+
+        // prakar
+        this.router.post('/prakar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Prakar.addPrakar);
+        this.router.post('/get-prakar-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Prakar.getAllPrakar);
+
+        // Tax
+        this.router.post('/tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tax.addTax);
+        this.router.post('/get-tax-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tax.getAllTax);
+
+        // Other Tax
+        this.router.post('/add-other-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.addOtherTax);
+        this.router.post('/get-other-tax-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.getAllOtherTax);
+
+        // Annual tax
+        this.router.post('/add-annual-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.addAnnualTax);
+        this.router.post('/get-annual-tax-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getAllAnnualTax);
 
         this.router.post('/add-open-plot-info', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.createOpenPlotInfo);
         this.router.post('/get-open-plot-info-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.getOpenPlotInfoList);
@@ -99,6 +135,21 @@ export class adminRoutes {
         this.router.delete('/delete-member/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Memeber.deleteMember);
         this.router.delete('/delete-dashboard-data/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.deleteUploadData);
 
+        // floor
+        this.router.delete('/delete-floor/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.deleteFloor);
+
+        // prakar
+        this.router.delete('/delete-prakar/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Prakar.deletePrakar);
+
+        // Tax
+        this.router.delete('/delete-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tax.deleteTax);
+
+        // Other Tax
+        this.router.delete('/delete-other-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.deleteOtherTax);
+
+        // Annual Tax
+        this.router.delete('/delete-annual-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.deleteAnnualTax);
+
         this.router.delete('/delete-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.deleteOpenPlotInfo);
 
 
@@ -115,6 +166,20 @@ export class adminRoutes {
         this.router.put('/update-member/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Memeber.updateMember);
         this.router.put('/update-dashboard-data/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.updateUploadDataInfo);
 
+        // floor
+        this.router.put('/update-floor', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.updateFloorInfo);
+
+        // prakar
+        this.router.put('/update-prakar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Prakar.updatePrakarInfo);
+
+        // Tax
+        this.router.put('/update-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tax.updateTaxInfo);
+
+        // Other Tax
+        this.router.put('/update-other-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.updateOtherTaxInfo);
+
+        // Annual Tax
+        this.router.put('/update-annual-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.updateAnnualTaxInfo);
         this.router.put('/update-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.updateOpenPlotInfo);
 
     }
