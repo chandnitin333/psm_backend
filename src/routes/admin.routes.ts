@@ -15,6 +15,7 @@ import { Prakar } from "../controllers/admin/prakar.controller";
 import { Tax } from "../controllers/admin/tax.controller";
 import { OtherTax } from "../controllers/admin/other-tax.controller";
 import { AnnualTax } from "../controllers/admin/annual-tax.controller";
+import { GhasaraDar } from "../controllers/admin/ghasara-dar.controller";
 
 export class adminRoutes {
     public router: Router;
@@ -113,6 +114,10 @@ export class adminRoutes {
 
         this.router.post('/add-open-plot-info', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.createOpenPlotInfo);
         this.router.post('/get-open-plot-info-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.getOpenPlotInfoList);
+
+        // ghasara dar routes
+        this.router.post('/add-ghasara-dar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, GhasaraDar.addGhasaraDar);
+        this.router.post('/get-ghasara-dar-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, GhasaraDar.getAllGhasaraDar);
 
 
 

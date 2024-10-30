@@ -11,7 +11,7 @@ export const createGhasaraDar = async (ghasaraDar: any) => {
         if (existingRecord.length > 0) {
             throw new Error('Ghasara Dar already exists');
         }
-        await executeQuery('INSERT INTO  milkat_vapar ( MALMATTA_ID, DEPRECIATION_NAME, AGEOFBUILDING_ID) VALUES ( ?, ?, ?)', [ghasaraDar.malmatta_id,ghasaraDar.depreciation_name,ghasaraDar.ageofbuilding_id]);
+        await executeQuery('INSERT INTO  depreciation ( MALMATTA_ID, DEPRECIATION_NAME, AGEOFBUILDING_ID) VALUES ( ?, ?, ?)', [ghasaraDar.malmatta_id,ghasaraDar.depreciation_name,ghasaraDar.ageofbuilding_id]);
         logger.info('Ghasara Dar created successfully');
     } catch (err) {
         logger.error('Error creating Ghasara Dar', err);
