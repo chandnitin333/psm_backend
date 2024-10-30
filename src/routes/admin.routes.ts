@@ -19,6 +19,9 @@ import { GhasaraDar } from "../controllers/admin/ghasara-dar.controller";
 import { BharankDar } from "../controllers/admin/bharank-dar.controller";
 import { Tower } from "../controllers/admin/tower.controller";
 
+import { AnnualTax } from "../controllers/admin/annual-tax.controller";
+import { GhasaraDar } from "../controllers/admin/ghasara-dar.controller";
+
 
 export class adminRoutes {
     public router: Router;
@@ -174,6 +177,14 @@ export class adminRoutes {
         // Annual tax
         this.router.post('/add-annual-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.addAnnualTax);
         this.router.post('/get-annual-tax-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getAllAnnualTax);
+
+        this.router.post('/add-open-plot-info', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.createOpenPlotInfo);
+        this.router.post('/get-open-plot-info-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.getOpenPlotInfoList);
+
+        // ghasara dar routes
+        this.router.post('/add-ghasara-dar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, GhasaraDar.addGhasaraDar);
+        this.router.post('/get-ghasara-dar-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, GhasaraDar.getAllGhasaraDar);
+
 
         this.router.post('/sign-in', GlobalMiddleware.checkError, AuthController.authenticate);
 
