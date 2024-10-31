@@ -21,6 +21,8 @@ import { Tower } from "../controllers/admin/tower.controller";
 
 import { AnnualTax } from "../controllers/admin/annual-tax.controller";
 import { GhasaraDar } from "../controllers/admin/ghasara-dar.controller";
+import { BharankDar } from "../controllers/admin/bharank-dar.controller";
+import { Tower } from "../controllers/admin/tower.controller";
 
 
 export class adminRoutes {
@@ -89,6 +91,17 @@ export class adminRoutes {
 
         // Annual Tax
         this.router.get('/get-annual-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getAnnualTax);
+
+        this.router.get('/get-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.getOpenPlotInfoById);
+
+        // ghasara dar routes
+        this.router.get('/ghasara-dar-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, GhasaraDar.getGhasaraDar);
+
+        // Bharank Dar routes
+        this.router.get('/bharank-dar-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BharankDar.getBharankDar);
+
+        // Tower routes
+        this.router.get('/tower-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.getTower);
 
     }
 
@@ -185,6 +198,13 @@ export class adminRoutes {
         this.router.post('/add-ghasara-dar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, GhasaraDar.addGhasaraDar);
         this.router.post('/get-ghasara-dar-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, GhasaraDar.getAllGhasaraDar);
 
+        // Bharank Dar routes
+        this.router.post('/add-bharank-dar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BharankDar.addBharankDar);
+        this.router.post('/get-bharank-dar-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BharankDar.getAllBharankDar);
+
+        // Tower routes
+        this.router.post('/add-tower', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.addTower);
+        this.router.post('/get-tower-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.getAllTower);
 
         this.router.post('/sign-in', GlobalMiddleware.checkError, AuthController.authenticate);
 
@@ -241,6 +261,9 @@ export class adminRoutes {
         // Annual Tax
         this.router.delete('/delete-annual-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.deleteAnnualTax);
 
+        this.router.delete('/delete-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.deleteOpenPlotInfo);
+
+        this.router.delete('/delete-ghasara-dar/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, GhasaraDar.deleteGhasaraDar);
 
         // Bharank Dar routes
         this.router.delete('/delete-bharank-dar/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BharankDar.deleteBharankDar);
@@ -304,6 +327,14 @@ export class adminRoutes {
         // Annual Tax
         this.router.put('/update-annual-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.updateAnnualTaxInfo);
 
+        // ghasara dar routes
+        this.router.put('/update-ghasara-dar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, GhasaraDar.updateGhasaraDarInfo);
+
+        // Bharank Dar routes
+        this.router.put('/update-bharank-dar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BharankDar.updateBharankDarInfo);
+
+        // Tower routes
+        this.router.put('/update-tower', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.updateTowerInfo);
 
     }
 }

@@ -97,13 +97,8 @@ export const getTotalAnnualTaxCount = async (search='') => {
                 JOIN milkat_vapar milkatvapar ON annualtax.MILKAT_VAPAR_ID = milkatvapar.MILKAT_VAPAR_ID
                 WHERE 
                 LOWER(district.DISTRICT_NAME) LIKE LOWER(?) 
-
                 OR LOWER(malmatta.DESCRIPTION_NAME) LIKE LOWER(?) 
                 OR LOWER(milkatvapar.MILKAT_VAPAR_NAME) LIKE LOWER(?) 
-
-                AND LOWER(malmatta.DESCRIPTION_NAME) LIKE LOWER(?) 
-                AND LOWER(milkatvapar.MILKAT_VAPAR_NAME) LIKE LOWER(?) 
-
                 AND annualtax.IS_DELETE = 0
             `, [`%${search}%`, `%${search}%`, `%${search}%`]);
         } else {

@@ -1,11 +1,7 @@
-
 import { logger } from "../../logger/Logger";
 import { Request, response, Response } from "express";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
-
-
 import { createMilkatVapar, getMilkatVaparById, getMilkatVaparList, getTotalMilkatVaparCount, softDeleteMilkatVapar, updateMilkatVapar } from "../../services/admin/milkat-vapar.service";
-
 import { createGhasaraDar, getGhasaraDarById, getGhasaraDarList, getTotalGhasaraDarCount, softDeleteGhasaraDar, updateGhasaraDar } from "../../services/admin/ghasara-dar.service";
 
 export class GhasaraDar {
@@ -22,23 +18,15 @@ export class GhasaraDar {
 
     static async updateGhasaraDarInfo(req: Request, res: Response) {
         try {
-
-            const { ghasara_id } = req.body;
-            if (!ghasara_id) {
-                return _400(res, "Ghasara Dar ID is required");
-            }
-          
-
             const { vapar_id } = req.body;
 
             if (!vapar_id) {
                 return _400(res, "Ghasara Dar ID is required");
             }
-            let isExists = await getGhasaraDarById(vapar_id);
+            let isExists = await getGhasaraDarById(ghasara_id);
             if (!isExists) {
                 return _404(res, "Ghasara Dar Details not found.");
             }
-
             const result = await updateGhasaraDar(req.body);
             return _200(res, "Ghasara Dar updated successfully", result);
         } catch (error) {
@@ -46,19 +34,12 @@ export class GhasaraDar {
             return _400(res, error.message);
         }
     }
-
     static async getAllGhasaraDar(req: Request, res: Response) {
         try {
             let response = [];
             const { page_number, search_text } = req.body;
             const result = await getGhasaraDarList(Number(page_number - 1), search_text as string);
-             if(search_text){
-                response['totalRecords'] = await getTotalGhasaraDarCount(search_text);
-            }else{
-                response['totalRecords'] = await getTotalGhasaraDarCount();
-            }
-
-
+            response['totalRecords'] = await getTotalGhasaraDarCount();
             response['data'] = result;
             return _200(res, "Ghasara Dar list retrieved successfully", response);
         } catch (error) {

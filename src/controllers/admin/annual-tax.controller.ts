@@ -40,6 +40,7 @@ export class AnnualTax {
 
             const result = await getAnnualTaxList(Number(page_number - 1), search_text as string);
 
+
             if(search_text){
                 response['totalRecords'] = await getTotalAnnualTaxCount(search_text); // need to do later getting inproper counts
             }else{
@@ -51,6 +52,12 @@ export class AnnualTax {
             // }else{
                 response['totalRecords'] = await getTotalAnnualTaxCount();
             // }
+
+            if(search_text){
+                response['totalRecords'] = await getTotalAnnualTaxCount(search_text); // need to do later getting inproper counts
+            }else{
+                response['totalRecords'] = await getTotalAnnualTaxCount();
+            }
 
             
             response['data'] = result;
