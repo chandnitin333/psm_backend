@@ -56,13 +56,14 @@ export const getGramPanchayatList = async (params: object) => {
         let data = [];
         if (searchValue) {
             sql += ` AND (RTRIM(LOWER(p.PANCHAYAT_NAME)) LIKE LOWER(?)  OR RTRIM(LOWER(t.TALUKA_NAME)) LIKE LOWER(?))`;
-            data = [searchValue, searchValue, limit, offset];
+            let searchText = `%${searchValue}%`
+            data = [searchText, searchText, limit, offset];
         } else {
             data = [limit, offset];
         }
 
         let total_count = await getGramPanchayaCount(sql, data);
-       
+
         sql += ` ORDER BY p.PANCHAYAT_ID DESC LIMIT ? OFFSET ?`;
         return executeQuery(sql, data).then(result => {
             return (result) ? { 'data': result, 'total_count': total_count } : null;

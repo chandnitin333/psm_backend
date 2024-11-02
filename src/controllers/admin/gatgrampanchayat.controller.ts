@@ -1,7 +1,6 @@
 
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
-import { getTotalCount } from "../../services/admin/auth.service";
 import { addGatGramPanchayat, deleteGatGramPanchayat, getGatGramPanchayat, getGatGramPanchayatList, getGatGrampanchayatByPanchayatId, getGrampanchayatByTalukaId, updateGatGramPanchayat } from "../../services/admin/gatgrampanchayat.service";
 import { _200, _201, _400, _404, _409 } from "../../utils/ApiResponse";
 
@@ -15,12 +14,12 @@ export class gatgrampanchayat {
         let currentTimestamp = Math.floor(new Date().getTime());
         let params = [districtId, talukaid, grampanchayatId, gatgramPanchayatName];
         addGatGramPanchayat(params).then((result) => {
-            if( result === "exists") {
-                _409(res, gatgramPanchayatName+' GatGramPanchayat Already Exists')
-            } else if( result == null) {
-                _400(res, gatgramPanchayatName+' GatGramPanchayat Not Added')
-            }else{
-                _201(res, gatgramPanchayatName+' GatGramPanchayat Added Successfully')
+            if (result === "exists") {
+                _409(res, gatgramPanchayatName + ' GatGramPanchayat Already Exists')
+            } else if (result == null) {
+                _400(res, gatgramPanchayatName + ' GatGramPanchayat Not Added')
+            } else {
+                _201(res, gatgramPanchayatName + ' GatGramPanchayat Added Successfully')
             }
         }
         ).catch((error) => {
@@ -50,13 +49,14 @@ export class gatgrampanchayat {
         let page = parseInt(req.body.page_number) || 1;
         let limit = PAGINATION.LIMIT || 10;
         let offset = (page - 1) * limit;
-        let totalCount =  await  getTotalCount(['gatgrampanchayat']);
-        getGatGramPanchayatList({ limit: limit, offset: offset }).then((result) => {
+        let searchText = req?.body?.search_text || '';
+        getGatGramPanchayatList({ limit: limit, offset: offset, searchText: searchText }).then((result) => {
             if (result) {
-                response['totalRecords'] = totalCount?.total_count;
+
+                response['totalRecords'] = result?.total_count ?? 0;
                 response['limit'] = limit;
                 response['page'] = page;
-                response['data'] = result;
+                response['data'] = result?.data;
                 _200(res, 'GatGramPanchayat list found successfully', response)
             } else {
                 _400(res, 'GatGramPanchayat list not found')
@@ -76,18 +76,18 @@ export class gatgrampanchayat {
         let gatgramPanchayatName = req?.body?.name;
         let response = {};
         let currentTimestamp = Math.floor(new Date().getTime());
-        let params = [districtId, talukaId,grampanchayatId, gatgramPanchayatName, gatgrampanchayatId];
+        let params = [districtId, talukaId, grampanchayatId, gatgramPanchayatName, gatgrampanchayatId];
         getGatGramPanchayat([gatgrampanchayatId]).then((result) => {
             if (!result) {
                 return _404(res, 'GatGrampanchayat Not Found');
             }
             updateGatGramPanchayat(params).then((result) => {
-                if( result === "exists") {
-                    _409(res, gatgramPanchayatName+' GatGrampanchayat already exists. Please choose another gatgrampanchayat name')
-                } else if( result == null) {
-                     _400(res, 'GramPanchayat Not Updated')
-                }else{
-                    _200(res, gatgramPanchayatName+ ' GatGramPanchayat Updated Successfully');
+                if (result === "exists") {
+                    _409(res, gatgramPanchayatName + ' GatGrampanchayat already exists. Please choose another gatgrampanchayat name')
+                } else if (result == null) {
+                    _400(res, 'GramPanchayat Not Updated')
+                } else {
+                    _200(res, gatgramPanchayatName + ' GatGramPanchayat Updated Successfully');
                 }
             }).catch((err) => {
 
