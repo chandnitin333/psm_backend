@@ -47,12 +47,29 @@ export const getGatGramPanchayat = async (params: object) => {
 
 export const getGatGramPanchayatList = async (params: object) => {
     try {
-        const { limit, offset } = params as { limit: number, offset: number };
-        let sql = `select g.GATGRAMPANCHAYAT_ID ,g.DISTRICT_ID ,g.TALUKA_ID ,g.PANCHAYAT_ID ,RTRIM(g.GATGRAMPANCHAYAT_NAME) as GATGRAMPANCHAYAT_NAME ,RTRIM(d.DISTRICT_NAME) as DISTRICT_NAME,RTRIM(t.TALUKA_NAME) as TALUKA_NAME,RTRIM(p.PANCHAYAT_NAME) as PANCHAYAT_NAME from gatgrampanchayat g join district d on g.DISTRICT_ID  = d.DISTRICT_ID join taluka t  on g.TALUKA_ID  = t.TALUKA_ID join panchayat p on g.PANCHAYAT_ID =p.PANCHAYAT_ID where g.IS_DELETE = 0 order by g.GATGRAMPANCHAYAT_ID DESC LIMIT ? OFFSET ?`;
-        return executeQuery(sql, [limit, offset]).then(result => {
-            return (result) ? result : null;
+
+        const { limit, offset, searchText } = params as { limit: number, offset: number, searchText: string };
+        let sql = `select g.GATGRAMPANCHAYAT_ID ,g.DISTRICT_ID ,g.TALUKA_ID ,g.PANCHAYAT_ID ,RTRIM(g.GATGRAMPANCHAYAT_NAME) as GATGRAMPANCHAYAT_NAME ,RTRIM(d.DISTRICT_NAME) as DISTRICT_NAME,RTRIM(t.TALUKA_NAME) as TALUKA_NAME,RTRIM(p.PANCHAYAT_NAME) as PANCHAYAT_NAME 
+                   from gatgrampanchayat g 
+                   join district d on g.DISTRICT_ID  = d.DISTRICT_ID 
+                   join taluka t  on g.TALUKA_ID  = t.TALUKA_ID 
+                   join panchayat p on g.PANCHAYAT_ID = p.PANCHAYAT_ID 
+                   where g.IS_DELETE = 0 `;
+        let data = [];
+        if (searchText) {
+            const searchPattern = `%${searchText}%`;
+            sql += ` and (g.GATGRAMPANCHAYAT_NAME LIKE ? OR p.PANCHAYAT_NAME LIKE ? OR t.TALUKA_NAME LIKE ? OR d.DISTRICT_NAME LIKE ?)`;
+            data = [searchPattern, searchPattern, searchPattern, searchPattern, limit, offset];
+        } else {
+            data = [limit, offset];
+        }
+        let totalCount = await getRecordsCount(sql, data);
+        sql += ` ORDER BY g.GATGRAMPANCHAYAT_ID DESC LIMIT ? OFFSET ?`;
+        return executeQuery(sql, data).then(result => {
+            (result) ? result : null;
+            return (result) ? { 'data': result, 'total_count': totalCount } : null;
         }).catch(error => {
-            console.error("getGatGramPanchayat fetch data error: ", error);
+            console.error("getGatGramPanchayatList fetch data error: ", error);
             return null;
         });
     } catch (error) {
@@ -62,6 +79,14 @@ export const getGatGramPanchayatList = async (params: object) => {
 
 }
 
+const getRecordsCount = (sql: string, data: any[]) => {
+    return executeQuery(sql, data).then((result: any) => {
+        return (result && result.length > 0) ? result.length : 0;
+    }).catch(error => {
+        console.error("getRecordsCount fetch data error: ", error);
+        return 0;
+    });
+}
 export const updateGatGramPanchayat = async (params: object) => {
     try {
         let sql = `SELECT GATGRAMPANCHAYAT_ID FROM gatgrampanchayat WHERE DISTRICT_ID = ? AND TALUKA_ID=? AND PANCHAYAT_ID=? AND GATGRAMPANCHAYAT_NAME=? AND IS_DELETE = 0`;
