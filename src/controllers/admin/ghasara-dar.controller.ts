@@ -1,7 +1,6 @@
 import { logger } from "../../logger/Logger";
 import { Request, response, Response } from "express";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
-import { createMilkatVapar, getMilkatVaparById, getMilkatVaparList, getTotalMilkatVaparCount, softDeleteMilkatVapar, updateMilkatVapar } from "../../services/admin/milkat-vapar.service";
 import { createGhasaraDar, getGhasaraDarById, getGhasaraDarList, getTotalGhasaraDarCount, softDeleteGhasaraDar, updateGhasaraDar } from "../../services/admin/ghasara-dar.service";
 
 export class GhasaraDar {
@@ -18,9 +17,8 @@ export class GhasaraDar {
 
     static async updateGhasaraDarInfo(req: Request, res: Response) {
         try {
-            const { vapar_id } = req.body;
-
-            if (!vapar_id) {
+            const { ghasara_id } = req.body;
+            if (!ghasara_id) {
                 return _400(res, "Ghasara Dar ID is required");
             }
             let isExists = await getGhasaraDarById(ghasara_id);
@@ -39,7 +37,11 @@ export class GhasaraDar {
             let response = [];
             const { page_number, search_text } = req.body;
             const result = await getGhasaraDarList(Number(page_number - 1), search_text as string);
-            response['totalRecords'] = await getTotalGhasaraDarCount();
+             if(search_text){
+                response['totalRecords'] = await getTotalGhasaraDarCount(search_text);
+            }else{
+                response['totalRecords'] = await getTotalGhasaraDarCount();
+            }
             response['data'] = result;
             return _200(res, "Ghasara Dar list retrieved successfully", response);
         } catch (error) {
@@ -88,8 +90,3 @@ export class GhasaraDar {
         }
     }
 }
-
-
-
-
-

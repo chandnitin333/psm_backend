@@ -1,4 +1,3 @@
-
 import { executeQuery } from "../../config/db/db";
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
@@ -44,25 +43,12 @@ export const getGhasaraDarList = async (offset: number, search: string) => {
         }
 
         query += ' ORDER BY d.DEPRECIATION_ID DESC LIMIT ? OFFSET ?';
-// tommorow will do this function
-export const getGhasaraDarList = async (offset: number, search: string) => {
-    try {
-        let query = 'SELECT * FROM milkat_vapar WHERE DELETED_AT IS NULL';
-        const params: any[] = [];
-
-        if (search) {
-            query += ' AND LOWER(MILKAT_VAPAR_NAME) LIKE LOWER(?)';
-            params.push(`%${search}%`);
-        }
-
-        query += ' ORDER BY MILKAT_VAPAR_ID DESC LIMIT ? OFFSET ?';
         params.push(PAGINATION.LIMIT, PAGINATION.LIMIT * offset);
 
         const result = await executeQuery(query, params);
         return result;
     } catch (err) {
         logger.error('Error fetching ghasara dar list', err);
-        logger.error('Error fetching milkat list', err);
         throw err;
     }
 };
@@ -73,17 +59,13 @@ export const getGhasaraDarById = async (id: number) => {
         return result[0];
     } catch (err) {
         logger.error('Error fetching ghasara by DEPRECIATION_ID', err);
-        const result = await executeQuery('SELECT * FROM milkat_vapar WHERE MILKAT_VAPAR_ID = ? AND DELETED_AT IS NULL', [id]);
-        return result[0];
-    } 
-    
+        throw err;
+    }
 };
 
 export const softDeleteGhasaraDar = async (id: number) => {
     try {
-        
-        return await executeQuery('UPDATE milkat_vapar SET DELETED_AT = NOW() WHERE MILKAT_VAPAR_ID = ? AND DELETED_AT IS NULL', [id]);
-
+        return await executeQuery('UPDATE depreciation SET  IS_DELETE= 1 WHERE DEPRECIATION_ID = ?', [id]);
     } catch (err) {
         logger.error('Error soft deleting milkat', err);
         throw err;
@@ -102,14 +84,6 @@ export const getTotalGhasaraDarCount = async (search='') => {
         return result[0].total;
     } catch (err) {
         logger.error('Error fetching total ghasara count', err);
-export const getTotalGhasaraDarCount = async () => {
-    try {
-        const result = await executeQuery('SELECT COUNT(*) AS total FROM milkat_vapar WHERE DELETED_AT IS NULL', []);
-        return result[0].total;
-    } catch (err) {
-        logger.error('Error fetching total milkat vapar count', err);
         throw err;
     }
 };
-
-

@@ -15,17 +15,10 @@ import { Prakar } from "../controllers/admin/prakar.controller";
 import { Tax } from "../controllers/admin/tax.controller";
 import { OtherTax } from "../controllers/admin/other-tax.controller";
 
-import { GhasaraDar } from "../controllers/admin/ghasara-dar.controller";
-import { BharankDar } from "../controllers/admin/bharank-dar.controller";
-import { Tower } from "../controllers/admin/tower.controller";
-
 import { AnnualTax } from "../controllers/admin/annual-tax.controller";
 import { GhasaraDar } from "../controllers/admin/ghasara-dar.controller";
 import { BharankDar } from "../controllers/admin/bharank-dar.controller";
 import { Tower } from "../controllers/admin/tower.controller";
-
-import { AnnualTax } from "../controllers/admin/annual-tax.controller";
-import { GhasaraDar } from "../controllers/admin/ghasara-dar.controller";
 
 
 export class adminRoutes {
