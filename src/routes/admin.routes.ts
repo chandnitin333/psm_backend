@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/admin/auth.controller";
-import { DashboardUpload } from "../controllers/admin/dashboard-upload.controlle";
+import { DashboardUpload } from "../controllers/admin/dashboard-upload.controller";
 import { district } from "../controllers/admin/district.controller";
 import { gatgrampanchayat } from "../controllers/admin/gatgrampanchayat.controller";
 import { grampanchayat } from "../controllers/admin/grampanchayat.controller";
@@ -18,6 +18,11 @@ import { AnnualTax } from "../controllers/admin/annual-tax.controller";
 import { GhasaraDar } from "../controllers/admin/ghasara-dar.controller";
 import { BharankDar } from "../controllers/admin/bharank-dar.controller";
 import { Tower } from "../controllers/admin/tower.controller";
+import { MalmattechePrakar } from "../controllers/admin/malmatteche-prakar.controller";
+import { Malmatta } from "../controllers/admin/malmatta.controller";
+import { KaryaKarniCommitee } from "../controllers/admin/karyakarni-commitee.controller";
+import { UploadFile } from "../controllers/admin/upload-file.controller";
+import { BDOUser } from "../controllers/admin/bdo-user.controller";
 
 export class adminRoutes {
     public router: Router;
@@ -70,6 +75,21 @@ export class adminRoutes {
 
         // Tower routes
         this.router.get('/tower-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.getTower);
+
+        // Malamatteche Prakar
+        this.router.get('/get-malmatteche-prakar-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalmattechePrakar.getMalmattechePrakar);
+
+        // Malmatta routes
+        this.router.get('/get-malmatta-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Malmatta.getMalmatta);
+
+        // Karyakanri Committee
+        this.router.get('/get-karyakarni-commitee-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, KaryaKarniCommitee.getKaryaKarniCommitee);
+
+        // Upload File
+        this.router.get('/get-upload-file/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, UploadFile.getUploadFile);
+        
+        // BDO User
+        this.router.get('/get-bdo-user-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BDOUser.getBDOUser);
     }
 
     postRoutes() {
@@ -138,6 +158,26 @@ export class adminRoutes {
         this.router.post('/add-tower', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.addTower);
         this.router.post('/get-tower-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.getAllTower);
 
+        // Malamatteche Prakar
+        this.router.post('/add-malmatteche-prakar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalmattechePrakar.addMalmattechePrakar);
+        this.router.post('/get-malmatteche-prakar-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalmattechePrakar.getAllMalmattechePrakar);
+
+        // Malmatta routes
+        this.router.post('/add-malmatta', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Malmatta.addMalmatta);
+        this.router.post('/get-malmatta-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Malmatta.getAllMalmatta);
+
+        // Karyakanri Committee
+        this.router.post('/add-karyakarni-commitee', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, KaryaKarniCommitee.addKaryaKarniCommitee);
+        this.router.post('/get-karyakarni-commitee-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, KaryaKarniCommitee.getAllKaryaKarniCommitee);
+
+        // Upload File
+        this.router.post('/add-upload-file', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, UploadFile.addUploadFile);
+        this.router.post('/get-upload-file-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, UploadFile.getAllUploadFile);
+
+        // BDO User Route
+        this.router.post('/add-bdo-user', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BDOUser.addBDOUser);
+        this.router.post('/get-bdo-user-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BDOUser.getAllBDOUser);
+
         this.router.post('/sign-in', GlobalMiddleware.checkError, AuthController.authenticate);
 
 
@@ -183,6 +223,21 @@ export class adminRoutes {
         // Tower routes
         this.router.delete('/delete-tower/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.deleteTower);
 
+        // Malamatteche Prakar
+        this.router.delete('/delete-malmatteche-prakar/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalmattechePrakar.deleteMalmattechePrakar);
+
+        // Malmatta routes
+        this.router.delete('/delete-malmatta/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Malmatta.deleteMalmatta);
+
+        // Karyakanri Committee
+        this.router.delete('/delete-karyakarni-commitee/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, KaryaKarniCommitee.deleteKaryaKarniCommitee);
+
+        // Upload File
+        this.router.delete('/delete-upload-file/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, UploadFile.deleteUploadFile);
+
+        // BDO User Route
+        this.router.delete('/delete-bdo-user/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BDOUser.deleteBDOUser);
+
     }
     putRoute() {
         this.router.put('/update-district', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, district.updateDistrict);
@@ -219,6 +274,21 @@ export class adminRoutes {
 
         // Tower routes
         this.router.put('/update-tower', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.updateTowerInfo);
+
+        // Malamatteche Prakar
+        this.router.put('/update-malmatteche-prakar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalmattechePrakar.updateMalmattechePrakarInfo);
+
+        // Malmatta routes
+        this.router.put('/update-malmatta', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Malmatta.updateMalmattaInfo);
+
+        // Karyakanri Committee
+        this.router.put('/update-karyakarni-commitee', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, KaryaKarniCommitee.updateKaryaKarniCommiteeInfo);
+
+        // Upload File
+        this.router.put('/update-upload-file/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, UploadFile.updateUploadDataInfo);
+
+        // BDO User Route
+        this.router.put('/update-bdo-user', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BDOUser.updateBDOUserInfo);
 
     }
 }

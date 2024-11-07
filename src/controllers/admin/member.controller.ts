@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 import { addMember, getMember, getMemberCount, getMembersList, softDeleteMember, updateMember } from "../../services/admin/members.service";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
 
+// कामकाज कमेटी
 export class Memeber {
 
     static async createMember(req: Request, res: Response) {

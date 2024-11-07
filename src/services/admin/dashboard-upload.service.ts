@@ -41,17 +41,17 @@ export const getUploadDataById = async (id: number): Promise<UploadDataDashboard
 
 export const createUploadData = async (data: any): Promise<void> => {
     try {
-        const { taluka_id, panchayat_id, file_name, r_path, district_id } = data;
+        const { taluka_id, panchayat_id, name, r_path, district_id } = data;
 
-        if (!taluka_id || !panchayat_id || !file_name || !r_path || !district_id) {
+        if (!taluka_id || !panchayat_id || !name || !r_path || !district_id) {
             throw new Error("Missing required fields");
         }
         
         const dateNow = await Utils.getCurrentDateTime();
 
-        console.log("dateNow=====",dateNow);
+        // console.log("dateNow=====",dateNow);
         const query = `INSERT INTO uploaddatadashboard (TALUKA_ID, PANCHAYAT_ID, FILE_NAME, R_PATH, TDATE, TTIME, DISTRICT_ID) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-        const values = [taluka_id, panchayat_id, file_name, r_path, dateNow, dateNow, district_id];
+        const values = [taluka_id, panchayat_id, name, r_path, dateNow, dateNow, district_id];
         await executeQuery(query, values);
     } catch (error) {
         logger.error(`Error creating upload data: ${error}`);
