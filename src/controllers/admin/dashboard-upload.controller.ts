@@ -16,7 +16,6 @@ export class DashboardUpload {
                         logger.error(err);
                         reject(_400(res, err.message));
                     } else {
-
                         resolve();
                     }
                 });
@@ -31,8 +30,8 @@ export class DashboardUpload {
 
             const uploadData = {
                 ...req.body,
-                file_name: req?.body?.newFileName,
-                r_path: req?.body?.fileDestination,
+                name: req?.body?.name,
+                r_path: req?.body?.fileDestination+'/'+req?.body?.newFileName,
 
             };
 
