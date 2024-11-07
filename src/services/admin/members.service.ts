@@ -1,7 +1,7 @@
 import { executeQuery } from "../../config/db/db";
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
-
+// कामकाज कमेटी 
 async function addMember(member: any): Promise<void> {
     const query = `
         INSERT INTO MemberMaster (PANCHAYAT_ID, NAME_NAME, MIDDLE_NAME, LAST_NAME, DESIGNATION_ID, MOBILE_NO)
