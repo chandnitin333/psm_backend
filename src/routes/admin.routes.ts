@@ -14,6 +14,7 @@ import { Floor } from "../controllers/admin/floor.controller";
 import { Prakar } from "../controllers/admin/prakar.controller";
 import { Tax } from "../controllers/admin/tax.controller";
 import { OtherTax } from "../controllers/admin/other-tax.controller";
+
 import { AnnualTax } from "../controllers/admin/annual-tax.controller";
 import { GhasaraDar } from "../controllers/admin/ghasara-dar.controller";
 import { BharankDar } from "../controllers/admin/bharank-dar.controller";
@@ -23,6 +24,7 @@ import { Malmatta } from "../controllers/admin/malmatta.controller";
 import { KaryaKarniCommitee } from "../controllers/admin/karyakarni-commitee.controller";
 import { UploadFile } from "../controllers/admin/upload-file.controller";
 import { BDOUser } from "../controllers/admin/bdo-user.controller";
+
 
 export class adminRoutes {
     public router: Router;
@@ -90,6 +92,32 @@ export class adminRoutes {
         
         // BDO User
         this.router.get('/get-bdo-user-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BDOUser.getBDOUser);
+        // floor
+        this.router.get('/floor/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.getFloor);
+
+        // prakar
+        this.router.get('/prakar/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Prakar.getPrakar);
+
+        // Tax
+        this.router.get('/tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tax.getTax);
+
+        // Other Tax
+        this.router.get('/get-other-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.getOtherTax);
+
+        // Annual Tax
+        this.router.get('/get-annual-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getAnnualTax);
+
+        this.router.get('/get-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.getOpenPlotInfoById);
+
+        // ghasara dar routes
+        this.router.get('/ghasara-dar-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, GhasaraDar.getGhasaraDar);
+
+        // Bharank Dar routes
+        this.router.get('/bharank-dar-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BharankDar.getBharankDar);
+
+        // Tower routes
+        this.router.get('/tower-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.getTower);
+
     }
 
     postRoutes() {
@@ -177,6 +205,25 @@ export class adminRoutes {
         // BDO User Route
         this.router.post('/add-bdo-user', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BDOUser.addBDOUser);
         this.router.post('/get-bdo-user-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BDOUser.getAllBDOUser);
+        // floor
+        this.router.post('/floor', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.addFloor);
+        this.router.post('/get-floor-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.getAllFloor);
+
+        // prakar
+        this.router.post('/prakar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Prakar.addPrakar);
+        this.router.post('/get-prakar-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Prakar.getAllPrakar);
+
+        // Tax
+        this.router.post('/tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tax.addTax);
+        this.router.post('/get-tax-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tax.getAllTax);
+
+        // Other Tax
+        this.router.post('/add-other-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.addOtherTax);
+        this.router.post('/get-other-tax-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.getAllOtherTax);
+
+        // Annual tax
+        this.router.post('/add-annual-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.addAnnualTax);
+        this.router.post('/get-annual-tax-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getAllAnnualTax);
 
         this.router.post('/sign-in', GlobalMiddleware.checkError, AuthController.authenticate);
 
@@ -214,7 +261,27 @@ export class adminRoutes {
 
         this.router.delete('/delete-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.deleteOpenPlotInfo);
 
+
         // ghasara dar routes
+        this.router.delete('/delete-ghasara-dar/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, GhasaraDar.deleteGhasaraDar);
+
+        // floor
+        this.router.delete('/delete-floor/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.deleteFloor);
+
+        // prakar
+        this.router.delete('/delete-prakar/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Prakar.deletePrakar);
+
+        // Tax
+        this.router.delete('/delete-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tax.deleteTax);
+
+        // Other Tax
+        this.router.delete('/delete-other-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.deleteOtherTax);
+
+        // Annual Tax
+        this.router.delete('/delete-annual-tax/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.deleteAnnualTax);
+
+        this.router.delete('/delete-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.deleteOpenPlotInfo);
+
         this.router.delete('/delete-ghasara-dar/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, GhasaraDar.deleteGhasaraDar);
 
         // Bharank Dar routes
@@ -289,6 +356,33 @@ export class adminRoutes {
 
         // BDO User Route
         this.router.put('/update-bdo-user', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BDOUser.updateBDOUserInfo);
+
+        this.router.put('/update-open-plot-info/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.updateOpenPlotInfo);
+
+
+        // floor
+        this.router.put('/update-floor', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.updateFloorInfo);
+
+        // prakar
+        this.router.put('/update-prakar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Prakar.updatePrakarInfo);
+
+        // Tax
+        this.router.put('/update-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tax.updateTaxInfo);
+
+        // Other Tax
+        this.router.put('/update-other-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.updateOtherTaxInfo);
+
+        // Annual Tax
+        this.router.put('/update-annual-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.updateAnnualTaxInfo);
+
+        // ghasara dar routes
+        this.router.put('/update-ghasara-dar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, GhasaraDar.updateGhasaraDarInfo);
+
+        // Bharank Dar routes
+        this.router.put('/update-bharank-dar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BharankDar.updateBharankDarInfo);
+
+        // Tower routes
+        this.router.put('/update-tower', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.updateTowerInfo);
 
     }
 }

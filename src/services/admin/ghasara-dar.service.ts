@@ -87,4 +87,3 @@ export const getTotalGhasaraDarCount = async (search='') => {
         throw err;
     }
 };
-

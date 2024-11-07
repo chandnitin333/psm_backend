@@ -90,8 +90,3 @@ export class GhasaraDar {
         }
     }
 }
-
-
-
-
-
