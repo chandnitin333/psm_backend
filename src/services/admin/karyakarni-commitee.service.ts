@@ -32,7 +32,9 @@ export const updateKaryaKarniCommitee = async (data: any) => {
 
 export const getKaryaKarniCommiteeList = async (offset: number, search: string) => {
     try {
+
         let query = 'SELECT * FROM designation WHERE DELETED_AT IS NULL';
+
         const params: any[] = [];
 
         if (search) {
@@ -53,7 +55,9 @@ export const getKaryaKarniCommiteeList = async (offset: number, search: string) 
 
 export const getKaryaKarniCommiteeById = async (id: number) => {
     try {
+
         const result = await executeQuery('SELECT * FROM designation WHERE DESIGNATION_ID = ? AND DELETED_AT IS NULL', [id]);
+
         return result[0];
     } catch (err) {
         logger.error('Error fetching Karyakarni Committee by DESIGNATION_ID', err);
@@ -63,7 +67,9 @@ export const getKaryaKarniCommiteeById = async (id: number) => {
 
 export const softDeleteKaryaKarniCommitee = async (id: number) => {
     try {
+
         return await executeQuery('UPDATE designation SET DELETED_AT = NOW() WHERE DESIGNATION_ID = ?', [id]);
+
 
     } catch (err) {
         logger.error('Error soft deleting Karyakarni Committee', err);
@@ -76,9 +82,11 @@ export const getTotalKaryaKarniCommiteeCount = async (search='') => {
     try {
         let result: any;
         if(search) {
+
             result = await executeQuery('SELECT COUNT(*) AS total FROM designation WHERE LOWER(DESIGNATION_NAME) LIKE LOWER(?) AND DELETED_AT IS NULL', [`%${search}%`]);
         }else{
             result = await executeQuery('SELECT COUNT(*) AS total FROM designation WHERE DELETED_AT IS NULL', []);
+
         }
         return result[0].total;
     } catch (err) {
