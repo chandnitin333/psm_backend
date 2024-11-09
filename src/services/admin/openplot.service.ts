@@ -59,8 +59,14 @@ export async function getOpenPlotInfoList(page: number = 1): Promise<any[]> {
         let limit: number = PAGINATION.LIMIT;
         const offset = (page - 1) * limit;
         let query = `
-            SELECT * FROM OpenPlot
-            WHERE DELETED_AT IS NULL ORDER BY OPENPLOT_ID DESC
+            SELECT OpenPlot.OPENPLOT_ID,OpenPlot.ANNUALCOST_NAME, OpenPlot.LEVYRATE_NAME,OpenPlot.DISTRICT_ID, OpenPlot.TALUKA_ID,OpenPlot.PANCHAYAT_ID,OpenPlot.GATGRAMPANCHAYAT_ID, District.DISTRICT_NAME, Taluka.TALUKA_NAME, Panchayat.PANCHAYAT_NAME, GatGramPanchayat.GATGRAMPANCHAYAT_NAME, Prakar.PRAKAR_NAME
+             FROM OpenPlot as OpenPlot
+            INNER JOIN District ON OpenPlot.DISTRICT_ID = District.DISTRICT_ID
+            INNER JOIN Taluka ON OpenPlot.TALUKA_ID = Taluka.TALUKA_ID
+            INNER JOIN Panchayat ON OpenPlot.PANCHAYAT_ID = Panchayat.PANCHAYAT_ID
+            INNER JOIN GatGramPanchayat ON OpenPlot.GATGRAMPANCHAYAT_ID = GatGramPanchayat.GATGRAMPANCHAYAT_ID
+            INNER JOIN Prakar ON OpenPlot.PRAKAR_ID = Prakar.PRAKAR_ID
+            WHERE OpenPlot.DELETED_AT IS NULL ORDER BY OpenPlot.OPENPLOT_ID DESC
         `;
         const values: any[] = [];
 

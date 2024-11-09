@@ -32,7 +32,7 @@ export const updateBDOUser = async (data: any) => {
 
 export const getBDOUserList = async (offset: number, search: string) => {
     try {
-        let query = 'SELECT ot.*, d.DISTRICT_NAME, t.TALUKA_NAME FROM bdouser ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID WHERE ot.IS_DELETE=0';
+        let query = 'SELECT ot.*, d.DISTRICT_NAME, t.TALUKA_NAME FROM bdouser ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID WHERE ot. DELETED_AT IS NULL';
         const params: any[] = [];
 
         if (search) {
@@ -53,7 +53,7 @@ export const getBDOUserList = async (offset: number, search: string) => {
 
 export const getBDOUserById = async (id: number) => {
     try {
-        const result = await executeQuery('SELECT ot.*, d.DISTRICT_NAME, t.TALUKA_NAME FROM bdouser ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID WHERE ot.BDOUser_ID = ? AND ot.IS_DELETE=0', [id]);
+        const result = await executeQuery('SELECT ot.*, d.DISTRICT_NAME, t.TALUKA_NAME FROM bdouser ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID WHERE ot.BDOUser_ID = ? AND ot. DELETED_AT IS NULL', [id]);
         return result[0];
     } catch (err) {
         logger.error('Error fetching BDO User by BDOUser_ID', err);
@@ -63,22 +63,22 @@ export const getBDOUserById = async (id: number) => {
 
 export const softDeleteBDOUser = async (id: number) => {
     try {
-        return await executeQuery('UPDATE bdouser SET IS_DELETE=1 WHERE BDOUser_ID = ?', [id]);
+        return await executeQuery('UPDATE bdouser SET IS_DELETE= NOW() WHERE BDOUser_ID = ?', [id]);
 
     } catch (err) {
         logger.error('Error soft deleting BDO user', err);
         throw err;
     }
 };
- 
 
-export const getTotalBDOUserCount = async (search='') => {
+
+export const getTotalBDOUserCount = async (search = '') => {
     try {
         let result: any;
-        if(search) {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM bdouser ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID WHERE (LOWER(d.DISTRICT_NAME) LIKE LOWER(?) OR LOWER(t.TALUKA_NAME) LIKE LOWER(?) OR LOWER(ot.NAME_NAME) LIKE LOWER(?) OR LOWER(ot.EMAIL_NAME) LIKE LOWER(?) OR LOWER(ot.USER_NAME) LIKE LOWER(?)) AND ot.IS_DELETE=0', [`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`]);
-        }else{
-            result = await executeQuery('SELECT COUNT(*) AS total FROM bdouser WHERE IS_DELETE = 0', []);
+        if (search) {
+            result = await executeQuery('SELECT COUNT(*) AS total FROM bdouser ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID WHERE (LOWER(d.DISTRICT_NAME) LIKE LOWER(?) OR LOWER(t.TALUKA_NAME) LIKE LOWER(?) OR LOWER(ot.NAME_NAME) LIKE LOWER(?) OR LOWER(ot.EMAIL_NAME) LIKE LOWER(?) OR LOWER(ot.USER_NAME) LIKE LOWER(?)) AND ot. DELETED_AT IS NULL', [`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`]);
+        } else {
+            result = await executeQuery('SELECT COUNT(*) AS total FROM bdouser WHERE  DELETED_AT IS NULL', []);
         }
         return result[0].total;
     } catch (err) {

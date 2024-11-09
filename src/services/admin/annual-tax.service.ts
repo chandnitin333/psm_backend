@@ -36,7 +36,7 @@ export const getAnnualTaxList = async (offset: number, search: string) => {
         query += 'JOIN district ON annualtax.DISTRICT_ID = district.DISTRICT_ID ';
         query += 'JOIN malmatta ON annualtax.MALMATTA_ID = malmatta.MALMATTA_ID ';
         query += 'JOIN milkat_vapar  milkatvapar ON annualtax.MILKAT_VAPAR_ID = milkatvapar.MILKAT_VAPAR_ID ';
-        query += 'WHERE annualtax.IS_DELETE=0';
+        query += 'WHERE annualtax. DELETED_AT IS NULL';
 
         const params: any[] = [];
 
@@ -64,7 +64,7 @@ export const getAnnualTaxById = async (id: number) => {
                 JOIN district ON annualtax.DISTRICT_ID = district.DISTRICT_ID
                 JOIN malmatta ON annualtax.MALMATTA_ID = malmatta.MALMATTA_ID
                 JOIN milkat_vapar milkatvapar ON annualtax.MILKAT_VAPAR_ID = milkatvapar.MILKAT_VAPAR_ID
-                WHERE annualtax.ANNUALTAX_ID = ? AND annualtax.IS_DELETE = 0
+                WHERE annualtax.ANNUALTAX_ID = ? AND annualtax. DELETED_AT IS NULL
             `;
             const result = await executeQuery(query, [id]);
             return result[0];
@@ -76,7 +76,7 @@ export const getAnnualTaxById = async (id: number) => {
 
 export const softDeleteAnnualTax = async (id: number) => {
     try {
-        return await executeQuery('UPDATE annualtax SET IS_DELETE=1 WHERE ANNUALTAX_ID = ?', [id]);
+        return await executeQuery('UPDATE annualtax SET  DELETED_AT = NOW() WHERE ANNUALTAX_ID = ?', [id]);
 
     } catch (err) {
         logger.error('Error soft deleting annual tax', err);
@@ -99,10 +99,10 @@ export const getTotalAnnualTaxCount = async (search='') => {
                 LOWER(district.DISTRICT_NAME) LIKE LOWER(?) 
                 OR LOWER(malmatta.DESCRIPTION_NAME) LIKE LOWER(?) 
                 OR LOWER(milkatvapar.MILKAT_VAPAR_NAME) LIKE LOWER(?) 
-                AND annualtax.IS_DELETE = 0
+                AND annualtax. DELETED_AT IS NULL
             `, [`%${search}%`, `%${search}%`, `%${search}%`]);
         } else {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM annualtax WHERE IS_DELETE = 0', []);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM annualtax WHERE  DELETED_AT IS NULL', []);
         }
         return result[0].total;
     } catch (err) {
