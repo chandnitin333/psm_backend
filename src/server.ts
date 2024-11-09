@@ -3,7 +3,7 @@ import { init } from './config/db/db';
 import { getEnvironmentVariable } from './environments/env';
 import { logger } from './logger/Logger';
 
-import  adminRoutes  from './routes/admin.routes';
+import adminRoutes from './routes/admin.routes';
 import bodyParser = require("body-parser");
 import cors = require('cors');
 
@@ -20,9 +20,11 @@ export class Server {
     public app: express.Application = express();
     constructor() {
         init()
+        this.defaultMiddleware()
         this.configBodyParser()
         this.setRoutes()
         this.handleErrors()
+
 
     }
 
@@ -33,7 +35,7 @@ export class Server {
     }
 
     setRoutes() {
-       
+
         this.app.use('/api/admin/', adminRoutes);
 
     }
@@ -54,6 +56,16 @@ export class Server {
                 SUCCESS: errorStatus,
             });
         });
+    }
+
+    defaultMiddleware() {
+        this.app.use((req, res, next) => {
+            console.log(`Request URL: ${req.url}`);
+            const controllerName = req.route?.path; // Use req.route.path to get the route path
+            console.log(`Controller Name: ${controllerName}`);
+            next();
+        });
+
     }
 
 }
