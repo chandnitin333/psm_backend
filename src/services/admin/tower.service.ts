@@ -32,7 +32,7 @@ export const updateTower = async (tower: any) => {
 
 export const getTowerList = async (offset: number, search: string) => {
     try {
-        let query = 'SELECT * FROM manoramaster WHERE IS_DELETE=0';
+        let query = 'SELECT * FROM manoramaster WHERE DELETED_AT IS NULL';
         const params: any[] = [];
         if (search) {
             query += ' AND LOWER(MANORAMASTER_NAME) LIKE LOWER(?)';
@@ -51,7 +51,7 @@ export const getTowerList = async (offset: number, search: string) => {
 
 export const getTowerById = async (id: number) => {
     try {
-        const result = await executeQuery('SELECT * FROM manoramaster WHERE MANORAMASTER_ID = ? AND IS_DELETE=0', [id]);
+        const result = await executeQuery('SELECT * FROM manoramaster WHERE MANORAMASTER_ID = ? AND DELETED_AT IS NULL', [id]);
         return result[0];
     } catch (err) {
         logger.error('Error fetching tower by MANORAMASTER_ID', err);
@@ -61,7 +61,7 @@ export const getTowerById = async (id: number) => {
 
 export const softDeleteTower = async (id: number) => {
     try {
-        return await executeQuery('UPDATE manoramaster SET IS_DELETE=1 WHERE MANORAMASTER_ID = ?', [id]);
+        return await executeQuery('UPDATE manoramaster SET DELETED_AT = NOW() WHERE MANORAMASTER_ID = ?', [id]);
 
     } catch (err) {
         logger.error('Error soft deleting tower', err);
@@ -74,9 +74,9 @@ export const getTotalTowerCount = async (search='') => {
     try {
         let result: any;
         if(search) {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM manoramaster WHERE LOWER(MANORAMASTER_NAME) LIKE LOWER(?) AND IS_DELETE=0', [`%${search}%`]);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM manoramaster WHERE LOWER(MANORAMASTER_NAME) LIKE LOWER(?) AND DELETED_AT IS NULL', [`%${search}%`]);
         }else{
-            result = await executeQuery('SELECT COUNT(*) AS total FROM manoramaster WHERE IS_DELETE = 0', []);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM manoramaster WHERE DELETED_AT IS NULL', []);
         }
         return result[0].total;
     } catch (err) {

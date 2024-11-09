@@ -4,7 +4,7 @@ import { logger } from "../../logger/Logger";
 
 export const createBharankDar = async (bharankDar: any) => {
     try {
-        const existingRecord: any[] = await executeQuery('SELECT * FROM buildingweights WHERE MILKAT_VAPAR_ID = ? AND BUILDINGWEIGHTS_NAME=? AND IS_DELETE=0', [bharankDar.milkat_vapar_id, bharankDar.bharank_name]);
+        const existingRecord: any[] = await executeQuery('SELECT * FROM buildingweights WHERE MILKAT_VAPAR_ID = ? AND BUILDINGWEIGHTS_NAME=? AND DELETED_AT IS NULL', [bharankDar.milkat_vapar_id, bharankDar.bharank_name]);
         if (existingRecord.length > 0) {
             throw new Error('Bharank Dar already exists');
         }
@@ -18,7 +18,7 @@ export const createBharankDar = async (bharankDar: any) => {
 
 export const updateBharankDar = async (bharankDar: any) => {
     try {
-        const existingRecord: any[] = await executeQuery('SELECT * FROM buildingweights WHERE MILKAT_VAPAR_ID = ? AND BUILDINGWEIGHTS_NAME=? AND IS_DELETE=0', [bharankDar.milkat_vapar_id, bharankDar.bharank_name]);
+        const existingRecord: any[] = await executeQuery('SELECT * FROM buildingweights WHERE MILKAT_VAPAR_ID = ? AND BUILDINGWEIGHTS_NAME=? AND DELETED_AT IS NULL', [bharankDar.milkat_vapar_id, bharankDar.bharank_name]);
         if (existingRecord.length > 0) {
             throw new Error('Updated Bharank Dar name already exists. Please choose a different one');
         }
@@ -32,7 +32,7 @@ export const updateBharankDar = async (bharankDar: any) => {
 
 export const getBharankDarList = async (offset: number, search: string) => {
     try {
-        let query = 'SELECT bw.*, mv.MILKAT_VAPAR_NAME FROM buildingweights bw JOIN milkat_vapar mv ON bw.MILKAT_VAPAR_ID = mv.MILKAT_VAPAR_ID WHERE bw.IS_DELETE=0';
+        let query = 'SELECT bw.*, mv.MILKAT_VAPAR_NAME FROM buildingweights bw JOIN milkat_vapar mv ON bw.MILKAT_VAPAR_ID = mv.MILKAT_VAPAR_ID WHERE bw.DELETED_AT IS NULL';
         const params: any[] = [];
         if (search) {
             query += ' AND (bw.BUILDINGWEIGHTS_NAME LIKE (?) OR LOWER(mv.MILKAT_VAPAR_NAME) LIKE LOWER(?))';
@@ -51,7 +51,7 @@ export const getBharankDarList = async (offset: number, search: string) => {
 
 export const getBharankDarById = async (id: number) => {
     try {
-        const result = await executeQuery('SELECT * FROM buildingweights bw JOIN milkat_vapar mv ON bw.MILKAT_VAPAR_ID = mv.MILKAT_VAPAR_ID WHERE bw.BUILDINGWEIGHTS_ID = ? AND bw.IS_DELETE=0', [id]);
+        const result = await executeQuery('SELECT * FROM buildingweights bw JOIN milkat_vapar mv ON bw.MILKAT_VAPAR_ID = mv.MILKAT_VAPAR_ID WHERE bw.BUILDINGWEIGHTS_ID = ? AND bw.DELETED_AT IS NULL', [id]);
         return result[0];
     } catch (err) {
         logger.error('Error fetching bharank by BUILDINGWEIGHTS_ID', err);
@@ -61,7 +61,7 @@ export const getBharankDarById = async (id: number) => {
 
 export const softDeleteBharankDar = async (id: number) => {
     try {
-        return await executeQuery('UPDATE buildingweights SET  IS_DELETE= 1 WHERE BUILDINGWEIGHTS_ID = ?', [id]);
+        return await executeQuery('UPDATE buildingweights SET  DELETED_AT = NOW() WHERE BUILDINGWEIGHTS_ID = ?', [id]);
     } catch (err) {
         logger.error('Error soft deleting Bharank dar', err);
         throw err;
@@ -72,9 +72,9 @@ export const getTotalBharankDarCount = async (search='') => {
     try {
         let result: any;
         if(search) {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM buildingweights bw JOIN milkat_vapar mv ON bw.MILKAT_VAPAR_ID = mv.MILKAT_VAPAR_ID WHERE bw.IS_DELETE=0 AND (bw.BUILDINGWEIGHTS_NAME LIKE (?) OR LOWER(mv.MILKAT_VAPAR_NAME) LIKE LOWER(?))', [`%${search}%`, `%${search}%`]);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM buildingweights bw JOIN milkat_vapar mv ON bw.MILKAT_VAPAR_ID = mv.MILKAT_VAPAR_ID WHERE bw.DELETED_AT IS NULL AND (bw.BUILDINGWEIGHTS_NAME LIKE (?) OR LOWER(mv.MILKAT_VAPAR_NAME) LIKE LOWER(?))', [`%${search}%`, `%${search}%`]);
         }else{
-            result = await executeQuery('SELECT COUNT(*) AS total FROM buildingweights WHERE IS_DELETE = 0', []);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM buildingweights WHERE DELETED_AT IS NULL', []);
         }
         return result[0].total;
     } catch (err) {

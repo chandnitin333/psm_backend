@@ -31,20 +31,29 @@ export const updateMilkat = async (milkat: any) => {
 
 export const getMilkatList = async (offset: number, search: string) => {
     try {
-        let query = 'SELECT * FROM milkat  WHERE DELETED_AT IS NULL';
+        let query = 'SELECT m.MILKAT_ID,m.MILKAT_VAPAR_ID, m.MILKAT_NAME, mv.MILKAT_VAPAR_NAME  FROM milkat  as m  ';
+        query += '  JOIN milkat_vapar as mv ON m.MILKAT_VAPAR_ID = mv.MILKAT_VAPAR_ID WHERE m.DELETED_AT IS NULL';
         const params: any[] = [];
 
         if (search) {
-            query += ' AND LOWER(MILKAT_NAME) LIKE LOWER(?)';
+            query += ' AND LOWER(m.MILKAT_NAME) LIKE LOWER(?)';
 
             params.push(`%${search}%`);
         }
+        let totalCount = await getMilkatCount(query, params);
 
         query += ' LIMIT ? OFFSET ?';
         params.push(PAGINATION.LIMIT, PAGINATION.LIMIT * offset);
         console.log(params)
-        const result = await executeQuery(query, params);
-        return result;
+        return executeQuery(query, params).then(result => {
+            
+            (result) ? result : null;
+         
+            return (result) ? { 'data': result, 'total_count': totalCount } : null;
+        }).catch(error => {
+            console.error("getMilkatList fetch data error: ", error);
+            return null;
+        });
     } catch (err) {
         logger.error('Error fetching milkat list', err);
         throw err;
@@ -64,7 +73,7 @@ export const getMilkatById = async (id: number) => {
 export const softDeleteMilkat = async (id: number) => {
     try {
         return await executeQuery('UPDATE milkat SET DELETED_AT = NOW() WHERE MILKAT_ID = ? AND DELETED_AT IS NULL', [id]);
-       
+
     } catch (err) {
         logger.error('Error soft deleting milkat', err);
         throw err;
@@ -73,10 +82,11 @@ export const softDeleteMilkat = async (id: number) => {
 
 //get total count of milkat 
 
-export const getMilkatCount = async () => {
+let getMilkatCount = async (query: string, param: any) => {
     try {
-        const result = await executeQuery('SELECT COUNT(*) as count FROM milkat WHERE DELETED_AT IS NULL', []);
-        return result[0].count;
+        console.log("param===", param)
+        const result = await executeQuery(query, param);
+        return Object.keys(result).length;
     } catch (err) {
         logger.error('Error fetching milkat count', err);
         throw err;

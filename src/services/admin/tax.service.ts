@@ -32,7 +32,7 @@ export const updateTax = async (tax: any) => {
 
 export const getTaxList = async (offset: number, search: string) => {
     try {
-        let query = 'SELECT * FROM othertax WHERE IS_DELETE=0';
+        let query = 'SELECT * FROM othertax WHERE  DELETED_AT IS NULL';
         const params: any[] = [];
 
         if (search) {
@@ -53,7 +53,7 @@ export const getTaxList = async (offset: number, search: string) => {
 
 export const getTaxById = async (id: number) => {
     try {
-        const result = await executeQuery('SELECT * FROM othertax WHERE OTHERTAX_ID = ? AND IS_DELETE=0', [id]);
+        const result = await executeQuery('SELECT * FROM othertax WHERE OTHERTAX_ID = ? AND  DELETED_AT IS NULL', [id]);
         return result[0];
     } catch (err) {
         logger.error('Error fetching tax by OTHERTAX_ID', err);
@@ -63,7 +63,7 @@ export const getTaxById = async (id: number) => {
 
 export const softDeleteTax = async (id: number) => {
     try {
-        return await executeQuery('UPDATE othertax SET IS_DELETE=1 WHERE OTHERTAX_ID = ?', [id]);
+        return await executeQuery('UPDATE othertax SET  DELETED_AT = NOW() WHERE OTHERTAX_ID = ?', [id]);
 
     } catch (err) {
         logger.error('Error soft deleting tax', err);
@@ -76,9 +76,9 @@ export const getTotalTaxCount = async (search='') => {
     try {
         let result: any;
         if(search) {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM othertax WHERE LOWER(OTHERTAX_NAME) LIKE LOWER(?) AND IS_DELETE=0', [`%${search}%`]);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM othertax WHERE LOWER(OTHERTAX_NAME) LIKE LOWER(?) AND  DELETED_AT IS NULL', [`%${search}%`]);
         }else{
-            result = await executeQuery('SELECT COUNT(*) AS total FROM othertax WHERE IS_DELETE = 0', []);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM othertax WHERE  DELETED_AT IS NULL', []);
         }
         return result[0].total;
     } catch (err) {

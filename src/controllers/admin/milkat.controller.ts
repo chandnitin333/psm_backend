@@ -2,7 +2,7 @@
 import { logger } from "../../logger/Logger";
 
 import { Request, Response } from "express";
-import { createMilkat, getMilkatById, getMilkatCount, getMilkatList, softDeleteMilkat, updateMilkat } from "../../services/admin/milkat.service";
+import { createMilkat, getMilkatById, getMilkatList, softDeleteMilkat, updateMilkat } from "../../services/admin/milkat.service";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
 
 export class Milkat {
@@ -43,8 +43,8 @@ export class Milkat {
             const { page_number, search_text } = req.body;
 
             const result = await getMilkatList(Number(page_number - 1), search_text as string);
-            response['totalRecords'] = await getMilkatCount();
-            response['data'] = result;
+            response['totalRecords'] = result?.total_count ?? 0;
+            response['data'] = result?.data;
             return _200(res, "Milkat list retrieved successfully", response);
         } catch (error) {
             logger.error(error);
@@ -64,7 +64,7 @@ export class Milkat {
                 return _404(res, "Milkat not found");
             }
             response['data'] = result;
-            return _200(res,"Fetch milkat successfully", response);
+            return _200(res, "Fetch milkat successfully", response);
         } catch (error) {
             logger.error(error);
             return _400(res, error.message);

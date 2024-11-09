@@ -15,16 +15,16 @@ export class gatgrampanchayat {
         let params = [districtId, talukaid, grampanchayatId, gatgramPanchayatName];
         addGatGramPanchayat(params).then((result) => {
             if (result === "exists") {
-                _409(res, gatgramPanchayatName + ' GatGramPanchayat Already Exists')
+                _409(res, gatgramPanchayatName + ' गटग्रामपंचायत आधीच अस्तित्वात आहे')
             } else if (result == null) {
-                _400(res, gatgramPanchayatName + ' GatGramPanchayat Not Added')
+                _400(res, gatgramPanchayatName + ' गटग्रामपंचायत जोडलेली नाही')
             } else {
-                _201(res, gatgramPanchayatName + ' GatGramPanchayat Added Successfully')
+                _201(res, gatgramPanchayatName + ' गटग्रामपंचायत यशस्वीरित्या जोडली')
             }
         }
         ).catch((error) => {
             logger.error("addGatGramPanchayat :: ", error)
-            _400(res, 'GatGramPanchayat Not Added')
+            _400(res, 'गटग्रामपंचायत जोडलेली नाही')
         });
     }
 
@@ -34,13 +34,13 @@ export class gatgrampanchayat {
         getGatGramPanchayat([gatgrampanchayatId]).then((result) => {
             if (result) {
                 response['data'] = result;
-                _200(res, 'GatGramPanchayat Found Successfully', response)
+                _200(res, 'गटग्रामपंचायत यशस्वीरित्या सापडली', response)
             } else {
-                _404(res, 'GatGramPanchayat Not Found')
+                _404(res, 'गटग्रामपंचायत सापडली नाही')
             }
         }).catch((error) => {
             logger.error("getGatGramPanchayat :: ", error)
-            _404(res, 'GatGramPanchayat Not Found')
+            _404(res, 'गटग्रामपंचायत सापडली नाही')
         });
     }
 
@@ -79,24 +79,24 @@ export class gatgrampanchayat {
         let params = [districtId, talukaId, grampanchayatId, gatgramPanchayatName, gatgrampanchayatId];
         getGatGramPanchayat([gatgrampanchayatId]).then((result) => {
             if (!result) {
-                return _404(res, 'GatGrampanchayat Not Found');
+                return _404(res, 'गटग्रामपंचायत सापडली नाही');
             }
             updateGatGramPanchayat(params).then((result) => {
                 if (result === "exists") {
-                    _409(res, gatgramPanchayatName + ' GatGrampanchayat already exists. Please choose another gatgrampanchayat name')
+                    _409(res, `${gatgramPanchayatName} गटग्रामपंचायत आधीच अस्तित्वात आहे. कृपया दुसरे गटग्रामपंचायत नाव निवडा`)
                 } else if (result == null) {
-                    _400(res, 'GramPanchayat Not Updated')
+                    _400(res, 'गटग्रामपंचायत सापडली नाही')
                 } else {
-                    _200(res, gatgramPanchayatName + ' GatGramPanchayat Updated Successfully');
+                    _200(res, gatgramPanchayatName + ' गटग्रामपंचायत यशस्वीरित्या अद्यतनित केली');
                 }
             }).catch((err) => {
 
                 logger.error("updateGatGramPanchayat :: ", err)
-                _400(res, 'GatGramPanchayat Not Updated')
+                _400(res, 'गटग्रामपंचायत अद्ययावत नाही')
             });
         }).catch((error) => {
             logger.error("updateGatGramPanchayat :: ", error);
-            _404(res, 'GatGramPanchayat Not Found');
+            _404(res, 'गटग्रामपंचायत सापडली नाही');
         });
     }
 

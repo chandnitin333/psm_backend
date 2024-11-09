@@ -22,7 +22,9 @@ export const updateMalmattechePrakar = async (prakar: any) => {
         if (existing.length > 0) {
             throw new Error('Updated malmatteche prakar name already exists. Please choose a different name');
         }
-        await executeQuery('UPDATE malmattaincome SET INCOME_NAME = ? WHERE INCOME_ID = ?', [prakar.name,prakar.prakar_id]);
+
+        await executeQuery('UPDATE malmattaincome SET INCOME_NAME = ? WHERE INCOME_ID = ?', [prakar.name, prakar.prakar_id]);
+
         logger.info('Malmatteche Prakar updated successfully');
     } catch (err) {
         logger.error('Error updating Malmatteche Prakar', err);
@@ -32,7 +34,9 @@ export const updateMalmattechePrakar = async (prakar: any) => {
 
 export const getMalmattechePrakarList = async (offset: number, search: string) => {
     try {
-        let query = 'SELECT * FROM malmattaincome WHERE IS_DELETE=0';
+
+        let query = 'SELECT * FROM malmattaincome WHERE  DELETED_AT  IS NULL';
+
         const params: any[] = [];
 
         if (search) {
@@ -53,7 +57,9 @@ export const getMalmattechePrakarList = async (offset: number, search: string) =
 
 export const getMalmattechePrakarById = async (id: number) => {
     try {
-        const result = await executeQuery('SELECT * FROM malmattaincome WHERE INCOME_ID = ? AND IS_DELETE=0', [id]);
+
+        const result = await executeQuery('SELECT * FROM malmattaincome WHERE INCOME_ID = ? AND  DELETED_AT  IS NULL', [id]);
+
         return result[0];
     } catch (err) {
         logger.error('Error fetching malmatteche prakar by INCOME_ID', err);
@@ -63,22 +69,26 @@ export const getMalmattechePrakarById = async (id: number) => {
 
 export const softDeleteMalmattechePrakar = async (id: number) => {
     try {
-        return await executeQuery('UPDATE malmattaincome SET IS_DELETE=1 WHERE INCOME_ID = ?', [id]);
+
+        return await executeQuery('UPDATE malmattaincome SET  DELETED_AT = NOW() WHERE INCOME_ID = ?', [id]);
+
 
     } catch (err) {
         logger.error('Error soft deleting malmatteche prakar', err);
         throw err;
     }
 };
- 
 
-export const getTotalMalmattechePrakarCount = async (search='') => {
+
+
+export const getTotalMalmattechePrakarCount = async (search = '') => {
     try {
         let result: any;
-        if(search) {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM malmattaincome WHERE LOWER(INCOME_NAME) LIKE LOWER(?) AND IS_DELETE=0', [`%${search}%`]);
-        }else{
-            result = await executeQuery('SELECT COUNT(*) AS total FROM malmattaincome WHERE IS_DELETE = 0', []);
+        if (search) {
+            result = await executeQuery('SELECT COUNT(*) AS total FROM malmattaincome WHERE LOWER(INCOME_NAME) LIKE LOWER(?) AND  DELETED_AT  IS NULL', [`%${search}%`]);
+        } else {
+            result = await executeQuery('SELECT COUNT(*) AS total FROM malmattaincome WHERE DELETED_AT IS NULL ', []);
+
         }
         return result[0].total;
     } catch (err) {

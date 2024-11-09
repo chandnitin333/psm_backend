@@ -32,7 +32,7 @@ export const updateOtherTax = async (tax: any) => {
 
 export const getOtherTaxList = async (offset: number, search: string) => {
     try {
-        let query = 'SELECT ot.*, d.DISTRICT_NAME, t.TALUKA_NAME, p.PANCHAYAT_NAME FROM createothertax ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID JOIN panchayat p ON ot.PANCHAYAT_ID = p.PANCHAYAT_ID WHERE ot.IS_DELETE=0';
+        let query = 'SELECT ot.*, d.DISTRICT_NAME, t.TALUKA_NAME, p.PANCHAYAT_NAME FROM createothertax ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID JOIN panchayat p ON ot.PANCHAYAT_ID = p.PANCHAYAT_ID WHERE ot. DELETED_AT IS NULL';
         const params: any[] = [];
 
         if (search) {
@@ -53,7 +53,7 @@ export const getOtherTaxList = async (offset: number, search: string) => {
 
 export const getOtherTaxById = async (id: number) => {
     try {
-        const result = await executeQuery('SELECT ot.*, d.DISTRICT_NAME, t.TALUKA_NAME, p.PANCHAYAT_NAME FROM createothertax ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID JOIN panchayat p ON ot.PANCHAYAT_ID = p.PANCHAYAT_ID WHERE ot.CREATEOTHERTAX_ID = ? AND ot.IS_DELETE=0', [id]);
+        const result = await executeQuery('SELECT ot.*, d.DISTRICT_NAME, t.TALUKA_NAME, p.PANCHAYAT_NAME FROM createothertax ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID JOIN panchayat p ON ot.PANCHAYAT_ID = p.PANCHAYAT_ID WHERE ot.CREATEOTHERTAX_ID = ? AND ot. DELETED_AT IS NULL', [id]);
         return result[0];
     } catch (err) {
         logger.error('Error fetching tax by CREATEOTHERTAX_ID', err);
@@ -63,7 +63,7 @@ export const getOtherTaxById = async (id: number) => {
 
 export const softDeleteOtherTax = async (id: number) => {
     try {
-        return await executeQuery('UPDATE createothertax SET IS_DELETE=1 WHERE CREATEOTHERTAX_ID = ?', [id]);
+        return await executeQuery('UPDATE createothertax SET  DELETED_AT = NOW() WHERE CREATEOTHERTAX_ID = ?', [id]);
 
     } catch (err) {
         logger.error('Error soft deleting tax', err);
@@ -76,9 +76,9 @@ export const getTotalOtherTaxCount = async (search='') => {
     try {
         let result: any;
         if(search) {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM createothertax ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID JOIN panchayat p ON ot.PANCHAYAT_ID = p.PANCHAYAT_ID WHERE (LOWER(d.DISTRICT_NAME) LIKE LOWER(?) OR LOWER(t.TALUKA_NAME) LIKE LOWER(?) OR LOWER(p.PANCHAYAT_NAME) LIKE LOWER(?)) AND ot.IS_DELETE=0', [`%${search}%`, `%${search}%`, `%${search}%`]);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM createothertax ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID JOIN panchayat p ON ot.PANCHAYAT_ID = p.PANCHAYAT_ID WHERE (LOWER(d.DISTRICT_NAME) LIKE LOWER(?) OR LOWER(t.TALUKA_NAME) LIKE LOWER(?) OR LOWER(p.PANCHAYAT_NAME) LIKE LOWER(?)) AND ot. DELETED_AT IS NULL', [`%${search}%`, `%${search}%`, `%${search}%`]);
         }else{
-            result = await executeQuery('SELECT COUNT(*) AS total FROM createothertax WHERE IS_DELETE = 0', []);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM createothertax WHERE  DELETED_AT IS NULL', []);
         }
         return result[0].total;
     } catch (err) {

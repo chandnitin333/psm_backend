@@ -22,7 +22,7 @@ export const updatePrakar = async (prakar: any) => {
         if (existing.length > 0) {
             throw new Error('Updated prakar name already exists. Please choose a different name');
         }
-        await executeQuery('UPDATE prakar SET PRAKAR_NAME = ? WHERE PRAKAR_ID = ?', [prakar.name,prakar.prakar_id]);
+        await executeQuery('UPDATE prakar SET PRAKAR_NAME = ? WHERE PRAKAR_ID = ?', [prakar.name, prakar.prakar_id]);
         logger.info('Prakar updated successfully');
     } catch (err) {
         logger.error('Error updating Prakar', err);
@@ -32,7 +32,7 @@ export const updatePrakar = async (prakar: any) => {
 
 export const getPrakarList = async (offset: number, search: string) => {
     try {
-        let query = 'SELECT * FROM prakar WHERE IS_DELETE=0';
+        let query = 'SELECT * FROM prakar WHERE DELETED_AT IS NULL';
         const params: any[] = [];
 
         if (search) {
@@ -53,7 +53,7 @@ export const getPrakarList = async (offset: number, search: string) => {
 
 export const getPrakarById = async (id: number) => {
     try {
-        const result = await executeQuery('SELECT * FROM prakar WHERE PRAKAR_ID = ? AND IS_DELETE=0', [id]);
+        const result = await executeQuery('SELECT * FROM prakar WHERE PRAKAR_ID = ? AND DELETED_AT IS NULL', [id]);
         return result[0];
     } catch (err) {
         logger.error('Error fetching prakar by PRAKAR_ID', err);
@@ -63,22 +63,22 @@ export const getPrakarById = async (id: number) => {
 
 export const softDeletePrakar = async (id: number) => {
     try {
-        return await executeQuery('UPDATE prakar SET IS_DELETE=1, DELETED_AT = NOW() WHERE PRAKAR_ID = ?', [id]);
+        return await executeQuery('UPDATE prakar SET  DELETED_AT = NOW() WHERE PRAKAR_ID = ?', [id]);
 
     } catch (err) {
         logger.error('Error soft deleting prakar', err);
         throw err;
     }
 };
- 
 
-export const getTotalPrakarCount = async (search='') => {
+
+export const getTotalPrakarCount = async (search = '') => {
     try {
         let result: any;
-        if(search) {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM prakar WHERE LOWER(PRAKAR_NAME) LIKE LOWER(?) AND IS_DELETE=0', [`%${search}%`]);
-        }else{
-            result = await executeQuery('SELECT COUNT(*) AS total FROM prakar WHERE IS_DELETE = 0', []);
+        if (search) {
+            result = await executeQuery('SELECT COUNT(*) AS total FROM prakar WHERE LOWER(PRAKAR_NAME) LIKE LOWER(?) AND DELETED_AT IS NULL', [`%${search}%`]);
+        } else {
+            result = await executeQuery('SELECT COUNT(*) AS total FROM prakar WHERE  DELETED_AT IS NULL', []);
         }
         return result[0].total;
     } catch (err) {
