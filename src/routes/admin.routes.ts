@@ -24,6 +24,7 @@ import { Malmatta } from "../controllers/admin/malmatta.controller";
 import { KaryaKarniCommitee } from "../controllers/admin/karyakarni-commitee.controller";
 import { UploadFile } from "../controllers/admin/upload-file.controller";
 import { BDOUser } from "../controllers/admin/bdo-user.controller";
+import { User } from "../controllers/admin/user.controller";
 
 
 export class adminRoutes {
@@ -225,6 +226,12 @@ export class adminRoutes {
         this.router.post('/add-annual-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.addAnnualTax);
         this.router.post('/get-annual-tax-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getAllAnnualTax);
 
+        // users routes
+        this.router.post('/add-new-user', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, User.addNewUser);
+        this.router.post('/get-all-user-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, User.getAllUser);
+        this.router.post('/get-user-by-id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, User.getUser);
+        
+
         this.router.post('/sign-in', GlobalMiddleware.checkError, AuthController.authenticate);
 
 
@@ -383,6 +390,10 @@ export class adminRoutes {
 
         // Tower routes
         this.router.put('/update-tower', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.updateTowerInfo);
+
+        //User routes
+        this.router.put('/update-user', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, User.updateUserInfo);
+        this.router.put('/delete-user-by-id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, User.deleteUser);
 
     }
 }

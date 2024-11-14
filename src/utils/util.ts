@@ -198,6 +198,29 @@ export class Utils {
         }
     }
 
+    static getCurrentDateTimeWithAMPM(): { [key: string]: string } {
+    const currentDate = new Date();
+    
+    const year = currentDate.getFullYear();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = currentDate.getDate().toString().padStart(2, '0');
+
+    let hours = currentDate.getHours();
+    const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+    const seconds = currentDate.getSeconds().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const hoursStr = hours.toString().padStart(2, '0');
+    
+
+    let formattedDateTime = `${month}/${day}/${year} ${hoursStr}:${minutes}:${seconds} ${ampm}`;
+    let onlyDate = `${month}/${day}/${year}`;
+    
+    return {simpleDate:onlyDate, dateWithAMPM:formattedDateTime}
+}
+
 }
 
 

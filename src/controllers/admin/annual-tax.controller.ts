@@ -50,14 +50,14 @@ export class AnnualTax {
             // if(search_text){
             //     response['totalRecords'] = await getTotalAnnualTaxCount(search_text); // need to do later getting inproper counts
             // }else{
-                response['totalRecords'] = await getTotalAnnualTaxCount();
-            // }
+            //     response['totalRecords'] = await getTotalAnnualTaxCount();
+            // // }
 
-            if(search_text){
-                response['totalRecords'] = await getTotalAnnualTaxCount(search_text); // need to do later getting inproper counts
-            }else{
-                response['totalRecords'] = await getTotalAnnualTaxCount();
-            }
+            // if(search_text){
+            //     response['totalRecords'] = await getTotalAnnualTaxCount(search_text); // need to do later getting inproper counts
+            // }else{
+            //     response['totalRecords'] = await getTotalAnnualTaxCount();
+            // }
 
             
             response['data'] = result;
