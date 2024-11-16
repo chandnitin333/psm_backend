@@ -19,7 +19,11 @@ interface UploadDataDashboard {
 export const getAllUploadData = async (page: number): Promise<UploadDataDashboard[]> => {
     try {
         const offset = (page - 1) * PAGINATION.LIMIT;
-        const query = `SELECT UPLOAD_ID, TALUKA_ID, PANCHAYAT_ID, FILE_NAME, R_PATH, TDATE, TTIME, DISTRICT_ID FROM uploaddatadashboard WHERE DELETED_AT IS NULL LIMIT ? OFFSET ?`;
+        const query = `SELECT ds.UPLOAD_ID, ds.TALUKA_ID, ds.PANCHAYAT_ID, ds.FILE_NAME, ds.R_PATH, ds.TDATE, ds.TTIME, ds.DISTRICT_ID,  RTRIM(d.DISTRICT_NAME) as DISTRICT_NAME, RTRIM(t.TALUKA_NAME) as TALUKA_NAME, RTRIM(p.PANCHAYAT_NAME) as PANCHAYAT_NAME FROM uploaddatadashboard as ds
+              join district d on ds.DISTRICT_ID = d.DISTRICT_ID 
+                   join taluka t on ds.TALUKA_ID = t.TALUKA_ID 
+                   join panchayat p on ds.PANCHAYAT_ID = p.PANCHAYAT_ID 
+        WHERE  ds.DELETED_AT IS NULL ORDER BY ds.UPLOAD_ID DESC LIMIT ? OFFSET ?`;
         const result = await executeQuery(query, [PAGINATION.LIMIT, offset]) as UploadDataDashboard[];
         return result;
     } catch (error) {
@@ -46,7 +50,7 @@ export const createUploadData = async (data: any): Promise<void> => {
         if (!taluka_id || !panchayat_id || !name || !r_path || !district_id) {
             throw new Error("Missing required fields");
         }
-        
+
         const dateNow = await Utils.getCurrentDateTime();
 
         // console.log("dateNow=====",dateNow);
@@ -116,7 +120,7 @@ export const getUploadDataByDistrictId = async (id: number): Promise<UploadDataD
 
 export const getUploadDataCount = async (): Promise<number> => {
     try {
-        const result = await executeQuery('SELECT COUNT(*) as count FROM uploaddatadashboard WHERE DELETED_AT IS NULL', []);
+        const result = await executeQuery('SELECT COUNT(*) as count FROM uploaddatadashboard  as ds join district d on ds.DISTRICT_ID = d.DISTRICT_ID join taluka t on ds.TALUKA_ID = t.TALUKA_ID  join panchayat p on ds.PANCHAYAT_ID = p.PANCHAYAT_ID WHERE  ds.DELETED_AT IS NULL', []);
         return result[0].count;
     } catch (error) {
         logger.error(`Error fetching upload data count: ${error}`);
