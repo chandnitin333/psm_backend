@@ -47,19 +47,6 @@ export class AnnualTax {
                 response['totalRecords'] = await getTotalAnnualTaxCount();
             }
 
-            // if(search_text){
-            //     response['totalRecords'] = await getTotalAnnualTaxCount(search_text); // need to do later getting inproper counts
-            // }else{
-            response['totalRecords'] = await getTotalAnnualTaxCount();
-            // }
-
-            if (search_text) {
-                response['totalRecords'] = await getTotalAnnualTaxCount(search_text); // need to do later getting inproper counts
-            } else {
-                response['totalRecords'] = await getTotalAnnualTaxCount();
-            }
-
-
             response['data'] = result;
             return _200(res, "Annual Tax list retrieved successfully", response);
         } catch (error) {
