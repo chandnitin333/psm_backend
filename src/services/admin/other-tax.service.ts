@@ -30,7 +30,7 @@ export const updateOtherTax = async (tax: any) => {
     }
 };
 
-export const getOtherTaxList = async (offset: number, search: string) => {
+export const getOtherTaxList = async (offset: number, search: string, panchayat_id: number) => {
     try {
         let query = 'SELECT ot.*, d.DISTRICT_NAME, t.TALUKA_NAME, p.PANCHAYAT_NAME FROM createothertax ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID JOIN panchayat p ON ot.PANCHAYAT_ID = p.PANCHAYAT_ID WHERE ot. DELETED_AT IS NULL';
         const params: any[] = [];
@@ -39,7 +39,10 @@ export const getOtherTaxList = async (offset: number, search: string) => {
             query += ' AND (LOWER(d.DISTRICT_NAME) LIKE LOWER(?) OR LOWER(t.TALUKA_NAME) LIKE LOWER(?) OR LOWER(p.PANCHAYAT_NAME) LIKE LOWER(?))';
             params.push(`%${search}%`, `%${search}%`, `%${search}%`);
         }
-
+        if (panchayat_id) {
+            query += ' AND ot.PANCHAYAT_ID = ?';
+            params.push(panchayat_id);
+        }
         query += ' ORDER BY ot.CREATEOTHERTAX_ID DESC LIMIT ? OFFSET ?';
         params.push(PAGINATION.LIMIT, PAGINATION.LIMIT * offset);
 
@@ -70,14 +73,14 @@ export const softDeleteOtherTax = async (id: number) => {
         throw err;
     }
 };
- 
 
-export const getTotalOtherTaxCount = async (search='') => {
+
+export const getTotalOtherTaxCount = async (search = '') => {
     try {
         let result: any;
-        if(search) {
+        if (search) {
             result = await executeQuery('SELECT COUNT(*) AS total FROM createothertax ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID JOIN panchayat p ON ot.PANCHAYAT_ID = p.PANCHAYAT_ID WHERE (LOWER(d.DISTRICT_NAME) LIKE LOWER(?) OR LOWER(t.TALUKA_NAME) LIKE LOWER(?) OR LOWER(p.PANCHAYAT_NAME) LIKE LOWER(?)) AND ot. DELETED_AT IS NULL', [`%${search}%`, `%${search}%`, `%${search}%`]);
-        }else{
+        } else {
             result = await executeQuery('SELECT COUNT(*) AS total FROM createothertax WHERE  DELETED_AT IS NULL', []);
         }
         return result[0].total;
