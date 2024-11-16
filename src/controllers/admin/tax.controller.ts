@@ -36,9 +36,9 @@ export class Tax {
     static async getAllTax(req: Request, res: Response) {
         try {
             let response = [];
-            const { page_number, search_text } = req.body;
+            const { page_number, search_text,is_page } = req.body;
 
-            const result = await getTaxList(Number(page_number - 1), search_text as string);
+            const result = await getTaxList(Number(page_number - 1), search_text as string, is_page as boolean);
             if(search_text){
                 response['totalRecords'] = await getTotalTaxCount(search_text);
             }else{

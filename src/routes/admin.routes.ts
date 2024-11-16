@@ -170,6 +170,11 @@ export class adminRoutes {
         // Annual tax
         this.router.post('/add-annual-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.addAnnualTax);
         this.router.post('/get-annual-tax-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getAllAnnualTax);
+        this.router.post('/get-annual-tax-list-by-district', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getAllAnnualTaxByDistrict);
+        this.router.post('/get-annual-get-district', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getDistrictData);
+
+        
+        
 
         this.router.post('/add-open-plot-info', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.createOpenPlotInfo);
         this.router.post('/get-open-plot-info-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.getOpenPlotInfoList);

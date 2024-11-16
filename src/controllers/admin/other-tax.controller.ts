@@ -37,9 +37,9 @@ export class OtherTax {
     static async getAllOtherTax(req: Request, res: Response) {
         try {
             let response = [];
-            const { page_number, search_text } = req.body;
+            const { page_number, search_text,panchayat_id } = req.body;
 
-            const result = await getOtherTaxList(Number(page_number - 1), search_text as string);
+            const result = await getOtherTaxList(Number(page_number - 1), search_text as string,panchayat_id as number);
             if(search_text){
                 response['totalRecords'] = await getTotalOtherTaxCount(search_text);
             }else{
