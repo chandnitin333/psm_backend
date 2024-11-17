@@ -15,7 +15,7 @@ const multerStorage = multer.diskStorage({
     req.body.fileDestination = `${UPLOAD_PATH}`;
     req.body.fileField = file.fieldname;
 
-    req.files = file;
+    req.files = [file];
     cb(null, `.${UPLOAD_PATH}`);
   },
   filename: (req, file, cb) => {

@@ -11,7 +11,7 @@ export class UploadFile {
     static async addUploadFile(req: Request, res: Response) {
         try {
             await new Promise<void>((resolve, reject) => {
-                upload.single('upload_file')(req, res, (err: Error) => {
+                upload.single('upload_file')(req, res, (err: any) => {
                     if (err) {
                         logger.error(err);
                         reject(_400(res, err.message));
@@ -44,7 +44,7 @@ export class UploadFile {
             try {
             
                 await new Promise<void>((resolve, reject) => {
-                    upload.single('upload_file')(req, res, (err: Error) => {
+                    upload.single('upload_file')(req, res, (err: any) => {
                         if (err) {
                             logger.error(err);
                             reject(_400(res, err.message));

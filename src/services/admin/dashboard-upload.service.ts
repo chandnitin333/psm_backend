@@ -56,6 +56,7 @@ export const createUploadData = async (data: any): Promise<void> => {
         // console.log("dateNow=====",dateNow);
         const query = `INSERT INTO uploaddatadashboard (TALUKA_ID, PANCHAYAT_ID, FILE_NAME, R_PATH, TDATE, TTIME, DISTRICT_ID) VALUES (?, ?, ?, ?, ?, ?, ?)`;
         const values = [taluka_id, panchayat_id, name, r_path, dateNow, dateNow, district_id];
+        console.log("values===", values)
         await executeQuery(query, values);
     } catch (error) {
         logger.error(`Error creating upload data: ${error}`);
@@ -66,8 +67,37 @@ export const createUploadData = async (data: any): Promise<void> => {
 export const updateUploadData = async (id: number, data: any): Promise<void> => {
     try {
         const dateNow = await Utils.getCurrentDateTime();
-        const query = `UPDATE uploaddatadashboard SET TALUKA_ID = ?, PANCHAYAT_ID = ?, FILE_NAME = ?, R_PATH = ?, TDATE = ?, TTIME = ?, DISTRICT_ID = ? WHERE UPLOAD_ID = ?`;
-        const values = [data.taluka_id, data.panchayat_id, data.file_name, data.r_path, dateNow, dateNow, data.district_id, id];
+        const fieldsToUpdate = [];
+        const values = [];
+
+        if (data.taluka_id !== undefined && data.taluka_id !== null) {
+            fieldsToUpdate.push("TALUKA_ID = ?");
+            values.push(data.taluka_id);
+        }
+        if (data.panchayat_id !== undefined && data.panchayat_id !== null) {
+            fieldsToUpdate.push("PANCHAYAT_ID = ?");
+            values.push(data.panchayat_id);
+        }
+        if (data.name !== undefined && data.name !== null) {
+            fieldsToUpdate.push("FILE_NAME = ?");
+            values.push(data.name);
+        }
+
+        if (data.r_path !== undefined && data.r_path !== null && data.r_path !== 'undefined/undefined') {
+            fieldsToUpdate.push("R_PATH = ?");
+            values.push(data.r_path);
+        }
+        if (data.district_id !== undefined && data.district_id !== null) {
+            fieldsToUpdate.push("DISTRICT_ID = ?");
+            values.push(data.district_id);
+        }
+
+        fieldsToUpdate.push("TDATE = ?", "TTIME = ?");
+        values.push(dateNow, dateNow);
+
+        values.push(id);
+
+        const query = `UPDATE uploaddatadashboard SET ${fieldsToUpdate.join(", ")} WHERE UPLOAD_ID = ?`;
         await executeQuery(query, values);
     } catch (error) {
         logger.error(`Error updating upload data: ${error}`);
@@ -124,6 +154,7 @@ export const getUploadDataCount = async (): Promise<number> => {
         return result[0].count;
     } catch (error) {
         logger.error(`Error fetching upload data count: ${error}`);
-        throw error;
+        throw new Error(error);
+
     }
 };

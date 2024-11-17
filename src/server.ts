@@ -29,9 +29,19 @@ export class Server {
     }
 
     configBodyParser() {
+
+        this.app.use(bodyParser.text());
+        this.app.use(bodyParser.raw());
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
         this.app.use(cors({ origin: 'http://localhost:4200' }));
+
+        this.app.use((_, res, next) => {
+           
+            res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+            res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+            next();
+        });
     }
 
     setRoutes() {
@@ -49,12 +59,15 @@ export class Server {
     handleErrors() {
         this.app.use((error, req, res, next) => {
             const errorStatus = req.errorStatus || 500;
-            logger.error("Uncaused handleErrors :: ", error);
-            res.status(errorStatus).json({
-                message: error.message || 'Something went wrong Please try again..!',
-                status_code: errorStatus,
-                SUCCESS: errorStatus,
-            });
+            logger.error("Uncaused handleErrors :: ", error?.message);
+            if (!res.headersSent) {
+                res.status(errorStatus).json({
+                    message: error.message || 'Something went wrong Please try again..!',
+                    status_code: errorStatus,
+                    SUCCESS: errorStatus,
+                });
+            }
+            next(error);
         });
     }
 
