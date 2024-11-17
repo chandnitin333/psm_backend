@@ -6,24 +6,46 @@ interface UploadFile {
     UPLOAD_ID: number;
     FILE_NAME: string;
     R_PATH: string;
-    IS_DELETE: number;
+    totalRecords?: number;
 }
 
-export const getAllUploadFile = async (page: number): Promise<UploadFile[]> => {
+interface UploadFileResponse {
+    data: UploadFile[];
+    totalRecords: number;
+}
+
+export const getAllUploadFile = async (params: any): Promise<any> => {
     try {
-        const offset = (page - 1) * PAGINATION.LIMIT;
-        const query = `SELECT * FROM up WHERE IS_DELETE = 0 LIMIT ? OFFSET ?`;
-        const result = await executeQuery(query, [PAGINATION.LIMIT, offset]) as UploadFile[];
-        return result;
+        
+        const { page_number, searchText } = params;
+
+        const offset = (page_number - 1) * PAGINATION.LIMIT;
+
+        let query = `SELECT * FROM up WHERE DELETED_AT IS NULL`;
+        const queryParams: any[] = [];
+
+        if (searchText) {
+            query += ` AND FILE_NAME LIKE ?`;
+            queryParams.push(`%${searchText}%`);
+        }
+        let totalCount = await getUploadFileCount(query, queryParams);
+        query += ` ORDER BY UPLOAD_ID DESC LIMIT ? OFFSET ?`;
+        queryParams.push(PAGINATION.LIMIT, offset);
+
+        const result = await executeQuery(query, queryParams) as any[];
+
+        return { 'data': result, 'totalRecords': totalCount };
+
     } catch (error) {
-        logger.error(`Error fetching upload file: ${error}`);
+        console.log("error===", error);
+        logger.error(`Error fetching upload file : ${error}`);
         throw error;
     }
 };
 
 export const getUploadFileById = async (id: number): Promise<UploadFile | null> => {
     try {
-        const query = `SELECT * FROM up WHERE UPLOAD_ID = ? AND IS_DELETE = 0`;
+        const query = `SELECT * FROM up WHERE UPLOAD_ID = ? AND DELETED_AT IS NULL`;
         const result = await executeQuery(query, [id]) as UploadFile[];
         return result.length ? result[0] : null;
     } catch (error) {
@@ -36,11 +58,11 @@ export const createUploadFile = async (data: any): Promise<void> => {
     try {
         const { name, r_path } = data;
 
-        if (!name || !r_path ) {
+        if (!name || !r_path) {
             throw new Error("Missing required fields");
         }
         const query = `INSERT INTO up (FILE_NAME, R_PATH) VALUES (?, ?)`;
-        const values = [name, r_path];
+        const values = [name, r_path, Date.now()];
         await executeQuery(query, values);
     } catch (error) {
         logger.error(`Error creating upload file: ${error}`);
@@ -61,7 +83,7 @@ export const updateUploadFile = async (id: number, data: any): Promise<void> => 
 
 export const softDeleteUploadFile = async (id: number): Promise<void> => {
     try {
-        const query = `UPDATE up SET IS_DELETE = 1 WHERE UPLOAD_ID = ?`;
+        const query = `UPDATE up SET DELETED_AT = NOW()  WHERE UPLOAD_ID = ?`;
         await executeQuery(query, [id]);
     } catch (error) {
         logger.error(`Error soft deleting upload data: ${error}`);
@@ -69,10 +91,10 @@ export const softDeleteUploadFile = async (id: number): Promise<void> => {
     }
 };
 
-export const getUploadFileCount = async (): Promise<number> => {
+export const getUploadFileCount = async (sql: string, params: any): Promise<number> => {
     try {
-        const result = await executeQuery('SELECT COUNT(*) as count FROM up WHERE IS_DELETE = 0', []);
-        return result[0].count;
+        const result = await executeQuery(sql, params);
+        return Object.keys(result).length ?? 0;
     } catch (error) {
         logger.error(`Error fetching upload file count: ${error}`);
         throw error;
