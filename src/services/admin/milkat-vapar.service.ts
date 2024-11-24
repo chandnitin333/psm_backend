@@ -31,7 +31,7 @@ export const updateMilkatVapar = async (milkat: any) => {
 
 export const getMilkatVaparList = async (offset: number, search: string) => {
     try {
-        let query = 'SELECT m.*,mv.MILKAT_VAPAR_NAME FROM milkat m JOIN milkat_vapar mv ON m.MILKAT_VAPAR_ID = mv.MILKAT_VAPAR_ID WHERE m.IS_DELETE=0';
+        let query = 'SELECT m.*,mv.MILKAT_VAPAR_NAME FROM milkat m JOIN milkat_vapar mv ON m.MILKAT_VAPAR_ID = mv.MILKAT_VAPAR_ID WHERE m.DELETED_AT IS NULL';
         const params: any[] = [];
 
         if (search) {
@@ -52,7 +52,7 @@ export const getMilkatVaparList = async (offset: number, search: string) => {
 
 export const getMilkatVaparById = async (id: number) => {
     try {
-        const result = await executeQuery('SELECT * FROM milkat WHERE MILKAT_ID = ? AND IS_DELETE=0', [id]);
+        const result = await executeQuery('SELECT * FROM milkat WHERE MILKAT_ID = ? AND DELETED_AT IS NULL', [id]);
         return result[0];
     } catch (err) {
         logger.error('Error fetching milkat by MILKAT_VAPAR_ID', err);
@@ -62,7 +62,7 @@ export const getMilkatVaparById = async (id: number) => {
 
 export const softDeleteMilkatVapar = async (id: number) => {
     try {
-        return await executeQuery('UPDATE milkat SET IS_DELETE=1 WHERE MILKAT_ID = ?', [id]);
+        return await executeQuery('UPDATE milkat SET DELETED_AT = NOW() WHERE MILKAT_ID = ?', [id]);
 
     } catch (err) {
         logger.error('Error soft deleting milkat', err);
@@ -76,11 +76,11 @@ export const getTotalMilkatVaparCount = async (search: string = "") => {
         let result:any;
         if(search)
         {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM milkat m JOIN milkat_vapar mv ON m.MILKAT_VAPAR_ID = mv.MILKAT_VAPAR_ID  WHERE m.IS_DELETE=0 AND (LOWER(m.MILKAT_NAME) LIKE LOWER(?) OR LOWER(mv.MILKAT_VAPAR_NAME) LIKE LOWER(?) )', [`%${search}%`, `%${search}%`]);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM milkat m JOIN milkat_vapar mv ON m.MILKAT_VAPAR_ID = mv.MILKAT_VAPAR_ID  WHERE m.DELETED_AT IS NULL AND (LOWER(m.MILKAT_NAME) LIKE LOWER(?) OR LOWER(mv.MILKAT_VAPAR_NAME) LIKE LOWER(?) )', [`%${search}%`, `%${search}%`]);
         }
         else
         {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM milkat WHERE IS_DELETE=0', []);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM milkat WHERE DELETED_AT IS NULL', []);
         }
         
         return result[0].total;

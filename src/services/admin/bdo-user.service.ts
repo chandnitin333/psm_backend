@@ -68,7 +68,7 @@ export const getBDOUserById = async (id: number) => {
 export const softDeleteBDOUser = async (id: number) => {
     try {
 
-        return await executeQuery('UPDATE bdouser SET IS_DELETE= NOW() WHERE BDOUser_ID = ?', [id]);
+        return await executeQuery('UPDATE bdouser SET DELETED_AT= NOW() WHERE BDOUser_ID = ?', [id]);
 
 
     } catch (err) {

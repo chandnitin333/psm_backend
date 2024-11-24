@@ -35,7 +35,7 @@ export const updateMalmatta = async (data: any) => {
 export const getMalmattechaList = async (offset: number, search: string) => {
     try {
 
-        let query = 'SELECT * FROM malmatta WHERE IS_DELETE = 0';
+        let query = 'SELECT * FROM malmatta WHERE DELETED_AT IS NULL';
 
         const params: any[] = [];
 
@@ -58,7 +58,7 @@ export const getMalmattechaList = async (offset: number, search: string) => {
 export const getMalmattaById = async (id: number) => {
     try {
 
-        const result = await executeQuery('SELECT * FROM malmatta WHERE MALMATTA_ID = ? AND IS_DELETE = 0', [id]);
+        const result = await executeQuery('SELECT * FROM malmatta WHERE MALMATTA_ID = ? AND DELETED_AT IS NULL', [id]);
 
         return result[0];
     } catch (err) {
@@ -70,7 +70,7 @@ export const getMalmattaById = async (id: number) => {
 export const softDeleteMalmatta = async (id: number) => {
     try {
 
-        return await executeQuery('UPDATE malmatta SET IS_DELETE = 1 WHERE MALMATTA_ID = ?', [id]);
+        return await executeQuery('UPDATE malmatta SET DELETED_AT = NOW() WHERE MALMATTA_ID = ?', [id]);
 
 
     } catch (err) {
@@ -85,9 +85,9 @@ export const getTotalMalmattaCount = async (search = '') => {
     try {
         let result: any;
         if (search) {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM malmatta WHERE (LOWER(DESCRIPTION_NAME) LIKE LOWER(?) OR LOWER(DESCRIPTION_NAME_EXTRA) LIKE LOWER(?)) AND IS_DELETE = 0', [`%${search}%`, `%${search}%`]);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM malmatta WHERE (LOWER(DESCRIPTION_NAME) LIKE LOWER(?) OR LOWER(DESCRIPTION_NAME_EXTRA) LIKE LOWER(?)) AND DELETED_AT IS NULL', [`%${search}%`, `%${search}%`]);
         } else {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM malmatta WHERE IS_DELETE = 0', []);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM malmatta WHERE DELETED_AT IS NULL', []);
 
         }
         return result[0].total;

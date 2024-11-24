@@ -35,7 +35,7 @@ export const updateMalmattechePrakar = async (prakar: any) => {
 export const getMalmattechePrakarList = async (offset: number, search: string) => {
     try {
 
-        let query = 'SELECT * FROM milkat_vapar WHERE IS_DELETE=0';
+        let query = 'SELECT * FROM milkat_vapar WHERE DELETED_AT IS NULL';
 
         const params: any[] = [];
 
@@ -58,7 +58,7 @@ export const getMalmattechePrakarList = async (offset: number, search: string) =
 export const getMalmattechePrakarById = async (id: number) => {
     try {
 
-        const result = await executeQuery('SELECT * FROM milkat_vapar WHERE MILKAT_VAPAR_ID = ? AND  IS_DELETE=0', [id]);
+        const result = await executeQuery('SELECT * FROM milkat_vapar WHERE MILKAT_VAPAR_ID = ? AND  DELETED_AT IS NULL', [id]);
 
         return result[0];
     } catch (err) {
@@ -70,7 +70,7 @@ export const getMalmattechePrakarById = async (id: number) => {
 export const softDeleteMalmattechePrakar = async (id: number) => {
     try {
 
-        return await executeQuery('UPDATE milkat_vapar SET IS_DELETE=1 WHERE MILKAT_VAPAR_ID = ?', [id]);
+        return await executeQuery('UPDATE milkat_vapar SET DELETED_AT = NOW() WHERE MILKAT_VAPAR_ID = ?', [id]);
 
 
     } catch (err) {
@@ -85,9 +85,9 @@ export const getTotalMalmattechePrakarCount = async (search = '') => {
     try {
         let result: any;
         if (search) {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM milkat_vapar WHERE LOWER(MILKAT_VAPAR_NAME) LIKE LOWER(?) AND IS_DELETE=0', [`%${search}%`]);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM milkat_vapar WHERE LOWER(MILKAT_VAPAR_NAME) LIKE LOWER(?) AND DELETED_AT IS NULL', [`%${search}%`]);
         } else {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM milkat_vapar WHERE IS_DELETE=0 ', []);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM milkat_vapar WHERE DELETED_AT IS NULL ', []);
 
         }
         return result[0].total;
@@ -100,7 +100,7 @@ export const getTotalMalmattechePrakarCount = async (search = '') => {
 
 export const getMalmattechePrakarDDL = async (params: object) => {
     try {
-        let sql = `SELECT MILKAT_VAPAR_ID,MILKAT_VAPAR_NAME FROM milkat_vapar WHERE IS_DELETE = 0`;
+        let sql = `SELECT MILKAT_VAPAR_ID,MILKAT_VAPAR_NAME FROM milkat_vapar WHERE DELETED_AT IS NULL`;
         return executeQuery(sql, params).then(result => {
             return (result) ? result : null;
 

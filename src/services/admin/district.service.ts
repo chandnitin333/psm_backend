@@ -9,7 +9,7 @@ import { logger } from "../../logger/Logger";
  */
 export const addDistrict = async (params: object) => {
     try {
-        let sql = `SELECT DISTRICT_ID FROM district WHERE RTRIM(DISTRICT_NAME) = ? AND IS_DELETE = 0`;
+        let sql = `SELECT DISTRICT_ID FROM district WHERE RTRIM(DISTRICT_NAME) = ? AND DELETED_AT IS NULL`;
         return executeQuery(sql, params).then(result => {
             if (result && (result as any[]).length > 0) {
                 return "exists";
@@ -41,7 +41,7 @@ export const addDistrict = async (params: object) => {
 
 export const getDistrict = async (params: object) => {
     try {
-        let sql = `SELECT DISTRICT_ID,DISTRICT_NAME FROM district WHERE DISTRICT_ID = ? AND IS_DELETE = 0`
+        let sql = `SELECT DISTRICT_ID,DISTRICT_NAME FROM district WHERE DISTRICT_ID = ? AND DELETED_AT IS NULL`
         return executeQuery(sql, params).then(result => {
             return (result) ? result[0] : null;
         }).catch(error => {
@@ -65,13 +65,13 @@ export const getDistrictList = async (params: object) => {
 
        
         const { limit, offset, searchText } = params as { limit: number, offset: number, searchText: string };
-        let sql = `SELECT DISTRICT_ID, DISTRICT_NAME FROM district WHERE IS_DELETE = 0 ORDER BY DISTRICT_ID DESC LIMIT ? OFFSET ?`;
+        let sql = `SELECT DISTRICT_ID, DISTRICT_NAME FROM district WHERE DELETED_AT IS NULL ORDER BY DISTRICT_ID DESC LIMIT ? OFFSET ?`;
         let values: Array<string | number> = [limit, offset];
 
         if (searchText) {
             sql = `SELECT DISTRICT_ID, DISTRICT_NAME 
             FROM district 
-            WHERE IS_DELETE = 0 
+            WHERE DELETED_AT IS NULL 
             AND LOWER(DISTRICT_NAME) LIKE LOWER(?) 
             ORDER BY DISTRICT_ID DESC 
             LIMIT ? OFFSET ?`;
@@ -100,7 +100,7 @@ export const getDistrictList = async (params: object) => {
 
 export const updateDistrict = async (params: object) => {
     try {
-        let sql = `SELECT DISTRICT_ID FROM district WHERE DISTRICT_NAME = ?  AND IS_DELETE = 0`;
+        let sql = `SELECT DISTRICT_ID FROM district WHERE DISTRICT_NAME = ?  AND DELETED_AT IS NULL`;
         return executeQuery(sql, params).then(result => {
             if (result && (result as any[]).length > 0) {
                 return "exists";
@@ -131,7 +131,7 @@ export const updateDistrict = async (params: object) => {
 
 export const deleteDistrict = async (params: object) => {
     try {
-        let sql = `UPDATE district SET IS_DELETE = 1 WHERE DISTRICT_ID = ?`
+        let sql = `UPDATE district SET DELETED_AT = NOW() WHERE DISTRICT_ID = ?`
         return executeQuery(sql, params).then(result => {
             return (result) ? result : null;
         }).catch(error => {
@@ -148,7 +148,7 @@ export const deleteDistrict = async (params: object) => {
 
 export const getDistrictListForDDL = async (params: object) => {
     try {
-        let sql = `SELECT DISTRICT_ID,RTRIM(DISTRICT_NAME)  AS DISTRICT_NAME FROM district WHERE IS_DELETE = 0`;
+        let sql = `SELECT DISTRICT_ID,RTRIM(DISTRICT_NAME)  AS DISTRICT_NAME FROM district WHERE DELETED_AT IS NULL`;
         return executeQuery(sql, params).then(result => {
             return (result) ? result : null;
 
@@ -166,7 +166,7 @@ export const getDistrictListForDDL = async (params: object) => {
 
 export const getDistrictCount = async () => {
     try {
-        let sql = `SELECT COUNT(DISTRICT_ID) AS total_count FROM district WHERE IS_DELETE = 0 `;
+        let sql = `SELECT COUNT(DISTRICT_ID) AS total_count FROM district WHERE DELETED_AT IS NULL `;
         return executeQuery(sql, []).then(result => {
             return (result) ? result[0] : null;
         }).catch(error => {
