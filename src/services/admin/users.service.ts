@@ -48,8 +48,11 @@ export const createNewUser = async (data: any) => {
 
 export const updateUser = async (data: any) => {
     try {
+        console.log("data===", data)
+        let { district_id, taluka_id, panchayat_id, gatgrampanchayat_id, name, surname, username, pwd, id } = data;
+        console.log("District==", district_id);
         if (data.user_type == "new_user") {
-            await executeQuery('UPDATE entries SET DISTRICT_ID = ? AND TALUKA_ID=? , PANCHAYAT_ID=? , GATGRAMPANCHAYAT_id=? , NAME=? , SURNAME=? , USERNAME=? , pwd=?  WHERE USER_ID = ?', [data.district_id, data.taluka_id, data.panchayat_id, data.gatgrampanchayat_id, data.name, data.surname, data.username, data.pwd, data.id]);
+            await executeQuery('UPDATE entries SET DISTRICT_ID = ? AND TALUKA_ID=? , PANCHAYAT_ID=? , GATGRAMPANCHAYAT_id=? , NAME=? , SURNAME=? , USERNAME=? , pwd=?  WHERE USER_ID = ?', [Number(data.district_id), data.taluka_id, data.panchayat_id, data.gatgrampanchayat_id, data.name, data.surname, data.username, data.pwd, data.id]);
             logger.info('User updated successfully');
         }
         else if (data.user_type == "ferfar_user") {
@@ -201,11 +204,8 @@ export const getUserById = async (id: number, user_type: string) => {
                     JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID
                     JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID
                     JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID
-<<<<<<< HEAD
-                    WHERE en.USER_ID = ? AnD en.DELETED_AT IS NULL
-=======
                     WHERE en.USER_ID = ? AND en.DELETED_AT IS NULL
->>>>>>> 256f5b7 (comit my changes)
+
                 `;
             const result = await executeQuery(query, [id]);
             return result[0];
@@ -276,7 +276,7 @@ export const softDeleteUser = async (id: number, user_type: string) => {
     }
 };
 
-export const getUsersDistrict = async () => {
+export const getUsersDistrict = async (id: number) => {
     try {
         return await executeQuery(`SELECT  district.DISTRICT_ID, district.DISTRICT_NAME FROM entries en
             JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID
