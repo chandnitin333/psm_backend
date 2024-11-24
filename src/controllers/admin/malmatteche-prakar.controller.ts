@@ -2,7 +2,7 @@
 import { logger } from "../../logger/Logger";
 import { Request, response, Response } from "express";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
-import { createMalmattechePrakar, getMalmattechePrakarById, getMalmattechePrakarList, getTotalMalmattechePrakarCount, softDeleteMalmattechePrakar, updateMalmattechePrakar } from "../../services/admin/malmatteche-prakar.service";
+import { createMalmattechePrakar, getMalmattechePrakarById, getMalmattechePrakarDDL, getMalmattechePrakarList, getTotalMalmattechePrakarCount, softDeleteMalmattechePrakar, updateMalmattechePrakar } from "../../services/admin/malmatteche-prakar.service";
 
 export class MalmattechePrakar {
     static async addMalmattechePrakar(req: Request, res: Response) {
@@ -92,6 +92,23 @@ export class MalmattechePrakar {
             logger.error(error);
             return _400(res, error.message);
         }
+    }
+    static async getAllMalmattechePrakarDDL(req: any, res: any, next: any) {
+        let response = {};
+        let params = [];
+        // console.log("Test",params);
+        getMalmattechePrakarDDL(params).then((result) => {
+            if (result) {
+                response['data'] = result;
+                _200(res, 'Malmatta Prakar list found successfully', response)
+            } else {
+                _400(res, 'Malmatta Prakar list not found')
+            }
+        }).catch((error) => {
+
+            logger.error("getMalmattechePrakarDDL :: ", error);
+            _400(res, 'Malmatta Prakar list not found')
+        });
     }
 
 }

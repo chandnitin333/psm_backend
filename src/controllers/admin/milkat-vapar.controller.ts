@@ -44,7 +44,14 @@ export class MilkatVapar {
             const { page_number, search_text } = req.body;
 
             const result = await getMilkatVaparList(Number(page_number - 1), search_text as string);
-            response['totalRecords'] = await getTotalMilkatVaparCount();
+            if(search_text)
+            {
+                response['totalRecords'] = await getTotalMilkatVaparCount(search_text);
+            }
+            else
+            {
+                response['totalRecords'] = await getTotalMilkatVaparCount();
+            }
             response['data'] = result;
             return _200(res, "Milkat Vapar list retrieved successfully", response);
         } catch (error) {
@@ -56,6 +63,7 @@ export class MilkatVapar {
     static async getMilkatVapar(req: Request, res: Response) {
         try {
             const { id } = req.params;
+            let response = {};
             if (!id) {
                 return _400(res, "Milkat Vapar ID is required");
             }
@@ -63,8 +71,9 @@ export class MilkatVapar {
             if (!result) {
                 return _404(res, "Milkat Vapar not found");
             }
+            // response['status'] = true;
             response['data'] = result;
-            return _200(res,"Fetch milkat vapar, result",response);
+            return _200(res,"Fetch milkat vapar result",response);
         } catch (error) {
             logger.error(error);
             return _400(res, error.message);
