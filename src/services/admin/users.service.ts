@@ -374,4 +374,3 @@ export const getTotalUserCount = async (user_type:string, search='') => {
         throw err;
     }
 };
-

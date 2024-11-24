@@ -2,28 +2,28 @@ import { Router } from "express";
 import { AuthController } from "../controllers/admin/auth.controller";
 import { DashboardUpload } from "../controllers/admin/dashboard-upload.controller";
 import { district } from "../controllers/admin/district.controller";
+import { Floor } from "../controllers/admin/floor.controller";
 import { gatgrampanchayat } from "../controllers/admin/gatgrampanchayat.controller";
 import { grampanchayat } from "../controllers/admin/grampanchayat.controller";
 import { Memeber } from "../controllers/admin/member.controller";
 import { MilkatVapar } from "../controllers/admin/milkat-vapar.controller";
 import { Milkat } from "../controllers/admin/milkat.controller";
 import { OpenPlotController } from "../controllers/admin/openplot.controller";
-import { taluka } from "../controllers/admin/taluka.controller";
-import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
-import { Floor } from "../controllers/admin/floor.controller";
-import { Prakar } from "../controllers/admin/prakar.controller";
-import { Tax } from "../controllers/admin/tax.controller";
 import { OtherTax } from "../controllers/admin/other-tax.controller";
+import { Prakar } from "../controllers/admin/prakar.controller";
+import { taluka } from "../controllers/admin/taluka.controller";
+import { Tax } from "../controllers/admin/tax.controller";
+import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
 
 import { AnnualTax } from "../controllers/admin/annual-tax.controller";
-import { GhasaraDar } from "../controllers/admin/ghasara-dar.controller";
-import { BharankDar } from "../controllers/admin/bharank-dar.controller";
-import { Tower } from "../controllers/admin/tower.controller";
-import { MalmattechePrakar } from "../controllers/admin/malmatteche-prakar.controller";
-import { Malmatta } from "../controllers/admin/malmatta.controller";
-import { KaryaKarniCommitee } from "../controllers/admin/karyakarni-commitee.controller";
-import { UploadFile } from "../controllers/admin/upload-file.controller";
 import { BDOUser } from "../controllers/admin/bdo-user.controller";
+import { BharankDar } from "../controllers/admin/bharank-dar.controller";
+import { GhasaraDar } from "../controllers/admin/ghasara-dar.controller";
+import { KaryaKarniCommitee } from "../controllers/admin/karyakarni-commitee.controller";
+import { Malmatta } from "../controllers/admin/malmatta.controller";
+import { MalmattechePrakar } from "../controllers/admin/malmatteche-prakar.controller";
+import { Tower } from "../controllers/admin/tower.controller";
+import { UploadFile } from "../controllers/admin/upload-file.controller";
 import { User } from "../controllers/admin/user.controller";
 
 
@@ -90,7 +90,7 @@ export class adminRoutes {
 
         // Upload File
         this.router.get('/get-upload-file/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, UploadFile.getUploadFile);
-        
+
         // BDO User
         this.router.get('/get-bdo-user-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BDOUser.getBDOUser);
         // floor
@@ -119,6 +119,7 @@ export class adminRoutes {
         // Tower routes
         this.router.get('/tower-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.getTower);
 
+        this.router.get('/get-user-district', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, User.getUserDistrict);
     }
 
     postRoutes() {
@@ -174,8 +175,8 @@ export class adminRoutes {
         this.router.post('/get-annual-tax-list-by-district', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getAllAnnualTaxByDistrict);
         this.router.post('/get-annual-get-district', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.getDistrictData);
 
-        
-        
+
+
 
         this.router.post('/add-open-plot-info', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.createOpenPlotInfo);
         this.router.post('/get-open-plot-info-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OpenPlotController.getOpenPlotInfoList);
@@ -236,7 +237,7 @@ export class adminRoutes {
         this.router.post('/add-new-user', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, User.addNewUser);
         this.router.post('/get-all-user-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, User.getAllUser);
         this.router.post('/get-user-by-id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, User.getUser);
-        
+
 
         this.router.post('/sign-in', GlobalMiddleware.checkError, AuthController.authenticate);
 
