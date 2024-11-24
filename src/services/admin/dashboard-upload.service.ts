@@ -16,16 +16,30 @@ interface UploadDataDashboard {
     DELETED_AT: string
 }
 
-export const getAllUploadData = async (page: number): Promise<UploadDataDashboard[]> => {
+export const getAllUploadData = async (params: any): Promise<{ data: any[], totalRecords: number }> => {
     try {
-        const offset = (page - 1) * PAGINATION.LIMIT;
-        const query = `SELECT ds.UPLOAD_ID, ds.TALUKA_ID, ds.PANCHAYAT_ID, ds.FILE_NAME, ds.R_PATH, ds.TDATE, ds.TTIME, ds.DISTRICT_ID,  RTRIM(d.DISTRICT_NAME) as DISTRICT_NAME, RTRIM(t.TALUKA_NAME) as TALUKA_NAME, RTRIM(p.PANCHAYAT_NAME) as PANCHAYAT_NAME FROM uploaddatadashboard as ds
+        const { page_number, searchText } = params;
+
+        const offset = (page_number - 1) * PAGINATION.LIMIT;
+        let query = `SELECT ds.UPLOAD_ID, ds.TALUKA_ID, ds.PANCHAYAT_ID, ds.FILE_NAME, ds.R_PATH, ds.TDATE, ds.TTIME, ds.DISTRICT_ID,  RTRIM(d.DISTRICT_NAME) as DISTRICT_NAME, RTRIM(t.TALUKA_NAME) as TALUKA_NAME, RTRIM(p.PANCHAYAT_NAME) as PANCHAYAT_NAME FROM uploaddatadashboard as ds
               join district d on ds.DISTRICT_ID = d.DISTRICT_ID 
-                   join taluka t on ds.TALUKA_ID = t.TALUKA_ID 
-                   join panchayat p on ds.PANCHAYAT_ID = p.PANCHAYAT_ID 
-        WHERE  ds.DELETED_AT IS NULL ORDER BY ds.UPLOAD_ID DESC LIMIT ? OFFSET ?`;
-        const result = await executeQuery(query, [PAGINATION.LIMIT, offset]) as UploadDataDashboard[];
-        return result;
+               join taluka t on ds.TALUKA_ID = t.TALUKA_ID 
+               join panchayat p on ds.PANCHAYAT_ID = p.PANCHAYAT_ID 
+        WHERE  ds.DELETED_AT IS NULL  `;
+        let data = [];
+
+        if (searchText) {
+            const searchPattern = `%${searchText}%`;
+            query += ` AND (ds.FILE_NAME LIKE ? OR d.DISTRICT_NAME LIKE ? OR t.TALUKA_NAME LIKE ? OR p.PANCHAYAT_NAME LIKE ?)`;
+            data = [searchPattern, searchPattern, searchPattern, searchPattern, PAGINATION.LIMIT, offset]
+        } else {
+            data = [PAGINATION.LIMIT, offset];
+        }
+        let totalRecords = await getUploadDataCount(query, data);
+
+        query += ` ORDER BY ds.UPLOAD_ID DESC LIMIT ? OFFSET ?`;
+        const result: any = await executeQuery(query, data) as any[];
+        return { 'data': result, 'totalRecords': totalRecords };
     } catch (error) {
         logger.error(`Error fetching upload data: ${error}`);
         throw error;
@@ -148,10 +162,10 @@ export const getUploadDataByDistrictId = async (id: number): Promise<UploadDataD
     }
 };
 
-export const getUploadDataCount = async (): Promise<number> => {
+export const getUploadDataCount = async (query: string, params: any): Promise<any> => {
     try {
-        const result = await executeQuery('SELECT COUNT(*) as count FROM uploaddatadashboard  as ds join district d on ds.DISTRICT_ID = d.DISTRICT_ID join taluka t on ds.TALUKA_ID = t.TALUKA_ID  join panchayat p on ds.PANCHAYAT_ID = p.PANCHAYAT_ID WHERE  ds.DELETED_AT IS NULL', []);
-        return result[0].count;
+        const result = await executeQuery(query, params);
+        return Object.keys(result).length ?? 0;
     } catch (error) {
         logger.error(`Error fetching upload data count: ${error}`);
         throw new Error(error);

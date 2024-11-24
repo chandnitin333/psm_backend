@@ -3,7 +3,7 @@ import { logger } from "../../logger/Logger";
 
 import { Request, Response } from "express";
 import { upload } from "../../config/Multer";
-import { createUploadData, getAllUploadData, getUploadDataById, getUploadDataCount, softDeleteUploadData, updateUploadData } from "../../services/admin/dashboard-upload.service";
+import { createUploadData, getAllUploadData, getUploadDataById, softDeleteUploadData, updateUploadData } from "../../services/admin/dashboard-upload.service";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
 export class DashboardUpload {
 
@@ -115,16 +115,17 @@ export class DashboardUpload {
 
     static async getAllUploadData(req: Request, res: Response) {
         try {
-            let response = [];
-            const { page_number } = req.body;
+            let response: { data?: any[], totalRecords?: number } = {};
+            const { page_number, search_text } = req.body;
 
-            const result: any[] = await getAllUploadData(Number(page_number));
-            if (result.length === 0) {
+            const result: { data: any[], totalRecords: number } = await getAllUploadData({ page_number: Number(page_number), searchText: search_text as string });
+            if (Object.keys(result).length === 0) {
                 return _404(res, "Upload Data not found");
             }
 
-            response['totalRecords'] = await getUploadDataCount();
-            response['data'] = result;
+            // response['totalRecords'] = await getUploadDataCount();
+            response['data'] = result.data;
+            response['totalRecords'] = result?.totalRecords || 0;
             return _200(res, "Upload Data list retrieved successfully", response);
         } catch (error) {
             logger.error(error);
