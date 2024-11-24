@@ -5,7 +5,7 @@ import { logger } from "../../logger/Logger";
 
 export const addGramPanchayat = async (params: object) => {
     try {
-        let sql = `SELECT PANCHAYAT_ID FROM panchayat WHERE DISTRICT_ID = ? AND TALUKA_ID=? AND PANCHAYAT_NAME=? AND IS_DELETE = 0`;
+        let sql = `SELECT PANCHAYAT_ID FROM panchayat WHERE DISTRICT_ID = ? AND TALUKA_ID=? AND PANCHAYAT_NAME=? AND DELETED_AT IS NULL`;
         return executeQuery(sql, params).then(result => {
             if (result && (result as any[]).length > 0) {
                 return "exists";
@@ -51,7 +51,7 @@ export const getGramPanchayatList = async (params: object) => {
                from panchayat p 
                join district d on p.DISTRICT_ID = d.DISTRICT_ID 
                join taluka t on p.TALUKA_ID = t.TALUKA_ID 
-               WHERE p.IS_DELETE=0`;
+               WHERE p.DELETED_AT IS NULL`;
 
         let data = [];
         if (searchValue) {
@@ -97,12 +97,12 @@ export const getGramPanchayaCount = async (sql: string, params: object) => {
 
 export const updateGramPanchayat = async (params: object) => {
     try {
-        let sql = `SELECT PANCHAYAT_ID FROM panchayat WHERE DISTRICT_ID = ? AND TALUKA_ID=? AND PANCHAYAT_NAME=? AND IS_DELETE = 0`;
+        let sql = `SELECT PANCHAYAT_ID FROM panchayat WHERE DISTRICT_ID = ? AND TALUKA_ID=? AND PANCHAYAT_NAME=? AND DELETED_AT IS NULL`;
         return executeQuery(sql, params).then(result => {
             if (result && (result as any[]).length > 0) {
                 return "exists";
             } else {
-                let sql = `UPDATE panchayat SET DISTRICT_ID = ?, TALUKA_ID=?, PANCHAYAT_NAME=? WHERE PANCHAYAT_ID = ? and IS_DELETE = 0`
+                let sql = `UPDATE panchayat SET DISTRICT_ID = ?, TALUKA_ID=?, PANCHAYAT_NAME=? WHERE PANCHAYAT_ID = ? and DELETED_AT IS NULL`
                 return executeQuery(sql, params).then(result => {
                     return (result) ? result : null;
                 }).catch(error => {
@@ -122,7 +122,7 @@ export const updateGramPanchayat = async (params: object) => {
 
 export const deleteGramPanchayat = async (params: object) => {
     try {
-        let sql = `UPDATE panchayat SET IS_DELETE = 1 WHERE PANCHAYAT_ID = ?`
+        let sql = `UPDATE panchayat SET DELETED_AT = NOW() WHERE PANCHAYAT_ID = ?`
         return executeQuery(sql, params).then(result => {
             return (result) ? result : null;
         }).catch(error => {
@@ -139,7 +139,7 @@ export const deleteGramPanchayat = async (params: object) => {
 //     try {
 //         // console.log("params",params)
 //         // const { limit, offset } = params as { limit: number, offset: number };
-//         let sql = `select t.TALUKA_ID,RTRIM(t.TALUKA_NAME),RTRIM(d.DISTRICT_NAME),t.DISTRICT_ID from taluka t join district d on t.DISTRICT_ID = d.DISTRICT_ID WHERE t.IS_DELETE=0  AND t.DISTRICT_ID=? ORDER BY t.TALUKA_ID DESC`;
+//         let sql = `select t.TALUKA_ID,RTRIM(t.TALUKA_NAME),RTRIM(d.DISTRICT_NAME),t.DISTRICT_ID from taluka t join district d on t.DISTRICT_ID = d.DISTRICT_ID WHERE t.DELETED_AT IS NULL  AND t.DISTRICT_ID=? ORDER BY t.TALUKA_ID DESC`;
 //         return executeQuery(sql, [params]).then(result => {
 //             return (result) ? result : null;
 //         }).catch(error => {

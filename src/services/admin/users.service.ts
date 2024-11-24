@@ -88,7 +88,7 @@ export const getUserList = async (offset: number, search: string, user_type:stri
             query += 'JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID ';
             query += 'JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID ';
             query += 'JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID ';
-            query += 'WHERE en.IS_DELETE=0';
+            query += 'WHERE en.DELETED_AT IS NULL';
 
             const params: any[] = [];
 
@@ -110,7 +110,7 @@ export const getUserList = async (offset: number, search: string, user_type:stri
             query += 'JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID ';
             query += 'JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID ';
             query += 'JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID ';
-            query += 'WHERE en.IS_DELETE=0';
+            query += 'WHERE en.DELETED_AT IS NULL';
 
             const params: any[] = [];
 
@@ -132,7 +132,7 @@ export const getUserList = async (offset: number, search: string, user_type:stri
             query += 'JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID ';
             query += 'JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID ';
             query += 'JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID ';
-            query += 'WHERE en.IS_DELETE=0';
+            query += 'WHERE en.DELETED_AT IS NULL';
 
             const params: any[] = [];
 
@@ -154,7 +154,7 @@ export const getUserList = async (offset: number, search: string, user_type:stri
             query += 'JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID ';
             query += 'JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID ';
             query += 'JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID ';
-            query += 'WHERE en.IS_DELETE=0';
+            query += 'WHERE en.DELETED_AT IS NULL';
 
             const params: any[] = [];
 
@@ -188,7 +188,7 @@ export const getUserById = async (id: number, user_type:string) => {
                     JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID
                     JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID
                     JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID
-                    WHERE en.USER_ID = ? AnD en.IS_DELETE=0
+                    WHERE en.USER_ID = ? AnD en.DELETED_AT IS NULL
                 `;
                 const result = await executeQuery(query, [id]);
                 return result[0];
@@ -202,7 +202,7 @@ export const getUserById = async (id: number, user_type:string) => {
                     JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID
                     JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID
                     JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID
-                    WHERE en.FERFARUSER_ID = ? AnD en.IS_DELETE=0
+                    WHERE en.FERFARUSER_ID = ? AnD en.DELETED_AT IS NULL
                 `;
                 const result = await executeQuery(query, [id]);
                 return result[0];
@@ -216,7 +216,7 @@ export const getUserById = async (id: number, user_type:string) => {
                     JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID
                     JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID
                     JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID
-                    WHERE en.FERFARUSERPDF_ID = ? AnD en.IS_DELETE=0
+                    WHERE en.FERFARUSERPDF_ID = ? AnD en.DELETED_AT IS NULL
                 `;
                 const result = await executeQuery(query, [id]);
                 return result[0];
@@ -230,7 +230,7 @@ export const getUserById = async (id: number, user_type:string) => {
                     JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID
                     JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID
                     JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID
-                    WHERE en.VASULIUSER_ID = ? AnD en.IS_DELETE=0
+                    WHERE en.VASULIUSER_ID = ? AnD en.DELETED_AT IS NULL
                 `;
                 const result = await executeQuery(query, [id]);
                 return result[0];
@@ -245,19 +245,19 @@ export const softDeleteUser = async (id: number, user_type:string) => {
     try {
         if(user_type == "new_user")
         {
-            return await executeQuery('UPDATE entries SET IS_DELETE=1 WHERE USER_ID = ?', [id]);
+            return await executeQuery('UPDATE entries SET DELETED_AT = NOW() WHERE USER_ID = ?', [id]);
         }
         else if(user_type == "ferfar_user")
         {
-            return await executeQuery('UPDATE ferfaruser SET IS_DELETE=1 WHERE FERFARUSER_ID = ?', [id]);
+            return await executeQuery('UPDATE ferfaruser SET DELETED_AT = NOW() WHERE FERFARUSER_ID = ?', [id]);
         }
         else if(user_type == "ferfar_pdf_user")
         {
-            return await executeQuery('UPDATE ferfaruserpdf SET IS_DELETE=1 WHERE FERFARUSERPDF_ID = ?', [id]);
+            return await executeQuery('UPDATE ferfaruserpdf SET DELETED_AT = NOW() WHERE FERFARUSERPDF_ID = ?', [id]);
         }
         else if(user_type == "vasuli_user")
         {
-            return await executeQuery('UPDATE vasuliuser SET IS_DELETE=1 WHERE VASULIUSER_ID = ?', [id]);
+            return await executeQuery('UPDATE vasuliuser SET DELETED_AT = NOW() WHERE VASULIUSER_ID = ?', [id]);
         }
 
     } catch (err) {
@@ -289,10 +289,10 @@ export const getTotalUserCount = async (user_type:string, search='') => {
                         OR LOWER(en.NAME) LIKE LOWER(?)
                         OR LOWER(en.SURNAME) LIKE LOWER(?)
                         OR LOWER(en.USERNAME) LIKE LOWER(?)
-                        AND en.IS_DELETE=0
+                        AND en.DELETED_AT IS NULL
                     `, [`%${search}%`, `%${search}%`, `%${search}%`,`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`]);
                 } else {
-                    result = await executeQuery('SELECT COUNT(*) AS total FROM entries WHERE  IS_DELETE=0', []);
+                    result = await executeQuery('SELECT COUNT(*) AS total FROM entries WHERE  DELETED_AT IS NULL', []);
                 }
             }
             else if(user_type == "ferfar_user")
@@ -313,10 +313,10 @@ export const getTotalUserCount = async (user_type:string, search='') => {
                         OR LOWER(en.NAME) LIKE LOWER(?)
                         OR LOWER(en.SURNAME) LIKE LOWER(?)
                         OR LOWER(en.USERNAME) LIKE LOWER(?)
-                        AND en.IS_DELETE=0
+                        AND en.DELETED_AT IS NULL
                     `, [`%${search}%`, `%${search}%`, `%${search}%`,`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`]);
                 } else {
-                    result = await executeQuery('SELECT COUNT(*) AS total FROM ferfaruser WHERE  IS_DELETE=0', []);
+                    result = await executeQuery('SELECT COUNT(*) AS total FROM ferfaruser WHERE  DELETED_AT IS NULL', []);
                 }
             }
             else if(user_type == "ferfar_pdf_user")
@@ -337,10 +337,10 @@ export const getTotalUserCount = async (user_type:string, search='') => {
                         OR LOWER(en.NAME) LIKE LOWER(?)
                         OR LOWER(en.SURNAME) LIKE LOWER(?)
                         OR LOWER(en.USERNAME) LIKE LOWER(?)
-                        AND en.IS_DELETE=0
+                        AND en.DELETED_AT IS NULL
                     `, [`%${search}%`, `%${search}%`, `%${search}%`,`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`]);
                 } else {
-                    result = await executeQuery('SELECT COUNT(*) AS total FROM ferfaruserpdf WHERE  IS_DELETE=0', []);
+                    result = await executeQuery('SELECT COUNT(*) AS total FROM ferfaruserpdf WHERE  DELETED_AT IS NULL', []);
                 }
             }
             else if(user_type == "vasuli_user")
@@ -361,10 +361,10 @@ export const getTotalUserCount = async (user_type:string, search='') => {
                         OR LOWER(en.NAME) LIKE LOWER(?)
                         OR LOWER(en.SURNAME) LIKE LOWER(?)
                         OR LOWER(en.USERNAME) LIKE LOWER(?)
-                        AND en.IS_DELETE=0
+                        AND en.DELETED_AT IS NULL
                     `, [`%${search}%`, `%${search}%`, `%${search}%`,`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`]);
                 } else {
-                    result = await executeQuery('SELECT COUNT(*) AS total FROM vasuliuser WHERE  IS_DELETE=0', []);
+                    result = await executeQuery('SELECT COUNT(*) AS total FROM vasuliuser WHERE  DELETED_AT IS NULL', []);
                 }
             }
         

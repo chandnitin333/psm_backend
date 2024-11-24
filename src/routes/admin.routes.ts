@@ -195,6 +195,7 @@ export class adminRoutes {
         // Malamatteche Prakar
         this.router.post('/add-malmatteche-prakar', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalmattechePrakar.addMalmattechePrakar);
         this.router.post('/get-malmatteche-prakar-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalmattechePrakar.getAllMalmattechePrakar);
+        this.router.post('/get-malmatteche-prakar-all-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalmattechePrakar.getAllMalmattechePrakarDDL);
 
         // Malmatta routes
         this.router.post('/add-malmatta', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Malmatta.addMalmatta);
