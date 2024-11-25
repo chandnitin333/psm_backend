@@ -97,3 +97,20 @@ export const getTotalMalmattaCount = async (search = '') => {
     }
 };
 
+export const getMalmattaListForDDL = async (params: object) => {
+    try {
+        let sql = `SELECT MALMATTA_ID,DESCRIPTION_NAME FROM malmatta WHERE DELETED_AT IS NULL`;
+        return executeQuery(sql, params).then(result => {
+            return (result) ? result : null;
+
+
+        }).catch((error) => {
+            console.error("getMalmattaListForDDL fetch data error: ", error);
+            return null;
+        }
+        );
+    } catch (error) {
+        logger.error("getMalmattaListForDDL :: ", error)
+        throw new Error(error)
+    }
+}
