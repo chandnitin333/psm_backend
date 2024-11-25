@@ -36,7 +36,7 @@ export const getAnnualTaxList = async (offset: number, search: string) => {
         query += 'JOIN district ON annualtax.DISTRICT_ID = district.DISTRICT_ID ';
         query += 'JOIN malmatta ON annualtax.MALMATTA_ID = malmatta.MALMATTA_ID ';
         query += 'JOIN milkat_vapar  milkatvapar ON annualtax.MILKAT_VAPAR_ID = milkatvapar.MILKAT_VAPAR_ID ';
-        query += 'WHERE annualtax. DELETED_AT IS NULL';
+        query += 'WHERE annualtax.DELETED_AT IS NULL';
 
         const params: any[] = [];
 
@@ -65,7 +65,7 @@ export const getAnnualTaxById = async (id: number) => {
                 JOIN district ON annualtax.DISTRICT_ID = district.DISTRICT_ID
                 JOIN malmatta ON annualtax.MALMATTA_ID = malmatta.MALMATTA_ID
                 JOIN milkat_vapar milkatvapar ON annualtax.MILKAT_VAPAR_ID = milkatvapar.MILKAT_VAPAR_ID
-                WHERE annualtax.ANNUALTAX_ID = ? AND annualtax. DELETED_AT IS NULL
+                WHERE annualtax.ANNUALTAX_ID = ? AND annualtax.DELETED_AT IS NULL
             `;
         const result = await executeQuery(query, [id]);
         return result[0];
@@ -100,7 +100,7 @@ export const getTotalAnnualTaxCount = async (search = '') => {
                 LOWER(district.DISTRICT_NAME) LIKE LOWER(?) 
                 OR LOWER(malmatta.DESCRIPTION_NAME) LIKE LOWER(?) 
                 OR LOWER(milkatvapar.MILKAT_VAPAR_NAME) LIKE LOWER(?) 
-                AND annualtax. DELETED_AT IS NULL
+                AND annualtax.DELETED_AT IS NULL
             `, [`%${search}%`, `%${search}%`, `%${search}%`]);
         } else {
             result = await executeQuery('SELECT COUNT(*) AS total FROM annualtax WHERE  DELETED_AT IS NULL', []);
@@ -121,7 +121,7 @@ export const getAnnualTaxByDistrict = async (districtId: number) => {
                 JOIN district ON annualtax.DISTRICT_ID = district.DISTRICT_ID
                 JOIN malmatta ON annualtax.MALMATTA_ID = malmatta.MALMATTA_ID
                 JOIN milkat_vapar milkatvapar ON annualtax.MILKAT_VAPAR_ID = milkatvapar.MILKAT_VAPAR_ID
-                WHERE annualtax.DISTRICT_ID = ? AND annualtax. DELETED_AT IS NULL
+                WHERE annualtax.DISTRICT_ID = ? AND annualtax.DELETED_AT IS NULL
             `;
         const result = await executeQuery(query, [districtId]);
         return result;
@@ -174,7 +174,7 @@ export const getCount = async (query, params) => {
 
 export const getDistrictList = async () => {
     try {
-        const result = await executeQuery('SELECT d.DISTRICT_ID, d.DISTRICT_NAME  FROM annualtax as an JOIN district d ON d.DISTRICT_ID = an.DISTRICT_ID  WHERE DELETED_AT IS NULL GROUP BY an.DISTRICT_ID', []);
+        const result = await executeQuery('SELECT d.DISTRICT_ID, d.DISTRICT_NAME  FROM annualtax as an JOIN district d ON d.DISTRICT_ID = an.DISTRICT_ID  WHERE an.DELETED_AT IS NULL GROUP BY an.DISTRICT_ID', []);
         return result ?? [];
     } catch (err) {
         logger.error('Error fetching district list', err);
