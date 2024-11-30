@@ -144,6 +144,8 @@ export class adminRoutes {
         this.router.post('/gat-gram-panchayat-list-by-panchayat-id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, gatgrampanchayat.getGatGrampanchayatByPanchayatId);  // On grampanchayat selection gatgrampanchayat list shown
         this.router.post('/malmatta-list-ddl',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Malmatta.getAllMalmattaDDL)
         this.router.post('/age-of-buildings-ddl',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.getAllBuildingAgeDDL)
+        this.router.post('/panchayat-list-ddl',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, grampanchayat.getAllgrampanchayatDDL)
+        this.router.post('/designation-list-ddl',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, KaryaKarniCommitee.getAllDesignationDDL)
 
         this.router.post('/milkat', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Milkat.addMilkat);
         this.router.post('/get-milkat-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Milkat.getAllMilkat);

@@ -2,7 +2,7 @@
 import { logger } from "../../logger/Logger";
 import { Request, response, Response } from "express";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
-import { createKaryaKarniCommitee, getKaryaKarniCommiteeById, getKaryaKarniCommiteeList, getTotalKaryaKarniCommiteeCount, softDeleteKaryaKarniCommitee, updateKaryaKarniCommitee } from "../../services/admin/karyakarni-commitee.service";
+import { createKaryaKarniCommitee, getDesignationListForDDL, getKaryaKarniCommiteeById, getKaryaKarniCommiteeList, getTotalKaryaKarniCommiteeCount, softDeleteKaryaKarniCommitee, updateKaryaKarniCommitee } from "../../services/admin/karyakarni-commitee.service";
 
 export class KaryaKarniCommitee {
     static async addKaryaKarniCommitee(req: Request, res: Response) {
@@ -92,6 +92,24 @@ export class KaryaKarniCommitee {
             logger.error(error);
             return _400(res, error.message);
         }
+    }
+
+    static async getAllDesignationDDL(req: any, res: any, next: any) {
+        let response = {};
+        let params = [];
+        // console.log("Test",params);
+        getDesignationListForDDL(params).then((result) => {
+            if (result) {
+                response['data'] = result;
+                _200(res, 'Designation list found successfully', response)
+            } else {
+                _400(res, 'Designation list not found')
+            }
+        }).catch((error) => {
+
+            logger.error("getAllDesignationDDL :: ", error);
+            _400(res, 'Designation list not found')
+        });
     }
 
 }

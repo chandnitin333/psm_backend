@@ -152,3 +152,21 @@ export const deleteGramPanchayat = async (params: object) => {
 //     }
 
 // }
+
+export const getPanchayatListForDDL = async (params: object) => {
+    try {
+        let sql = `SELECT PANCHAYAT_ID,PANCHAYAT_NAME FROM panchayat WHERE DELETED_AT IS NULL`;
+        return executeQuery(sql, params).then(result => {
+            return (result) ? result : null;
+
+
+        }).catch((error) => {
+            console.error("getPanchayatListForDDL fetch data error: ", error);
+            return null;
+        }
+        );
+    } catch (error) {
+        logger.error("getPanchayatListForDDL :: ", error)
+        throw new Error(error)
+    }
+}
