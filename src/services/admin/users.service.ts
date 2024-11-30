@@ -49,22 +49,24 @@ export const createNewUser = async (data: any) => {
 export const updateUser = async (data: any) => {
     try {
         console.log("data===", data)
+        let query = ``;
         let { district_id, taluka_id, panchayat_id, gatgrampanchayat_id, name, surname, username, pwd, id } = data;
         console.log("District==", district_id);
         if (data.user_type == "new_user") {
-            await executeQuery('UPDATE entries SET DISTRICT_ID = ? AND TALUKA_ID=? , PANCHAYAT_ID=? , GATGRAMPANCHAYAT_id=? , NAME=? , SURNAME=? , USERNAME=? , pwd=?  WHERE USER_ID = ?', [Number(data.district_id), data.taluka_id, data.panchayat_id, data.gatgrampanchayat_id, data.name, data.surname, data.username, data.pwd, data.id]);
+            await executeQuery('UPDATE entries SET DISTRICT_ID = ? , TALUKA_ID=? , PANCHAYAT_ID=? , GATGRAMPANCHAYAT_id=? , NAME=? , SURNAME=? , USERNAME=? , pwd=?  WHERE USER_ID = ?', [Number(data.district_id), data.taluka_id, data.panchayat_id, data.gatgrampanchayat_id, data.name, data.surname, data.username, data.pwd, data.id]);
             logger.info('User updated successfully');
         }
         else if (data.user_type == "ferfar_user") {
-            await executeQuery('UPDATE ferfaruser SET DISTRICT_ID = ? AND TALUKA_ID=? , PANCHAYAT_ID=? , GATGRAMPANCHAYAT_id=? , NAME=? , SURNAME=? , USERNAME=? , pwd=?  WHERE FERFARUSER_ID = ?', [data.district_id, data.taluka_id, data.panchayat_id, data.gatgrampanchayat_id, data.name, data.surname, data.username, data.pwd, data.id]);
+
+            await executeQuery('UPDATE ferfaruser SET DISTRICT_ID = ? , TALUKA_ID=? , PANCHAYAT_ID=? , GATGRAMPANCHAYAT_id=? , NAME=? , SURNAME=? , USERNAME=? , pwd=?  WHERE FERFARUSER_ID = ?', [data.district_id, data.taluka_id, data.panchayat_id, data.gatgrampanchayat_id, data.name, data.surname, data.username, data.pwd, data.id]);
             logger.info('Ferfar User updated successfully');
         }
         else if (data.user_type == "ferfar_pdf_user") {
-            await executeQuery('UPDATE ferfaruserpdf SET DISTRICT_ID = ? AND TALUKA_ID=? , PANCHAYAT_ID=? , GATGRAMPANCHAYAT_id=? , NAME=? , SURNAME=? , USERNAME=? , pwd=?  WHERE FERFARUSERPDF_ID = ?', [data.district_id, data.taluka_id, data.panchayat_id, data.gatgrampanchayat_id, data.name, data.surname, data.username, data.pwd, data.id]);
+            await executeQuery('UPDATE ferfaruserpdf SET DISTRICT_ID = ? , TALUKA_ID=? , PANCHAYAT_ID=? , GATGRAMPANCHAYAT_id=? , NAME=? , SURNAME=? , USERNAME=? , pwd=?  WHERE FERFARUSERPDF_ID = ?', [data.district_id, data.taluka_id, data.panchayat_id, data.gatgrampanchayat_id, data.name, data.surname, data.username, data.pwd, data.id]);
             logger.info('Ferfar PDF User updated successfully');
         }
         else if (data.user_type == "vasuli_user") {
-            await executeQuery('UPDATE vasuliuser SET DISTRICT_ID = ? AND TALUKA_ID=? , PANCHAYAT_ID=? , GATGRAMPANCHAYAT_id=? , NAME=? , SURNAME=? , USERNAME=? , pwd=?  WHERE VASULIUSER_ID = ?', [data.district_id, data.taluka_id, data.panchayat_id, data.gatgrampanchayat_id, data.name, data.surname, data.username, data.pwd, data.id]);
+            await executeQuery('UPDATE vasuliuser SET DISTRICT_ID = ? , TALUKA_ID=? , PANCHAYAT_ID=? , GATGRAMPANCHAYAT_id=? , NAME=? , SURNAME=? , USERNAME=? , pwd=?  WHERE VASULIUSER_ID = ?', [data.district_id, data.taluka_id, data.panchayat_id, data.gatgrampanchayat_id, data.name, data.surname, data.username, data.pwd, data.id]);
             logger.info('Vasuli User updated successfully');
         }
 
