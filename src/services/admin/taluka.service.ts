@@ -48,16 +48,17 @@ export const getTalukaList = async (params: object) => {
     try {
         const { limit, offset, search } = params as { limit: number, offset: number, search?: string };
         let sql = `select t.TALUKA_ID,RTRIM(t.TALUKA_NAME)  AS TALUKA_NAME ,RTRIM(d.DISTRICT_NAME) AS DISTRICT_NAME,t.DISTRICT_ID from taluka t join district d on t.DISTRICT_ID = d.DISTRICT_ID WHERE t.DELETED_AT IS NULL`;
-        
+
         if (search) {
             sql += ` AND (RTRIM(LOWER(t.TALUKA_NAME)) LIKE LOWER(?) OR RTRIM(LOWER(d.DISTRICT_NAME)) LIKE LOWER(?))`;
         }
         const queryParams = search ? [`%${search}%`, `%${search}%`, limit, offset] : [limit, offset];
-        let totalCount = await getTalukaListCount(sql,queryParams);
+        let totalCount = await getTalukaListCount(sql, queryParams);
 
+        console.log("sql===", sql)
         sql += ` ORDER BY t.TALUKA_ID DESC LIMIT ? OFFSET ?`;
         return executeQuery(sql, queryParams).then(result => {
-            result =  {result,totalCount:totalCount};
+            result = { result, totalCount: totalCount };
             return (result) ? result : null;
         }).catch(error => {
             console.error("getTalukaList fetch data error: ", error);
@@ -69,9 +70,9 @@ export const getTalukaList = async (params: object) => {
     }
 
 }
-export const getTalukaListCount = async (sql,params) => {
+export const getTalukaListCount = async (sql, params) => {
     try {
-        
+
         return executeQuery(sql, params).then((result: any[]) => {
             return Object.keys(result).length;
         }).catch(error => {

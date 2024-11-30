@@ -89,7 +89,8 @@ export class User {
 
     static getUserDistrict = async (req, res) => {
         try {
-            const result: any = await getUsersDistrict()
+            let {district_id} =  req.body;
+            const result: any = await getUsersDistrict(district_id)
             if (!result) {
                 return _404(res, "User not found");
             }

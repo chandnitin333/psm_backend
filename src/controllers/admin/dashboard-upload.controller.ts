@@ -61,11 +61,11 @@ export class DashboardUpload {
             });
 
             const uploadId = Number(req.params.id);
-
+            const type = req.body.type ?? '';
             if (!uploadId) {
                 return _400(res, "Upload Data ID is required");
             }
-            let isExists = await getUploadDataById(uploadId);
+            let isExists = await getUploadDataById(uploadId, type);
             if (!isExists) {
                 return _404(res, "Upload Data Details not found.");
             }
@@ -84,7 +84,7 @@ export class DashboardUpload {
 
             };
 
-            const result = await updateUploadData(uploadId, uploadData);
+            const result = await updateUploadData(uploadId, uploadData, type);
             return _200(res, "Upload Data updated successfully", result);
         } catch (error) {
             logger.error(error);
@@ -96,11 +96,12 @@ export class DashboardUpload {
     static async getUploadData(req: Request, res: Response) {
         try {
             let response = []
-            const { id } = req.params;
+            const { id, type } = req.params;
+            console.log("type==",type)
             if (!id) {
                 return _400(res, "Upload Data ID is required");
             }
-            const result = await getUploadDataById(Number(id));
+            const result = await getUploadDataById(Number(id), type);
             if (result) {
                 response['data'] = result;
                 return _200(res, "Upload Data retrieved successfully", response);
@@ -116,9 +117,9 @@ export class DashboardUpload {
     static async getAllUploadData(req: Request, res: Response) {
         try {
             let response: { data?: any[], totalRecords?: number } = {};
-            const { page_number, search_text } = req.body;
+            const { page_number, search_text, type } = req.body;
 
-            const result: { data: any[], totalRecords: number } = await getAllUploadData({ page_number: Number(page_number), searchText: search_text as string });
+            const result: { data: any[], totalRecords: number } = await getAllUploadData({ page_number: Number(page_number), searchText: search_text as string, type: type });
             if (Object.keys(result).length === 0) {
                 return _404(res, "Upload Data not found");
             }
@@ -135,15 +136,15 @@ export class DashboardUpload {
 
     static async deleteUploadData(req: Request, res: Response) {
         try {
-            const { id } = req.params;
+            const { id, type } = req.params;
             if (!id) {
                 return _400(res, "Upload Data ID is required");
             }
-            const result = await getUploadDataById(Number(id));
+            const result = await getUploadDataById(Number(id), type);
             if (!result) {
                 return _404(res, "Upload Data not found");
             }
-            await softDeleteUploadData(Number(id));
+            await softDeleteUploadData(Number(id), type);
             return _200(res, "Upload Data deleted successfully");
         } catch (error) {
             logger.error(error);

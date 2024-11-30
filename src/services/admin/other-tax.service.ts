@@ -32,7 +32,9 @@ export const updateOtherTax = async (tax: any) => {
 
 export const getOtherTaxList = async (offset: number, search: string, panchayat_id: number) => {
     try {
-        let query = 'SELECT ot.*, d.DISTRICT_NAME, t.TALUKA_NAME, p.PANCHAYAT_NAME FROM createothertax ot JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID LEFT JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID LEFT JOIN panchayat p ON ot.PANCHAYAT_ID = p.PANCHAYAT_ID WHERE ot. DELETED_AT IS NULL';
+
+        let query = 'SELECT ot.*, d.DISTRICT_NAME, t.TALUKA_NAME, p.PANCHAYAT_NAME FROM createothertax ot LEFT JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID LEFT JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID LEFT JOIN panchayat p ON ot.PANCHAYAT_ID = p.PANCHAYAT_ID WHERE ot. DELETED_AT IS NULL';
+
         const params: any[] = [];
 
         if (search) {

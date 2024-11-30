@@ -52,7 +52,7 @@ export class adminRoutes {
         this.router.get('/milkat-vapar/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MilkatVapar.getMilkatVapar);
         this.router.get('/member/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Memeber.getMember);
 
-        this.router.get('/get-dashboard-data/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.getUploadData);
+        this.router.get('/get-dashboard-data/:id/:type', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.getUploadData);
 
         // floor
         this.router.get('/floor/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.getFloor);
@@ -260,7 +260,7 @@ export class adminRoutes {
         this.router.delete('/delete-milkat/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Milkat.deleteMilkat);
         this.router.delete('/delete-milkat-vapar/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MilkatVapar.deleteMilkatVapar);
         this.router.delete('/delete-member/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Memeber.deleteMember);
-        this.router.delete('/delete-dashboard-data/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.deleteUploadData);
+        this.router.delete('/delete-dashboard-data/:id/:type', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.deleteUploadData);
 
         // floor
         this.router.delete('/delete-floor/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.deleteFloor);
