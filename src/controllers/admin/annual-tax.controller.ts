@@ -46,7 +46,6 @@ export class AnnualTax {
             } else {
                 response['totalRecords'] = await getTotalAnnualTaxCount();
             }
-
             response['data'] = result;
             return _200(res, "Annual Tax list retrieved successfully", response);
         } catch (error) {
