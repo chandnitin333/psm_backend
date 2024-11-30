@@ -119,7 +119,7 @@ export class adminRoutes {
         // Tower routes
         this.router.get('/tower-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Tower.getTower);
 
-        this.router.get('/get-user-district', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, User.getUserDistrict);
+
 
         this.router.get('/get-panchayat-users', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Memeber.getPanchayatUsers);
     }
@@ -142,10 +142,10 @@ export class adminRoutes {
         this.router.post('/taluka-list-by-district-id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, taluka.getTalukaByDistrict);  // On district selection taluka list shown
         this.router.post('/panchayat-list-by-taluka-id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, gatgrampanchayat.getGrampanchayatByTalukaId);  // On taluka selection grampanchayat list shown
         this.router.post('/gat-gram-panchayat-list-by-panchayat-id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, gatgrampanchayat.getGatGrampanchayatByPanchayatId);  // On grampanchayat selection gatgrampanchayat list shown
-        this.router.post('/malmatta-list-ddl',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Malmatta.getAllMalmattaDDL)
-        this.router.post('/age-of-buildings-ddl',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.getAllBuildingAgeDDL)
-        this.router.post('/panchayat-list-ddl',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, grampanchayat.getAllgrampanchayatDDL)
-        this.router.post('/designation-list-ddl',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, KaryaKarniCommitee.getAllDesignationDDL)
+        this.router.post('/malmatta-list-ddl', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Malmatta.getAllMalmattaDDL)
+        this.router.post('/age-of-buildings-ddl', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.getAllBuildingAgeDDL)
+        this.router.post('/panchayat-list-ddl', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, grampanchayat.getAllgrampanchayatDDL)
+        this.router.post('/designation-list-ddl', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, KaryaKarniCommitee.getAllDesignationDDL)
 
         this.router.post('/milkat', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Milkat.addMilkat);
         this.router.post('/get-milkat-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Milkat.getAllMilkat);
@@ -247,7 +247,7 @@ export class adminRoutes {
 
         this.router.post('/sign-in', GlobalMiddleware.checkError, AuthController.authenticate);
 
-
+        this.router.post('/get-user-district', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, User.getUserDistrict);
     }
 
     deleteRoute() {
