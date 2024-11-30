@@ -59,14 +59,14 @@ export async function getOpenPlotInfoList(page: number = 1, search: string = "")
         let limit: number = PAGINATION.LIMIT;
         const offset = (page - 1) * limit;
         let query = `
-            SELECT openplot.OPENPLOT_ID,openplot.ANNUALCOST_NAME, openplot.LEVYRATE_NAME,openplot.DISTRICT_ID, openplot.TALUKA_ID,openplot.PANCHAYAT_ID,openplot.GATGRAMPANCHAYAT_ID, district.DISTRICT_NAME, taluka.TALUKA_NAME, panchayat.PANCHAYAT_NAME, gatgrampanchayat.GATGRAMPANCHAYAT_NAME, prakar.PRAKAR_NAME
-             FROM openplot as openplot
-            INNER JOIN district ON openplot.DISTRICT_ID = district.DISTRICT_ID
-            INNER JOIN taluka ON openplot.TALUKA_ID = taluka.TALUKA_ID
-            INNER JOIN panchayat ON openplot.PANCHAYAT_ID = panchayat.PANCHAYAT_ID
-            INNER JOIN gatgrampanchayat ON openplot.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID
-            INNER JOIN prakar ON openplot.PRAKAR_ID = prakar.PRAKAR_ID
-            WHERE openplot.DELETED_AT IS NULL ORDER BY openplot.OPENPLOT_ID DESC
+            SELECT OpenPlot.OPENPLOT_ID,OpenPlot.ANNUALCOST_NAME, OpenPlot.LEVYRATE_NAME,OpenPlot.DISTRICT_ID, OpenPlot.TALUKA_ID,OpenPlot.PANCHAYAT_ID,OpenPlot.GATGRAMPANCHAYAT_ID, District.DISTRICT_NAME, Taluka.TALUKA_NAME, Panchayat.PANCHAYAT_NAME, GatGramPanchayat.GATGRAMPANCHAYAT_NAME, Prakar.PRAKAR_NAME
+             FROM OpenPlot as OpenPlot
+            INNER JOIN District ON OpenPlot.DISTRICT_ID = District.DISTRICT_ID
+            INNER JOIN Taluka ON OpenPlot.TALUKA_ID = Taluka.TALUKA_ID
+            INNER JOIN Panchayat ON OpenPlot.PANCHAYAT_ID = Panchayat.PANCHAYAT_ID
+            INNER JOIN GatGramPanchayat ON OpenPlot.GATGRAMPANCHAYAT_ID = GatGramPanchayat.GATGRAMPANCHAYAT_ID
+            INNER JOIN Prakar ON OpenPlot.PRAKAR_ID = Prakar.PRAKAR_ID
+            WHERE OpenPlot.DELETED_AT IS NULL   
         `;
         const values: any[] = [];
         if (search) {
