@@ -186,7 +186,7 @@ export class Utils {
 
      static getTotalCount = (params:object)=>{
         try {
-            let sql = `SELECT COUNT(*) AS total_count from `+params[0]+` WHERE  IS_DELETE = 0`;
+            let sql = `SELECT COUNT(*) AS total_count from `+params[0]+` WHERE  DELETED_AT IS NULL`;
             return executeQuery(sql, []).then(result => {
                 return (result) ? result[0] : null;
             }).catch(error => {

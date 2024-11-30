@@ -52,6 +52,7 @@ export class BharankDar {
 
     static async getBharankDar(req: Request, res: Response) {
         try {
+            let response = []
             const { id } = req.params;
             if (!id) {
                 return _400(res, "Bharank Dar ID is required");

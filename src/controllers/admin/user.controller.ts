@@ -1,8 +1,8 @@
 
-import { logger } from "../../logger/Logger";
 import { Request, response, Response } from "express";
+import { logger } from "../../logger/Logger";
+import { createNewUser, getUserById, getUserList, getUsersDistrict, softDeleteUser, updateUser } from "../../services/admin/users.service";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
-import { createNewUser, getTotalUserCount, getUserById, getUserList, softDeleteUser, updateUser } from "../../services/admin/users.service";
 
 export class User {
     static async addNewUser(req: Request, res: Response) {
@@ -36,14 +36,10 @@ export class User {
     static async getAllUser(req: Request, res: Response) {
         try {
             let response = [];
-            const { page_number, search_text, user_type } = req.body;
-            const result = await getUserList(Number(page_number - 1), search_text as string, user_type as string);
-            if(search_text){
-                response['totalRecords'] = await getTotalUserCount(user_type as string, search_text); 
-            }else{
-                response['totalRecords'] = await getTotalUserCount(user_type as string);
-            }
-            response['data'] = result;
+            const { page_number, search_text, user_type, district_id } = req.body;
+            const result: any = await getUserList(Number(page_number - 1), search_text as string, user_type as string, Number(district_id));
+            response['data'] = result?.data ?? [];
+            response['totalRecords'] = result?.totalRecords ?? 0
             return _200(res, "User list retrieved successfully", response);
         } catch (error) {
             logger.error(error);
@@ -53,7 +49,7 @@ export class User {
 
     static async getUser(req: Request, res: Response) {
         try {
-            const { id,user_type } = req.body;
+            const { id, user_type } = req.body;
             if (!id) {
                 return _400(res, "User ID is required");
             }
@@ -62,7 +58,7 @@ export class User {
                 return _404(res, "User not found");
             }
             response['data'] = result;
-            return _200(res,"User data fetch successfully",response);
+            return _200(res, "User data fetch successfully", response);
         } catch (error) {
             logger.error(error);
             return _400(res, error.message);
@@ -75,11 +71,11 @@ export class User {
             if (!id) {
                 return _400(res, "User ID is required");
             }
-            const result = await getUserById(Number(id),user_type);
+            const result = await getUserById(Number(id), user_type);
             if (!result) {
                 return _404(res, "User not found");
             }
-            let response: any = await softDeleteUser(id,user_type);
+            let response: any = await softDeleteUser(id, user_type);
             if (response) {
                 return _200(res, "User deleted successfully");
             } else {
@@ -91,6 +87,21 @@ export class User {
         }
     }
 
+    static getUserDistrict = async (req, res) => {
+        try {
+            let {district_id} =  req.body;
+            const result: any = await getUsersDistrict(district_id)
+            if (!result) {
+                return _404(res, "User not found");
+            }
+            response['data'] = result;
+            return _200(res, "User data fetch successfully", response);
+        } catch (error) {
+            logger.error("getUserDistrict::", error);
+            return _400(res, error.message);
+        }
+
+    }
 }
 
 

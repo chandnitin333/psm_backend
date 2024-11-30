@@ -83,6 +83,7 @@ export class AnnualTax {
     }
     static async getAnnualTax(req: Request, res: Response) {
         try {
+             let response = [];
             const { id } = req.params;
             if (!id) {
                 return _400(res, "Annual Tax ID is required");
@@ -105,13 +106,16 @@ export class AnnualTax {
             if (!id) {
                 return _400(res, "Annual Tax ID is required");
             }
+            let response1 = [];
             const result = await getAnnualTaxById(Number(id));
+            console.log(result)
             if (!result) {
                 return _404(res, "Annual Tax not found");
             }
+             response1['data'] = result;
             let response: any = await softDeleteAnnualTax(id);
             if (response) {
-                return _200(res, "Annual Tax deleted successfully");
+                return _200(res, "Annual Tax deleted successfully", response1);
             } else {
                 return _400(res, "Annual Tax not deleted,Something went wrong.");
             }

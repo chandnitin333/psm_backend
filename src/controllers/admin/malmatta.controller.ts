@@ -2,7 +2,7 @@
 import { logger } from "../../logger/Logger";
 import { Request, response, Response } from "express";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
-import { createMalmatta, getMalmattaById, getMalmattechaList, getTotalMalmattaCount, softDeleteMalmatta, updateMalmatta } from "../../services/admin/malmatta.service";
+import { createMalmatta, getMalmattaById, getMalmattaListForDDL, getMalmattechaList, getTotalMalmattaCount, softDeleteMalmatta, updateMalmatta } from "../../services/admin/malmatta.service";
 
 export class Malmatta {
     static async addMalmatta(req: Request, res: Response) {
@@ -92,6 +92,24 @@ export class Malmatta {
             logger.error(error);
             return _400(res, error.message);
         }
+    }
+
+    static async getAllMalmattaDDL(req: any, res: any, next: any) {
+        let response = {};
+        let params = [];
+        // console.log("Test",params);
+        getMalmattaListForDDL(params).then((result) => {
+            if (result) {
+                response['data'] = result;
+                _200(res, 'Malmatta list found successfully', response)
+            } else {
+                _400(res, 'Malmatta list not found')
+            }
+        }).catch((error) => {
+
+            logger.error("getAllMalmattaDDL :: ", error);
+            _400(res, 'Malmatta list not found')
+        });
     }
 
 }

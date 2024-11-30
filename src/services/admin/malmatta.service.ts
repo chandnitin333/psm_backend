@@ -40,7 +40,7 @@ export const getMalmattechaList = async (offset: number, search: string) => {
         const params: any[] = [];
 
         if (search) {
-            query += ' AND LOWER(DESCRIPTION_NAME) LIKE LOWER(?) OR LOWER(DESCRIPTION_NAME_EXTRA) LIKE LOWER(?)';
+            query += ' AND (LOWER(DESCRIPTION_NAME) LIKE LOWER(?) OR LOWER(DESCRIPTION_NAME_EXTRA) LIKE LOWER(?))';
             params.push(`%${search}%`, `%${search}%`);
         }
 
@@ -70,7 +70,7 @@ export const getMalmattaById = async (id: number) => {
 export const softDeleteMalmatta = async (id: number) => {
     try {
 
-        return await executeQuery('UPDATE malmatta SET DELETED_AT=NOW() WHERE MALMATTA_ID = ?', [id]);
+        return await executeQuery('UPDATE malmatta SET DELETED_AT = NOW() WHERE MALMATTA_ID = ?', [id]);
 
 
     } catch (err) {
@@ -87,7 +87,7 @@ export const getTotalMalmattaCount = async (search = '') => {
         if (search) {
             result = await executeQuery('SELECT COUNT(*) AS total FROM malmatta WHERE (LOWER(DESCRIPTION_NAME) LIKE LOWER(?) OR LOWER(DESCRIPTION_NAME_EXTRA) LIKE LOWER(?)) AND DELETED_AT IS NULL', [`%${search}%`, `%${search}%`]);
         } else {
-            result = await executeQuery('SELECT COUNT(*) AS total FROM malmatta WHERE DELETED_AT  IS NULL', []);
+            result = await executeQuery('SELECT COUNT(*) AS total FROM malmatta WHERE DELETED_AT IS NULL', []);
 
         }
         return result[0].total;
@@ -97,3 +97,20 @@ export const getTotalMalmattaCount = async (search = '') => {
     }
 };
 
+export const getMalmattaListForDDL = async (params: object) => {
+    try {
+        let sql = `SELECT MALMATTA_ID,DESCRIPTION_NAME FROM malmatta WHERE DELETED_AT IS NULL`;
+        return executeQuery(sql, params).then(result => {
+            return (result) ? result : null;
+
+
+        }).catch((error) => {
+            console.error("getMalmattaListForDDL fetch data error: ", error);
+            return null;
+        }
+        );
+    } catch (error) {
+        logger.error("getMalmattaListForDDL :: ", error)
+        throw new Error(error)
+    }
+}
