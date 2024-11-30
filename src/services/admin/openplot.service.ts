@@ -54,7 +54,7 @@ export async function getOpenPlotDetailsById(openPlotId: number): Promise<any | 
     }
 }
 
-export async function getOpenPlotInfoList(page: number = 1): Promise<any[]> {
+export async function getOpenPlotInfoList(page: number = 1, search: string = ""): Promise<any[]> {
     try {
         let limit: number = PAGINATION.LIMIT;
         const offset = (page - 1) * limit;
@@ -66,13 +66,16 @@ export async function getOpenPlotInfoList(page: number = 1): Promise<any[]> {
             INNER JOIN Panchayat ON OpenPlot.PANCHAYAT_ID = Panchayat.PANCHAYAT_ID
             INNER JOIN GatGramPanchayat ON OpenPlot.GATGRAMPANCHAYAT_ID = GatGramPanchayat.GATGRAMPANCHAYAT_ID
             INNER JOIN Prakar ON OpenPlot.PRAKAR_ID = Prakar.PRAKAR_ID
-            WHERE OpenPlot.DELETED_AT IS NULL ORDER BY OpenPlot.OPENPLOT_ID DESC
+            WHERE OpenPlot.DELETED_AT IS NULL   
         `;
         const values: any[] = [];
+        if (search) {
+            query += ` AND LOWER(District.DISTRICT_NAME) LIKE LOWER(?) OR LOWER(Taluka.TALUKA_NAME) LIKE LOWER(?) OR LOWER( Panchayat.PANCHAYAT_NAME) LIKE LOWER(?) OR LOWER(GatGramPanchayat.GATGRAMPANCHAYAT_NAME) LIKE LOWER(?) OR LOWER(Prakar.PRAKAR_NAME) LIKE LOWER(?) OR LOWER(OpenPlot.ANNUALCOST_NAME) LIKE LOWER(?) OR LOWER(OpenPlot.LEVYRATE_NAME) LIKE LOWER(?)`;
+            values.push(`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`);
+        }
 
-
-
-        query += ` LIMIT ${limit} OFFSET ${offset}`;
+        query += ` ORDER BY OpenPlot.OPENPLOT_ID DESC LIMIT ${limit} OFFSET ${offset}`;
+        console.log(query)
         const results = await executeQuery(query, values);
         return results as any[];
     } catch (error) {
@@ -103,5 +106,24 @@ export async function getOpenPlotRecordsCount(): Promise<number> {
     } catch (error) {
         logger.error(`Error fetching open plot records count: ${error.message}`);
         throw error;
+    }
+}
+
+
+export const getPrakarListForDDL = async (params: object) => {
+    try {
+        let sql = `SELECT PRAKAR_ID,PRAKAR_NAME FROM prakar WHERE DELETED_AT IS NULL`;
+        return executeQuery(sql, params).then(result => {
+            return (result) ? result : null;
+
+
+        }).catch((error) => {
+            console.error("getPrakarListForDDL fetch data error: ", error);
+            return null;
+        }
+        );
+    } catch (error) {
+        logger.error("getPrakarListForDDL :: ", error)
+        throw new Error(error)
     }
 }
