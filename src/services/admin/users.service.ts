@@ -201,11 +201,7 @@ export const getUserById = async (id: number, user_type: string) => {
                     JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID
                     JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID
                     JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID
-<<<<<<< HEAD
-                    WHERE en.USER_ID = ? AnD en.DELETED_AT IS NULL
-=======
                     WHERE en.USER_ID = ? AND en.DELETED_AT IS NULL
->>>>>>> 256f5b7 (comit my changes)
                 `;
             const result = await executeQuery(query, [id]);
             return result[0];
