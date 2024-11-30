@@ -1,7 +1,7 @@
 
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
-import { addGramPanchayat, deleteGramPanchayat, getGramPanchayat, getGramPanchayatList, updateGramPanchayat } from "../../services/admin/grampanchayat.service";
+import { addGramPanchayat, deleteGramPanchayat, getGramPanchayat, getGramPanchayatList, getPanchayatListForDDL, updateGramPanchayat } from "../../services/admin/grampanchayat.service";
 import { _200, _201, _400, _404, _409 } from "../../utils/ApiResponse";
 
 export class grampanchayat {
@@ -117,6 +117,24 @@ export class grampanchayat {
         }).catch((error) => {
             logger.error("deleteGramPanchayat :: ", error);
             _404(res, 'GramPanchayat not found');
+        });
+    }
+
+    static async getAllgrampanchayatDDL(req: any, res: any, next: any) {
+        let response = {};
+        let params = [];
+        // console.log("Test",params);
+        getPanchayatListForDDL(params).then((result) => {
+            if (result) {
+                response['data'] = result;
+                _200(res, 'Panchayat list found successfully', response)
+            } else {
+                _400(res, 'Panchayat list not found')
+            }
+        }).catch((error) => {
+
+            logger.error("getAllgrampanchayatDDL :: ", error);
+            _400(res, 'Panchayat list not found')
         });
     }
 }

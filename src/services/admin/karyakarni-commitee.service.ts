@@ -95,3 +95,20 @@ export const getTotalKaryaKarniCommiteeCount = async (search='') => {
     }
 };
 
+export const getDesignationListForDDL = async (params: object) => {
+    try {
+        let sql = `SELECT DESIGNATION_ID,DESIGNATION_NAME FROM designation WHERE DELETED_AT IS NULL`;
+        return executeQuery(sql, params).then(result => {
+            return (result) ? result : null;
+
+
+        }).catch((error) => {
+            console.error("getDesignationListForDDL fetch data error: ", error);
+            return null;
+        }
+        );
+    } catch (error) {
+        logger.error("getDesignationListForDDL :: ", error)
+        throw new Error(error)
+    }
+}
