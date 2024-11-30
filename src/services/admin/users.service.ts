@@ -277,11 +277,30 @@ export const softDeleteUser = async (id: number, user_type: string) => {
     }
 };
 
-export const getUsersDistrict = async (id: number) => {
+export const getUsersDistrict = async (user_type:string) => {
     try {
-        return await executeQuery(`SELECT  district.DISTRICT_ID, district.DISTRICT_NAME FROM entries en
-            JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID
-           WHERE  en.DELETED_AT IS NULL GROUP BY en.DISTRICT_ID`, []);
+       
+
+           if (user_type == "new_user") {
+            return await executeQuery(`SELECT  district.DISTRICT_ID, district.DISTRICT_NAME FROM entries en
+                JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID
+               WHERE  en.DELETED_AT IS NULL GROUP BY en.DISTRICT_ID`, []);
+        }
+        else if (user_type == "ferfar_user") {
+            return await executeQuery(`SELECT  district.DISTRICT_ID, district.DISTRICT_NAME FROM ferfaruser en
+                JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID
+               WHERE  en.DELETED_AT IS NULL GROUP BY en.DISTRICT_ID`, []);
+        }
+        else if (user_type == "ferfar_pdf_user") {
+            return await executeQuery(`SELECT  district.DISTRICT_ID, district.DISTRICT_NAME FROM ferfaruserpdf en
+                JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID
+               WHERE  en.DELETED_AT IS NULL GROUP BY en.DISTRICT_ID`, []);
+        }
+        else if (user_type == "vasuli_user") {
+            return await executeQuery(`SELECT  district.DISTRICT_ID, district.DISTRICT_NAME FROM vasuliuser en
+                JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID
+               WHERE  en.DELETED_AT IS NULL GROUP BY en.DISTRICT_ID`, []);
+        }
     } catch (err) {
         logger.error('Error getUsersDistrict::', err);
         throw err;
