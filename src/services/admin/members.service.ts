@@ -51,7 +51,7 @@ async function getMember(memberId: number): Promise<any | null> {
     return null;
 }
 
-async function getMembersList(page: number = 1, memberName?: string): Promise<any[]> {
+async function getMembersList(page: number = 1, memberName?: string, panchayat_id?:number): Promise<any[]> {
     let limit: number = PAGINATION.LIMIT;
     const offset = (page - 1) * limit;
     let query = `
@@ -59,6 +59,10 @@ async function getMembersList(page: number = 1, memberName?: string): Promise<an
         WHERE DELETED_AT IS NULL
     `;
     const values: any[] = [];
+    if (panchayat_id) {
+        query += '  AND PANCHAYAT_ID= ?'
+        values.push(panchayat_id)
+    }
 
     if (memberName) {
         query += ` AND LOWER(NAME_NAME) LIKE LOWER(?)`;
@@ -86,7 +90,19 @@ async function getMemberCount(): Promise<number> {
     return result[0].count;
 }
 
+async function getpanchayatUsers (): Promise<any | null> {
+    try {
+        return await executeQuery(`SELECT  p.PANCHAYAT_ID, p.PANCHAYAT_NAME FROM membermaster mm
+            JOIN panchayat p ON mm.PANCHAYAT_ID = p.PANCHAYAT_ID
+           WHERE  mm.DELETED_AT IS NULL GROUP BY mm.PANCHAYAT_ID`, []);
+    } catch (err) {
+        logger.error('Error getpanchayatUsers::', err);
+        throw err;
+    }
+
+}
+
 export {
     addMember, getMember, getMemberCount, getMembersList,
-    softDeleteMember, updateMember
+    softDeleteMember, updateMember, getpanchayatUsers
 };

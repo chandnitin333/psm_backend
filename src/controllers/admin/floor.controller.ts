@@ -2,7 +2,7 @@
 import { logger } from "../../logger/Logger";
 import { Request, response, Response } from "express";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
-import { createFloor, getFloorById, getFloorList, getTotalFloorCount, softDeleteFloor, updateFloor } from "../../services/admin/floor.service";
+import { createFloor, getBuildingAgeListForDDL, getFloorById, getFloorList, getTotalFloorCount, softDeleteFloor, updateFloor } from "../../services/admin/floor.service";
 
 export class Floor {
     static async addFloor(req: Request, res: Response) {
@@ -92,6 +92,24 @@ export class Floor {
             logger.error(error);
             return _400(res, error.message);
         }
+    }
+
+    static async getAllBuildingAgeDDL(req: any, res: any, next: any) {
+        let response = {};
+        let params = [];
+        // console.log("Test",params);
+        getBuildingAgeListForDDL(params).then((result) => {
+            if (result) {
+                response['data'] = result;
+                _200(res, 'Building Age list found successfully', response)
+            } else {
+                _400(res, 'Building Age list not found')
+            }
+        }).catch((error) => {
+
+            logger.error("getAllBuildingAgeDDL :: ", error);
+            _400(res, 'Building Age list not found')
+        });
     }
 
 }

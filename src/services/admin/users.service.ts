@@ -207,7 +207,6 @@ export const getUserById = async (id: number, user_type: string) => {
                     JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID
                     JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID
                     WHERE en.USER_ID = ? AND en.DELETED_AT IS NULL
-
                 `;
             const result = await executeQuery(query, [id]);
             return result[0];

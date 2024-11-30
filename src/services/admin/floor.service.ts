@@ -87,3 +87,21 @@ export const getTotalFloorCount = async (search = '') => {
     }
 };
 
+
+export const getBuildingAgeListForDDL = async (params: object) => {
+    try {
+        let sql = `SELECT AGEOFBUILDING_ID,AGEOFBUILDING_NAME  AS AGEOFBUILDING_NAME FROM ageofbuilding WHERE DELETED_AT IS NULL`;
+        return executeQuery(sql, params).then(result => {
+            return (result) ? result : null;
+
+
+        }).catch((error) => {
+            console.error("getBuildingAgeListForDDL fetch data error: ", error);
+            return null;
+        }
+        );
+    } catch (error) {
+        logger.error("getBuildingAgeListForDDL :: ", error)
+        throw new Error(error)
+    }
+}
