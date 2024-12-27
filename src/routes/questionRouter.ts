@@ -1,6 +1,4 @@
 import { Router } from "express";
-import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
-import { questionController } from "../controllers/questionController";
 
 
 export class questionRouter {
@@ -12,8 +10,6 @@ export class questionRouter {
     }
 
     postRoutes() {
-        this.router.post('/get-all-exam-questions', GlobalMiddleware.authenticate, questionController.getAllExamQuestion);
-
 
     }
 

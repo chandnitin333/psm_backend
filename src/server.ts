@@ -34,10 +34,10 @@ export class Server {
         this.app.use(bodyParser.raw());
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
-        this.app.use(cors({ origin: 'http://localhost:4200' }));
+        this.app.use(cors({ origin: '*' }));
 
         this.app.use((_, res, next) => {
-           
+
             res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
             res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
             next();
