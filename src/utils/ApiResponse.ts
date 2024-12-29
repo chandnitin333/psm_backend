@@ -47,7 +47,7 @@ export const _500 = (res: Response, msg: string) => {
         message: msg,
     };
 
-    return res.status(500).json(data);
+    return res.status(200).json(data);
 };
 export const _404 = (res: Response, msg = 'No data Found') => {
 
@@ -55,7 +55,7 @@ export const _404 = (res: Response, msg = 'No data Found') => {
         status: 404,
         message: msg || 'No Data Found..!',
     };
-    return res.status(404).json(data);
+    return res.status(200).json(data);
 };
 export const _400 = (res: Response, msg: string = '') => {
 
@@ -65,14 +65,14 @@ export const _400 = (res: Response, msg: string = '') => {
 
     };
 
-    return res.status(400).json(resData);
+    return res.status(200).json(resData);
 };
 export const _401 = (res: Response, msg: string = '') => {
     var data = {
         status: 401,
         message: msg || 'Unauthorized',
     };
-    return res.status(401).json(data);
+    return res.status(200).json(data);
 }
 export const _402 = (res: Response, msg = '') => {
 
@@ -81,7 +81,7 @@ export const _402 = (res: Response, msg = '') => {
         status: 402,
         message: msg || 'Something went wrong',
     };
-    return res.status(402).json(data);
+    return res.status(200).json(data);
 }
 export const _408 = (res: Response, msg = '') => {
 
@@ -89,7 +89,7 @@ export const _408 = (res: Response, msg = '') => {
         status: 408,
         message: msg || 'Something went wrong',
     };
-    return res.status(408).json(data);
+    return res.status(200).json(data);
 }
 export const _403 = (res: Response, msg = '') => {
 
@@ -97,7 +97,7 @@ export const _403 = (res: Response, msg = '') => {
         status: 403,
         message: msg || 'Something went wrong',
     };
-    return res.status(403).json(data);
+    return res.status(200).json(data);
 }
 export const _409 = (res: Response, msg = '', data = null,) => {
 
@@ -109,5 +109,5 @@ export const _409 = (res: Response, msg = '', data = null,) => {
         resData[DATA_KEY] = data
     }
     resData = { ...resData, ...data }
-    return res.status(409).json(resData);
+    return res.status(200).json(resData);
 }

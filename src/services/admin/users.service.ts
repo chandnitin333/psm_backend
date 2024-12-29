@@ -277,11 +277,11 @@ export const softDeleteUser = async (id: number, user_type: string) => {
     }
 };
 
-export const getUsersDistrict = async (user_type:string) => {
+export const getUsersDistrict = async (user_type: string) => {
     try {
-       
 
-           if (user_type == "new_user") {
+
+        if (user_type == "new_user") {
             return await executeQuery(`SELECT  district.DISTRICT_ID, district.DISTRICT_NAME FROM entries en
                 JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID
                WHERE  en.DELETED_AT IS NULL GROUP BY en.DISTRICT_ID`, []);
@@ -406,6 +406,101 @@ export const getTotalUserCount = async (user_type: string, search = '') => {
         return result[0].total;
     } catch (err) {
         logger.error('Error fetching total user count', err);
+        throw err;
+    }
+};
+
+
+
+export const signIn = async (user_type: string, district_id: number, taluka_id: number, panchayat_id: number, username: string, password: string) => {
+    try {
+        if (user_type == "new_user") {
+            let query = 'SELECT en.*, district.DISTRICT_NAME, taluka.TALUKA_NAME, panchayat.PANCHAYAT_NAME, gatgrampanchayat.GATGRAMPANCHAYAT_NAME, ds.FILE_NAME,ds.FILE_NAME, ds.R_PATH FROM entries en ';
+            query += 'JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID ';
+            query += 'JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID ';
+            query += 'JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID ';
+            query += 'JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID ';
+            query += 'JOIN UPLOADDATADASHBOARD as ds ON en.PANCHAYAT_ID = ds.PANCHAYAT_ID ';
+            query += 'WHERE en.DELETED_AT IS NULL';
+
+            let params: any[] = [];
+
+            query += '  AND en.DISTRICT_ID= ? AND en.TALUKA_ID= ? AND en.PANCHAYAT_ID= ? AND en.USERNAME= ? AND en.PWD= ?'
+            params = [district_id, taluka_id, panchayat_id, username, password];
+
+            console.log("query==", query)
+
+            const result = await executeQuery(query, params);
+
+
+
+            return { data: result }
+        }
+        else if (user_type == "ferfar_user") {
+            let query = 'SELECT en.*, district.DISTRICT_NAME, taluka.TALUKA_NAME, panchayat.PANCHAYAT_NAME, gatgrampanchayat.GATGRAMPANCHAYAT_NAME FROM ferfaruser en ';
+            query += 'JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID ';
+            query += 'JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID ';
+            query += 'JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID ';
+            query += 'JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID ';
+            query += 'WHERE en.DELETED_AT IS NULL';
+
+            let params: any[] = [];
+
+            query += '  AND en.DISTRICT_ID= ? AND en.TALUKA_ID= ? AND en.PANCHAYAT_ID= ? AND en.USERNAME= ? AND en.PWD= ?'
+            params = [district_id, taluka_id, panchayat_id, username, password];
+
+
+            const result = await executeQuery(query, params);
+            return { data: result }
+        }
+        else if (user_type == "ferfar_pdf_user") {
+            let query = 'SELECT en.*, district.DISTRICT_NAME, taluka.TALUKA_NAME, panchayat.PANCHAYAT_NAME, gatgrampanchayat.GATGRAMPANCHAYAT_NAME FROM ferfaruserpdf en ';
+            query += 'JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID ';
+            query += 'JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID ';
+            query += 'JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID ';
+            query += 'JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID ';
+            query += 'WHERE en.DELETED_AT IS NULL';
+
+            let params: any[] = [];
+
+            query += '  AND en.DISTRICT_ID= ? AND en.TALUKA_ID= ? AND en.PANCHAYAT_ID= ? AND en.USERNAME= ? AND en.PWD= ?'
+            params = [district_id, taluka_id, panchayat_id, username, password];
+            const result = await executeQuery(query, params);
+            return { data: result };
+        }
+        else if (user_type == "vasuli_user") {
+            let query = 'SELECT en.*, district.DISTRICT_NAME, taluka.TALUKA_NAME, panchayat.PANCHAYAT_NAME, gatgrampanchayat.GATGRAMPANCHAYAT_NAME FROM vasuliuser en ';
+            query += 'JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID ';
+            query += 'JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID ';
+            query += 'JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID ';
+            query += 'JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID ';
+            query += 'WHERE en.DELETED_AT IS NULL';
+
+            let params: any[] = [];
+
+            query += '  AND en.DISTRICT_ID= ? AND en.TALUKA_ID= ? AND en.PANCHAYAT_ID= ? AND en.USERNAME= ? AND en.PWD= ?'
+            query += '  AND en.DISTRICT_ID= ?'
+            params = [district_id, taluka_id, panchayat_id, username, password];
+
+
+
+
+            const result = await executeQuery(query, params);
+            return { data: result }
+        }
+
+    } catch (err) {
+        logger.error('Error fetching tax list', err);
+        throw err;
+    }
+};
+
+export const getCounts = async (userId) => {
+    try {
+        const userCounts = await executeQuery('CALL getUserCounts(?)', [userId]);
+        return userCounts[0];
+    } catch (err) {
+        logger.error('Error fetching district list', err);
         throw err;
     }
 };

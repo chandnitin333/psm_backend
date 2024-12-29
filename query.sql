@@ -370,3 +370,17 @@ BEGIN
     LIMIT 3;
 END 
 
+
+
+CREATE PROCEDURE getUserCounts(IN user_id INT)
+BEGIN
+    SELECT 
+        (SELECT COUNT(annu_kramank)  FROM newuser WHERE user_id = user_id) AS current_account,
+        (SELECT COUNT(milkar_prakar) FROM newuser WHERE MILKAR_PRAKAR = 'अधिकृत' AND user_id = user_id) AS ADHIKRUT,
+        (SELECT COUNT(milkar_prakar) FROM newuser WHERE MILKAR_PRAKAR = 'घरकुल' AND user_id = user_id) AS GHARKUL,
+        (SELECT COUNT(milkar_prakar) FROM newuser WHERE milkar_prakar = 'इमलाकर' AND user_id = user_id) AS IMLAKAR,
+        (SELECT COUNT(milkar_prakar) FROM newuser WHERE MILKAR_PRAKAR = 'घर कर लावायचा आहे' AND user_id = user_id) AS HOME_KAR;
+END 
+
+
+

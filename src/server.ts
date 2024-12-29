@@ -4,6 +4,7 @@ import { getEnvironmentVariable } from './environments/env';
 import { logger } from './logger/Logger';
 
 import adminRoutes from './routes/admin.routes';
+import psmRoutes from './routes/psm.routes';
 import bodyParser = require("body-parser");
 import cors = require('cors');
 
@@ -47,7 +48,7 @@ export class Server {
     setRoutes() {
 
         this.app.use('/api/admin/', adminRoutes);
-
+        this.app.use('/api', psmRoutes);
     }
     dbConnection() {
 
