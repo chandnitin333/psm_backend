@@ -420,7 +420,7 @@ export const signIn = async (user_type: string, district_id: number, taluka_id: 
             query += 'JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID ';
             query += 'JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID ';
             query += 'JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID ';
-            query += 'JOIN UPLOADDATADASHBOARD as ds ON en.PANCHAYAT_ID = ds.PANCHAYAT_ID ';
+            query += 'JOIN uploaddatadashboard as ds ON en.PANCHAYAT_ID = ds.PANCHAYAT_ID ';
             query += 'WHERE en.DELETED_AT IS NULL';
 
             let params: any[] = [];
@@ -498,10 +498,24 @@ export const signIn = async (user_type: string, district_id: number, taluka_id: 
 export const getCounts = async (userId) => {
     try {
         const userCounts = await executeQuery('CALL getUserCounts(?)', [userId]);
+
+
         return userCounts[0];
     } catch (err) {
-        logger.error('Error fetching district list', err);
+        logger.error('Error fetching getCounts ', err);
         throw err;
     }
 };
 
+
+export const getMemberList = async (panchayat_id) => {
+    try {
+        const memberList = await executeQuery('CALL getMemberList(?)', [panchayat_id]);
+
+
+        return memberList[0];
+    } catch (err) {
+        logger.error('Error fetching getMemberList', err);
+        throw err;
+    }
+};

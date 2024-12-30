@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import * as Jwt from "jsonwebtoken";
 import { getEnvironmentVariable } from "../../environments/env";
 import { logger } from "../../logger/Logger";
-import { getCounts, signIn } from "../../services/admin/users.service";
+import { getCounts, getMemberList, signIn } from "../../services/admin/users.service";
 import { _200, _400 } from "../../utils/ApiResponse";
 import e = require("express");
 export class AuthController {
@@ -47,7 +47,7 @@ export class AuthController {
 
                 }
                 //encode  param any ecodeded
-                
+
 
 
                 const token = Jwt.sign(params, getEnvironmentVariable().jwt_secret, {
@@ -75,7 +75,7 @@ export class AuthController {
         try {
             let response = [];
             response['data'] = {};
-            const{user_id}  = req.body;
+            const { user_id } = req.body;
             getCounts(user_id).then((result) => {
                 response['data'] = result;
                 return _200(res, "User list retrieved successfully", response);
@@ -91,4 +91,22 @@ export class AuthController {
     }
 
 
+    static async getMemberDetails(req: Request, res: Response) {
+        try {
+            let response = [];
+            response['data'] = {};
+            const { panchayat_id } = req.body;
+            getMemberList(panchayat_id).then((result) => {
+                response['data'] = result;
+                return _200(res, "Member list retrieved successfully", response);
+            }
+            ).catch((error) => {
+                logger.error(error);
+                return _400(res, error.message);
+            });
+        } catch (error) {
+            logger.error(error);
+            return _400(res, error.message);
+        }
+    }
 }

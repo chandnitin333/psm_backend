@@ -42,7 +42,9 @@ export class psmRoutes {
         this.router.post('/designation-list-ddl', GlobalMiddleware.checkError, KaryaKarniCommitee.getAllDesignationDDL)
 
 
-        this.router.post('/get-user-activity', GlobalMiddleware.checkError, AuthController.getActivityCount);
+        this.router.post('/get-user-activity', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getActivityCount);
+        this.router.post('/get-member-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getMemberDetails);
+
 
     }
 
