@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0.32 
+    platform: linux/amd64 
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Java@123
+      MYSQL_DATABASE: psm_lts
+    ports:
+      - "3307:3307"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
+      - ./my.cnf:/etc/mysql/my.cnf
+
+  app:
+    build: .
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: Java@123
+      DB_NAME: psm_lts
+    ports:
+      - "4444:4444"
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+volumes:
+  mysql-data:

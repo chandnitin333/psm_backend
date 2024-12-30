@@ -1,20 +1,19 @@
-FROM node:20
+FROM node:18
 
+# Set the working directory
 WORKDIR /app
 
+# Copy package files
 COPY package*.json ./
 
+# Install dependencies
+RUN npm install
+
+# Copy application code
 COPY . .
 
-# RUN NODE_ENV=dev
-
-# RUN npm audit fix --force
-
-# RUN npm run build
-RUN npm install -g ts-node nodemon
-RUN npm install
-RUN npm install typescript
-
+# Expose port
 EXPOSE 4444
 
-CMD ["ts-node", "src/app.ts"] 
+# Start the app
+CMD ["npm", "start"]
