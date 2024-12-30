@@ -8,8 +8,8 @@ services:
       - "4444:4444"
     restart: always
     networks:
-      - psm_default
+      - psm_default1
 
 networks:
-  psm_default:
+  psm_default1:
     external: true
