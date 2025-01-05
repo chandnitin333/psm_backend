@@ -14,16 +14,16 @@ export class grampanchayat {
         let params = [districtId, talukaid, gramPanchayatName];
         addGramPanchayat(params).then((result) => {
             if (result === "exists") {
-                _409(res, gramPanchayatName + ' Gram Panchayat Already Exists')
+               return _409(res, gramPanchayatName + ' Gram Panchayat Already Exists')
             } else if (result == null) {
-                _400(res, gramPanchayatName + ' Gram Panchayat Not Added')
+                return _400(res, gramPanchayatName + ' Gram Panchayat Not Added')
             } else {
-                _201(res, gramPanchayatName + ' Gram Panchayat Added Successfully')
+                return _201(res, gramPanchayatName + ' Gram Panchayat Added Successfully')
             }
         }
         ).catch((error) => {
             logger.error("addGramPanchayat :: ", error)
-            _400(res, 'Gram Panchayat Not Added')
+           return _400(res, 'Gram Panchayat Not Added')
         });
     }
 
@@ -33,13 +33,13 @@ export class grampanchayat {
         getGramPanchayat([grampanchayatId]).then((result) => {
             if (result) {
                 response['data'] = result;
-                _200(res, 'GramPanchayat Found Successfully', response)
+                return _200(res, 'GramPanchayat Found Successfully', response)
             } else {
-                _404(res, 'GramPanchayat Not Found')
+               return _404(res, 'GramPanchayat Not Found')
             }
         }).catch((error) => {
             logger.error("getGramPanchayat :: ", error)
-            _404(res, 'GramPanchayat Not Found')
+            return _404(res, 'GramPanchayat Not Found')
         });
     }
 
@@ -55,14 +55,14 @@ export class grampanchayat {
                 response['limit'] = limit;
                 response['page'] = page;
                 response['data'] = result?.data;
-                _200(res, 'GramPanchayat list found successfully', response)
+               return _200(res, 'GramPanchayat list found successfully', response)
             } else {
-                _400(res, 'GramPanchayat list not found')
+               return _400(res, 'GramPanchayat list not found')
             }
         }).catch((error) => {
 
             logger.error("getGramPanchayat :: ", error);
-            _400(res, 'GramPanchayat list not found')
+           return _400(res, 'GramPanchayat list not found')
         });
     }
 
@@ -80,20 +80,20 @@ export class grampanchayat {
             }
             updateGramPanchayat(params).then((result) => {
                 if (result === "exists") {
-                    _409(res, gramPanchayatName + ' Grampanchayat already exists. Please choose another gram panchayat name')
+                   return _409(res, gramPanchayatName + ' Grampanchayat already exists. Please choose another gram panchayat name')
                 } else if (result == null) {
-                    _400(res, 'GramPanchayat Not Updated')
+                   return _400(res, 'GramPanchayat Not Updated')
                 } else {
-                    _200(res, gramPanchayatName + ' GramPanchayat Updated Successfully');
+                   return _200(res, gramPanchayatName + ' GramPanchayat Updated Successfully');
                 }
             }).catch((err) => {
 
                 logger.error("updateGramPanchayat :: ", err)
-                _400(res, 'GramPanchayat Not Updated')
+               return _400(res, 'GramPanchayat Not Updated')
             });
         }).catch((error) => {
             logger.error("updateGramPanchayat :: ", error);
-            _404(res, 'GramPanchayat Not Found');
+           return _404(res, 'GramPanchayat Not Found');
         });
     }
 
@@ -106,9 +106,9 @@ export class grampanchayat {
 
             deleteGramPanchayat([grampanchayatId]).then((result) => {
                 if (result) {
-                    _200(res, 'Grampanchayat deleted successfully');
+                   return _200(res, 'Grampanchayat deleted successfully');
                 } else {
-                    _400(res, 'GramPanchayat not deleted');
+                   return _400(res, 'GramPanchayat not deleted');
                 }
             }).catch((error) => {
                 logger.error("deleteGrampanchayat :: ", error);
@@ -116,7 +116,7 @@ export class grampanchayat {
             });
         }).catch((error) => {
             logger.error("deleteGramPanchayat :: ", error);
-            _404(res, 'GramPanchayat not found');
+           return _404(res, 'GramPanchayat not found');
         });
     }
 
@@ -127,14 +127,14 @@ export class grampanchayat {
         getPanchayatListForDDL(params).then((result) => {
             if (result) {
                 response['data'] = result;
-                _200(res, 'Panchayat list found successfully', response)
+               return _200(res, 'Panchayat list found successfully', response)
             } else {
-                _400(res, 'Panchayat list not found')
+               return _400(res, 'Panchayat list not found')
             }
         }).catch((error) => {
 
             logger.error("getAllgrampanchayatDDL :: ", error);
-            _400(res, 'Panchayat list not found')
+           return _400(res, 'Panchayat list not found')
         });
     }
 }

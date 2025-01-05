@@ -6,6 +6,7 @@ import { _200, _201, _400, _404, _409 } from "../../utils/ApiResponse";
 
 export class gatgrampanchayat {
     static async addGatGramPanchayat(req, res, next) {
+        console.log("reqBody",req.body)
         let districtId = req?.body?.district_id;
         let talukaid = req?.body?.taluka_id;
         let grampanchayatId = req?.body?.grampanchayat_id;
@@ -13,6 +14,14 @@ export class gatgrampanchayat {
         let response = {};
         let currentTimestamp = Math.floor(new Date().getTime());
         let params = [districtId, talukaid, grampanchayatId, gatgramPanchayatName];
+        const isAnyValueEmpty = params.some(
+            (param) => param === null || param === undefined || param === ''
+        );
+
+        console.log("=====",isAnyValueEmpty);
+        if (isAnyValueEmpty) {
+            return _400(res, ' सर्व फील्ड आवश्यक आहेत')
+        } 
         addGatGramPanchayat(params).then((result) => {
             if (result === "exists") {
                 _409(res, gatgramPanchayatName + ' गटग्रामपंचायत आधीच अस्तित्वात आहे')
@@ -79,24 +88,24 @@ export class gatgrampanchayat {
         let params = [districtId, talukaId, grampanchayatId, gatgramPanchayatName, gatgrampanchayatId];
         getGatGramPanchayat([gatgrampanchayatId]).then((result) => {
             if (!result) {
-                return _404(res, 'गटग्रामपंचायत सापडली नाही');
+                return _400(res, 'गटग्रामपंचायत सापडली नाही');
             }
             updateGatGramPanchayat(params).then((result) => {
                 if (result === "exists") {
-                    _409(res, `${gatgramPanchayatName} गटग्रामपंचायत आधीच अस्तित्वात आहे. कृपया दुसरे गटग्रामपंचायत नाव निवडा`)
+                   return _409(res, `${gatgramPanchayatName} गटग्रामपंचायत आधीच अस्तित्वात आहे. कृपया दुसरे गटग्रामपंचायत नाव निवडा`)
                 } else if (result == null) {
-                    _400(res, 'गटग्रामपंचायत सापडली नाही')
+                   return _400(res, 'गटग्रामपंचायत सापडली नाही')
                 } else {
-                    _200(res, gatgramPanchayatName + ' गटग्रामपंचायत यशस्वीरित्या अद्यतनित केली');
+                    return _200(res, gatgramPanchayatName + ' गटग्रामपंचायत यशस्वीरित्या अद्यतनित केली');
                 }
             }).catch((err) => {
 
                 logger.error("updateGatGramPanchayat :: ", err)
-                _400(res, 'गटग्रामपंचायत अद्ययावत नाही')
+                return _400(res, 'गटग्रामपंचायत अद्ययावत नाही')
             });
         }).catch((error) => {
             logger.error("updateGatGramPanchayat :: ", error);
-            _404(res, 'गटग्रामपंचायत सापडली नाही');
+            return _404(res, 'गटग्रामपंचायत सापडली नाही');
         });
     }
 
@@ -109,17 +118,17 @@ export class gatgrampanchayat {
 
             deleteGatGramPanchayat([gatgrampanchayatId]).then((result) => {
                 if (result) {
-                    _200(res, 'GatGrampanchayat deleted successfully');
+                   return  _200(res, 'GatGrampanchayat deleted successfully');
                 } else {
-                    _400(res, 'GatGramPanchayat not deleted');
+                   return _400(res, 'GatGramPanchayat not deleted');
                 }
             }).catch((error) => {
                 logger.error("deleteGatGrampanchayat :: ", error);
-                _400(res, 'GatGramPanchayat not deleted');
+                return _400(res, 'GatGramPanchayat not deleted');
             });
         }).catch((error) => {
             logger.error("deleteGatGramPanchayat :: ", error);
-            _404(res, 'GatGramPanchayat not found');
+           return _404(res, 'GatGramPanchayat not found');
         });
     }
 
@@ -131,14 +140,14 @@ export class gatgrampanchayat {
         getGrampanchayatByTalukaId(params).then((result) => {
             if (result) {
                 response['data'] = result;
-                _200(res, 'Grampanchayat list found successfully', response)
+               return _200(res, 'Grampanchayat list found successfully', response)
             } else {
-                _400(res, 'Grampanchayat list not found')
+               return _400(res, 'Grampanchayat list not found')
             }
         }).catch((error) => {
 
             logger.error("getGrampanchayatList :: ", error);
-            _400(res, 'Grampanchayat list not found')
+           return  _400(res, 'Grampanchayat list not found')
         });
     }
     static async getGatGrampanchayatByPanchayatId(req: any, res: any, next: any) {
@@ -149,14 +158,14 @@ export class gatgrampanchayat {
         getGatGrampanchayatByPanchayatId(params).then((result) => {
             if (result) {
                 response['data'] = result;
-                _200(res, 'GatGrampanchayat list found successfully', response)
+               return _200(res, 'GatGrampanchayat list found successfully', response)
             } else {
-                _400(res, 'GatGrampanchayat list not found')
+               return _400(res, 'GatGrampanchayat list not found')
             }
         }).catch((error) => {
 
             logger.error("getGatGrampanchayatList :: ", error);
-            _400(res, 'GatGrampanchayat list not found')
+           return _400(res, 'GatGrampanchayat list not found')
         });
     }
 }
