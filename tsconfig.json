@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
+    "types": ["node", "express", "express-fileupload"],
     "target": "es6",
     "module": "commonjs",
-    "outDir": "dist",
+    "outDir": "./dist",
+    "rootDir": "./src",
     "sourceMap": false,
     "declaration": true,
     "lib": [
@@ -12,6 +14,10 @@
       "dom"
     ]
   },
+  "baseUrl": ".",
+    "paths": {
+      "@types/express-fileupload": ["node_modules/@types/express-fileupload"]
+    },
   "files": [
     "./node_modules/@types/node/index.d.ts"
   ],

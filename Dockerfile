@@ -1,22 +1,26 @@
+# Use the official Node.js 20 image
+FROM node:20
 
-
-FROM node:16.17
-
+# Set the working directory to /app
 WORKDIR /app
 
+# Copy package.json and package-lock.json first to install dependencies
 COPY package*.json ./
 
+# Install project dependencies
+RUN npm install
+
+# Copy the rest of the application code
 COPY . .
 
-# RUN NODE_ENV=dev
+# Install TypeScript as a dev dependency (if not already in package.json)
+RUN npm install --save-dev typescript
 
-# RUN npm audit fix --force
+# Build the TypeScript code (compile to dist folder)
+RUN npx tsc
 
-# RUN npm run build
-RUN npm install -g ts-node nodemon
-RUN npm install
-RUN npm install typescript
-
+# Expose port 4444
 EXPOSE 4444
 
-CMD ["ts-node", "src/app.ts"] 
+# Command to run your app using Node.js
+CMD ["node", "dist/app.js"]

@@ -36,7 +36,7 @@ export class AuthController {
                 response['data'] = { token: token, username: userDetails.user_id };
                 return _200(res, 'Authentication Successfully', response);
             } else {
-                _401(res, 'Authentication Failed')
+                return _401(res, 'Authentication Failed')
             }
         } catch (err) {
             return _400(res, 'Authentication Failed');
