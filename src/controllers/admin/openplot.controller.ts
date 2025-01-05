@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
-import { addOpenPlotInfo, getOpenPlotDetailsById, getOpenPlotInfoList, getOpenPlotRecordsCount, softDeleteOpenPlotInfo, updateOpenPlotInfo } from "../../services/admin/openplot.service";
+import { addOpenPlotInfo, getOpenPlotDetailsById, getOpenPlotInfoList, getOpenPlotRecordsCount, getPrakarListForDDL, softDeleteOpenPlotInfo, updateOpenPlotInfo } from "../../services/admin/openplot.service";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
 import { Utils } from "../../utils/util";
 
 export class OpenPlotController {
     static async createOpenPlotInfo(req: Request, res: Response) {
+        console.log("console", req.body)
         const validationError = Utils.validateRequestBody(req.body, ["taluka_id", "panchayat_id", "gatgrampanchayat_id", "prakar_id", "annualcost_name", "levyrate_name", "district_id"]); // Add required fields here
         if (validationError) {
             return _400(res, validationError);
@@ -60,7 +61,8 @@ export class OpenPlotController {
     static async getOpenPlotInfoList(req: Request, res: Response) {
         try {
             let page_number: number = req.body.page_number ? Number(req.body.page_number) : 1;
-            const members: any = await getOpenPlotInfoList(page_number);
+            let search: string = req.body.search_text ? req.body.search_text : "";
+            const members: any = await getOpenPlotInfoList(page_number, search);
             let totalRecords = await getOpenPlotRecordsCount();
             return _200(res, "OpenPlots fetched successfully", { status: 200, data: members, totalRecords });
         } catch (error) {
@@ -92,5 +94,23 @@ export class OpenPlotController {
             logger.error("Error deleting OpenPlot", error);
             return _400(res, "Error deleting OpenPlot");
         }
+    }
+
+    static async getAllPrakarDDL(req: any, res: any, next: any) {
+        let response = {};
+        let params = [];
+        // console.log("Test",params);
+        getPrakarListForDDL(params).then((result) => {
+            if (result) {
+                response['data'] = result;
+                _200(res, 'Prakar list found successfully', response)
+            } else {
+                _400(res, 'Prakar list not found')
+            }
+        }).catch((error) => {
+
+            logger.error("getAllPrakarDDL :: ", error);
+            _400(res, 'Prakar list not found')
+        });
     }
 }
