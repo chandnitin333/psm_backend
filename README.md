@@ -46,3 +46,9 @@ docker run -d -p 4444:80 backend
 
 docker-compose down -v
 docker-compose up --build
+
+
+
+docker-compose build
+
+docker-compose up --build
