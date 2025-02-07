@@ -1,9 +1,6 @@
-import { ProdEnvironment } from "./prod.env";
-import { DevEnvironment } from "./dev.env";
 import { ENV_VAR } from "../constants/constant";
-
-const config = require("../config/eganeetConfig.json");
-
+import { DevEnvironment } from "./dev.env";
+import { ProdEnvironment } from "./prod.env";
 
 
 export interface Environment {
