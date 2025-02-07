@@ -59,7 +59,7 @@ export class district {
     static async getDistrictList(req, res, next) {
         let response = {};
         let page = parseInt(req.body.page_number) || 1;
-        let limit = req.body.limit || PAGINATION.LIMIT;
+        let limit = PAGINATION.LIMIT;
         let offset = (page - 1) * limit;
         let searchText = req.body?.searchText || '';
         let resultData = await getDistrictCount();
