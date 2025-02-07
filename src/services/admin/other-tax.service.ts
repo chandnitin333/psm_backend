@@ -30,6 +30,33 @@ export const updateOtherTax = async (tax: any) => {
     }
 };
 
+export const getOtherTaxListByDistrict = async (offset: number, search: string, district_id: number) => {
+    try {
+
+        let query = 'SELECT ot.*, d.DISTRICT_NAME, t.TALUKA_NAME, p.PANCHAYAT_NAME FROM createothertax ot LEFT JOIN district d ON ot.DISTRICT_ID = d.DISTRICT_ID LEFT JOIN taluka t ON ot.TALUKA_ID = t.TALUKA_ID LEFT JOIN panchayat p ON ot.PANCHAYAT_ID = p.PANCHAYAT_ID WHERE ot. DELETED_AT IS NULL';
+
+        const params: any[] = [];
+
+        if (search) {
+            query += ' AND (LOWER(d.DISTRICT_NAME) LIKE LOWER(?) OR LOWER(t.TALUKA_NAME) LIKE LOWER(?) OR LOWER(p.PANCHAYAT_NAME) LIKE LOWER(?))';
+            params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+        }
+       
+        if (district_id) {
+            query += ' AND ot.DISTRICT_ID = ?';
+            params.push(district_id);
+        }
+        query += ' ORDER BY ot.CREATEOTHERTAX_ID DESC LIMIT ? OFFSET ?';
+        params.push(PAGINATION.LIMIT, PAGINATION.LIMIT * offset);
+
+        const result = await executeQuery(query, params);
+        return result;
+    } catch (err) {
+        logger.error('Error fetching tax list', err);
+        throw err;
+    }
+};
+
 export const getOtherTaxList = async (offset: number, search: string, panchayat_id: number) => {
     try {
 
@@ -45,6 +72,7 @@ export const getOtherTaxList = async (offset: number, search: string, panchayat_
             query += ' AND ot.PANCHAYAT_ID = ?';
             params.push(panchayat_id);
         }
+       
         query += ' ORDER BY ot.CREATEOTHERTAX_ID DESC LIMIT ? OFFSET ?';
         params.push(PAGINATION.LIMIT, PAGINATION.LIMIT * offset);
 
