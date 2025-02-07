@@ -175,6 +175,7 @@ export class adminRoutes {
         // Other Tax
         this.router.post('/add-other-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.addOtherTax);
         this.router.post('/get-other-tax-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.getAllOtherTax);
+        this.router.post('/get-other-tax-list-by-district-id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.getAllOtherTaxListByDistrictWise);
 
         // Annual tax
         this.router.post('/add-annual-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.addAnnualTax);
