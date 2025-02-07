@@ -23,12 +23,3 @@ export function getEnvironmentVariable() {
     return DevEnvironment;
 }
 
-export function configData() {
-    let configList: object
-    if (process.env.NODE_ENV == 'production') {
-        return configList = config[ENV_VAR.prod]
-    }
-    console.log(configList)
-    return configList = config[ENV_VAR.dev]
-
-}

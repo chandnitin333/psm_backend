@@ -1,8 +1,7 @@
 import * as Bcrypt from "bcrypt";
-import { configData } from '../environments/env';
-import { httpService } from "../helper/httpService";
-import { logger } from "../logger/Logger";
+
 import { executeQuery } from "../config/db/db";
+import { logger } from "../logger/Logger";
 let dateTime = require('node-datetime');
 const sendmail = require('sendmail')();
 
@@ -126,17 +125,7 @@ export class Utils {
 
     static async sendSMS(mobile: number, message: string) {
         try {
-            let baseUrl = configData().sms.url
-            let userid = configData().sms.userid
-            let password = configData().sms.password
-            let sender = configData().sms.sender
-            let peid = configData().sms.peid
-            let tpid = configData().sms.tpid
-            let apiUrl = `${baseUrl}?userid=${userid}&password=${password}&sender=${sender}&mobileno=${mobile}&msg=${message}&msgtype=0&peid=${peid}&tpid=${tpid}`;
-            let status = await httpService.axiosGetCall(apiUrl)
-            console.info("sendSMS Status::", status)
-            logger.info("sendSMS Status::", status)
-            return status
+
         } catch (err) {
             logger.error("sendSMS Error", err)
             throw new Error(err.message)
@@ -184,9 +173,9 @@ export class Utils {
         return null;
     };
 
-     static getTotalCount = (params:object)=>{
+    static getTotalCount = (params: object) => {
         try {
-            let sql = `SELECT COUNT(*) AS total_count from `+params[0]+` WHERE  DELETED_AT IS NULL`;
+            let sql = `SELECT COUNT(*) AS total_count from ` + params[0] + ` WHERE  DELETED_AT IS NULL`;
             return executeQuery(sql, []).then(result => {
                 return (result) ? result[0] : null;
             }).catch(error => {
@@ -199,27 +188,27 @@ export class Utils {
     }
 
     static getCurrentDateTimeWithAMPM(): { [key: string]: string } {
-    const currentDate = new Date();
-    
-    const year = currentDate.getFullYear();
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-    const day = currentDate.getDate().toString().padStart(2, '0');
+        const currentDate = new Date();
 
-    let hours = currentDate.getHours();
-    const minutes = currentDate.getMinutes().toString().padStart(2, '0');
-    const seconds = currentDate.getSeconds().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
+        const year = currentDate.getFullYear();
+        const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+        const day = currentDate.getDate().toString().padStart(2, '0');
 
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    const hoursStr = hours.toString().padStart(2, '0');
-    
+        let hours = currentDate.getHours();
+        const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+        const seconds = currentDate.getSeconds().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
 
-    let formattedDateTime = `${month}/${day}/${year} ${hoursStr}:${minutes}:${seconds} ${ampm}`;
-    let onlyDate = `${month}/${day}/${year}`;
-    
-    return {simpleDate:onlyDate, dateWithAMPM:formattedDateTime}
-}
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        const hoursStr = hours.toString().padStart(2, '0');
+
+
+        let formattedDateTime = `${month}/${day}/${year} ${hoursStr}:${minutes}:${seconds} ${ampm}`;
+        let onlyDate = `${month}/${day}/${year}`;
+
+        return { simpleDate: onlyDate, dateWithAMPM: formattedDateTime }
+    }
 
 }
 
