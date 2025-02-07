@@ -8,6 +8,8 @@ import { Malmatta } from "../controllers/admin/malmatta.controller";
 import { taluka } from "../controllers/admin/taluka.controller";
 import { AuthController } from "../controllers/main/auth.controller";
 import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
+import { CustomerController } from "../controllers/main/customer.controller";
+import { FerFarYadi } from "../controllers/main/ferfar-yadi.controller";
 
 export class psmRoutes {
     public router: Router;
@@ -23,7 +25,9 @@ export class psmRoutes {
 
     getRoutes() {
         this.router.get('/list', GlobalMiddleware.checkError, district.getDistrictList);
+        this.router.get('/get-malmatta-nodni-user-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.getCustomerById);
 
+        this.router.get('/get-all-year-list', GlobalMiddleware.checkError, FerFarYadi.getYearList);
 
 
     }
@@ -45,14 +49,23 @@ export class psmRoutes {
         this.router.post('/get-user-activity', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getActivityCount);
         this.router.post('/get-member-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getMemberDetails);
 
+        this.router.post('/add-new-customer-in-malmatta-nodni',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.createCustomerInfo);
+        this.router.post('/get-annu-kramank-in-malmatta-nodni',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.getAnnuKramank);
+        this.router.post('/get-malmatta-nodni-list-info',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.getMalmattaNodniInfoList);
+        this.router.post('/insert-update-sillak-joda',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.createUpdateSillakJoda);
+
+        this.router.post('/add-new-ferfar-yadi',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.createNewFerfarYadiInfo);
+        this.router.post('/get-annu-kramank-in-ferfar-yadi',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.getAnnuKramankFerfarYadi);
 
     }
 
     deleteRoute() {
         this.router.delete('/delete-district', GlobalMiddleware.checkError, district.deleteDistrict);
+        this.router.delete('/delete-malmatta-nodni-info/:id',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.deleteMalmattaNodniInfo );
     }
     putRoute() {
         this.router.put('/update-district', GlobalMiddleware.checkError, district.updateDistrict);
+        this.router.put('/update-malmatta-nodni',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.updateMalmattaNodniInfo);
     }
 }
 
