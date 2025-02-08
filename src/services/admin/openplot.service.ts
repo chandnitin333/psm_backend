@@ -60,21 +60,21 @@ export async function getOpenPlotInfoList(page: number = 1, search: string = "")
         const offset = (page - 1) * limit;
         let query = `
             SELECT openplot.OPENPLOT_ID,openplot.ANNUALCOST_NAME, openplot.LEVYRATE_NAME,openplot.DISTRICT_ID, openplot.TALUKA_ID,openplot.PANCHAYAT_ID,openplot.GATGRAMPANCHAYAT_ID, district.DISTRICT_NAME, taluka.TALUKA_NAME, panchayat.PANCHAYAT_NAME, gatgrampanchayat.GATGRAMPANCHAYAT_NAME, prakar.PRAKAR_NAME
-             FROM openplot as openplot
+             FROM openplot
             INNER JOIN district ON openplot.DISTRICT_ID = district.DISTRICT_ID
             INNER JOIN taluka ON openplot.TALUKA_ID = taluka.TALUKA_ID
             INNER JOIN panchayat ON openplot.PANCHAYAT_ID = panchayat.PANCHAYAT_ID
             INNER JOIN gatgrampanchayat ON openplot.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID
             INNER JOIN prakar ON openplot.PRAKAR_ID = prakar.PRAKAR_ID
-            WHERE openplot.DELETED_AT IS NULL ORDER BY openplot.OPENPLOT_ID DESC
+            WHERE openplot.DELETED_AT IS NULL
         `;
         const values: any[] = [];
         if (search) {
-            query += ` AND LOWER(District.DISTRICT_NAME) LIKE LOWER(?) OR LOWER(Taluka.TALUKA_NAME) LIKE LOWER(?) OR LOWER( Panchayat.PANCHAYAT_NAME) LIKE LOWER(?) OR LOWER(GatGramPanchayat.GATGRAMPANCHAYAT_NAME) LIKE LOWER(?) OR LOWER(Prakar.PRAKAR_NAME) LIKE LOWER(?) OR LOWER(OpenPlot.ANNUALCOST_NAME) LIKE LOWER(?) OR LOWER(OpenPlot.LEVYRATE_NAME) LIKE LOWER(?)`;
-            values.push(`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`);
+            query += ` AND (LOWER(district.DISTRICT_NAME) LIKE LOWER(?) OR LOWER(taluka.TALUKA_NAME) LIKE LOWER(?) OR LOWER(panchayat.PANCHAYAT_NAME) LIKE LOWER(?) OR LOWER(gatgrampanchayat.GATGRAMPANCHAYAT_NAME) LIKE LOWER(?) OR LOWER(prakar.PRAKAR_NAME) LIKE LOWER(?) OR LOWER(openplot.ANNUALCOST_NAME) LIKE LOWER(?) OR LOWER(openplot.LEVYRATE_NAME) LIKE LOWER(?))`;
+            values.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
         }
 
-        query += ` ORDER BY OpenPlot.OPENPLOT_ID DESC LIMIT ${limit} OFFSET ${offset}`;
+        query += ` ORDER BY openplot.OPENPLOT_ID DESC LIMIT ${limit} OFFSET ${offset}`;
         console.log(query)
         const results = await executeQuery(query, values);
         return results as any[];
