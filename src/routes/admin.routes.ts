@@ -351,6 +351,7 @@ export class adminRoutes {
 
         // Other Tax
         this.router.put('/update-other-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.updateOtherTaxInfo);
+        this.router.put('/update-other-tax-new', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, OtherTax.updateOtherTaxNewInfo);
 
         // Annual Tax
         this.router.put('/update-annual-tax', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AnnualTax.updateAnnualTaxInfo);

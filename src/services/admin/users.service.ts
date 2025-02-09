@@ -301,11 +301,11 @@ export const getUsersDistrict = async (user_type: string) => {
                 JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID
                WHERE  en.DELETED_AT IS NULL GROUP BY en.DISTRICT_ID`, []);
         }else if(user_type == "other_tax") {
-            return await executeQuery(`SELECT  district.DISTRICT_ID, district.DISTRICT_NAME,pan.PANCHAYAT_NAME, tal.TALUKA_NAME FROM createothertax en
+            return await executeQuery(`SELECT  district.DISTRICT_ID, district.DISTRICT_NAME,tal.TALUKA_ID, pan.PANCHAYAT_NAME,pan.PANCHAYAT_ID, tal.TALUKA_NAME FROM createothertax en
                 JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID
                 JOIN taluka tal ON en.TALUKA_ID=tal.TALUKA_ID
                 JOIN panchayat pan ON en.PANCHAYAT_ID= pan.PANCHAYAT_ID
-               WHERE  en.DELETED_AT IS NULL ORDER BY en.DISTRICT_ID`, []);
+               WHERE  en.DELETED_AT IS NULL ORDER BY en.CREATEOTHERTAX_ID DESC`, []);
         }
     } catch (err) {
         logger.error('Error getUsersDistrict::', err);
