@@ -120,3 +120,14 @@ export const getTotalOtherTaxCount = async (search = '') => {
     }
 };
 
+
+export const updateOtherTaxNew = async (tax: any) => {
+    try {
+        
+        await executeQuery('UPDATE createothertax SET TAXRATE1=?,TAXRATE2=?, TAXRATE3=?, TAXRATE4=?, TAXRATE5=? WHERE CREATEOTHERTAX_ID = ?', [tax.taxrate1, tax.taxrate2, tax.taxrate3, tax.taxrate4, tax.taxrate5, tax.othertax_id]);
+        logger.info('Other Tax updated successfully');
+    } catch (err) {
+        logger.error('Error updating Tax', err);
+        throw err;
+    }
+};

@@ -2,7 +2,7 @@
 import { logger } from "../../logger/Logger";
 import { Request, response, Response } from "express";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
-import { createOtherTax, getOtherTaxById, getOtherTaxList, getOtherTaxListByDistrict, getTotalOtherTaxCount, softDeleteOtherTax, updateOtherTax } from "../../services/admin/other-tax.service";
+import { createOtherTax, getOtherTaxById, getOtherTaxList, getOtherTaxListByDistrict, getTotalOtherTaxCount, softDeleteOtherTax, updateOtherTax, updateOtherTaxNew } from "../../services/admin/other-tax.service";
 
 export class OtherTax {
     static async addOtherTax(req: Request, res: Response) {
@@ -108,6 +108,25 @@ export class OtherTax {
             } else {
                 return _400(res, "Other Tax not deleted,Something went wrong.");
             }
+        } catch (error) {
+            logger.error(error);
+            return _400(res, error.message);
+        }
+    }
+
+    static async updateOtherTaxNewInfo(req: Request, res: Response) {
+        try {
+            const { othertax_id } = req.body;
+            if (!othertax_id) {
+                return _400(res, "Other Tax ID is required");
+            }
+            let isExists = await getOtherTaxById(othertax_id);
+            if (!isExists) {
+                return _404(res, "Other Tax details not found.");
+            }
+            
+            const result = await updateOtherTaxNew(req.body);
+            return _200(res, "Other Tax updated successfully", result);
         } catch (error) {
             logger.error(error);
             return _400(res, error.message);
