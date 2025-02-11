@@ -53,6 +53,7 @@ export class psmRoutes {
         this.router.post('/get-annu-kramank-in-malmatta-nodni',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.getAnnuKramank);
         this.router.post('/get-malmatta-nodni-list-info',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.getMalmattaNodniInfoList);
         this.router.post('/insert-update-sillak-joda',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.createUpdateSillakJoda);
+        this.router.post('/verify-user-for-permission', GlobalMiddleware.checkError, CustomerController.verifyUser);
 
         this.router.post('/add-new-ferfar-yadi',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.createNewFerfarYadiInfo);
         this.router.post('/get-annu-kramank-in-ferfar-yadi',GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.getAnnuKramankFerfarYadi);
