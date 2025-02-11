@@ -3,6 +3,7 @@ import { Utils } from "../../utils/util";
 import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
 import { addNewCustomerInNodniFormInfo, getAnnuKramank, getCustomerDetailsById, getMalmattaNotdniList, insertUpdateSillakJoda, softDeleteMalmattaNodniInfo, updateMalmattaNodniInfo } from "../../services/main/customer.service";
+import { signIn } from "../../services/admin/users.service";
 
 
 // मालमत्ता धारकाची यादी (Customer List) Module API
@@ -109,6 +110,29 @@ export class CustomerController {
         } catch (error) {
             logger.error("Error deleting मालमत्ता धारकाची यादी", error);
             return _400(res, "Error deleting मालमत्ता धारकाची यादी");
+        }
+    }
+
+    static async verifyUser(req: Request, res: Response) {
+        try {
+            let response: any = {};
+
+            const { user_type, district_id, taluka_id, panchayat_id, username, password } = req.body;
+            const result: any = await signIn(user_type as string, Number(district_id), Number(taluka_id), Number(panchayat_id), username, password);
+
+            if (result?.data?.length === 0) {
+                return _400(res, "Invalid username or password");
+            }
+
+            if (result?.data?.length > 0) {      
+                response['data'] = {"is_success": true};
+                return _200(res, "User logged in successfully", response);
+            }
+
+
+        } catch (error) {
+            logger.error(error);
+            return _400(res, error.message);
         }
     }
 }
