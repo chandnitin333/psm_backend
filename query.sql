@@ -82,18 +82,18 @@ ADD COLUMN DELETED_AT DATETIME DEFAULT NULL;
 
 
 
-CREATE PROCEDURE multipleinsertdata (
+CREATE DEFINER=`root`@`localhost` PROCEDURE `psm_lts`.`multipleinsertdata`(
     IN anu_kramank VARCHAR(100),
     IN vard_number VARCHAR(100),
     IN ramdom TEXT,
     IN userid INT,
     IN rno INT,
-    IN tokens TEXT,
-    OUT newuserid INT
+    IN tokens TEXT
 )
 BEGIN
     DECLARE local_newuserid INT DEFAULT NULL;
 
+    -- Get the NEWUSER_ID from the NEWUSER table
     SELECT NEWUSER_ID INTO local_newuserid
     FROM NEWUSER
     WHERE ANNU_KRAMANK = anu_kramank 
@@ -103,9 +103,10 @@ BEGIN
       AND TOKENS = tokens 
       AND RANDOMNUMBER = ramdom;
 
-    SET newuserid = local_newuserid;
+    -- If a valid NEWUSER_ID is found, proceed with updates and insertions
     IF local_newuserid IS NOT NULL AND local_newuserid <> 0 THEN
     
+        -- Update the TEMP tables with the new NEWUSER_ID
         UPDATE TAXATIONLAND_Temp
         SET NEWUSER_ID = local_newuserid
         WHERE RANDOMNUMBER = ramdom 
@@ -115,7 +116,6 @@ BEGIN
           AND ANNU_KRAMANK = anu_kramank 
           AND VARD_NUMBER = vard_number;
 
-     
         UPDATE constructiontax_temp
         SET NEWUSER_ID = local_newuserid
         WHERE RANDOMNUMBER = ramdom 
@@ -125,7 +125,6 @@ BEGIN
           AND ANNU_KRAMANK = anu_kramank 
           AND VARD_NUMBER = vard_number;
 
-       
         UPDATE TAXPAYERS_Temp
         SET NEWUSER_ID = local_newuserid
         WHERE RANDOMNUMBER = ramdom 
@@ -135,7 +134,7 @@ BEGIN
           AND ANNU_KRAMANK = anu_kramank 
           AND VARD_NUMBER = vard_number;
 
-       
+        -- Insert into the final table TAXATIONLAND
         INSERT INTO TAXATIONLAND (
             NEWUSER_ID, USER_ID, EXTRA, TAXPAYERSSS, TAX1000, VARD_NUMBER, ANNU_KRAMANK,
             RNO, MILKAT_VAPAR_ID, MILKAT_VAPAR_ID1, VAPARACHE_PRAKAR, GATGRAMPANCHAYAT_ID, OPENPLOT_ID,
@@ -154,7 +153,7 @@ BEGIN
           AND ANNU_KRAMANK = anu_kramank 
           AND VARD_NUMBER = vard_number;
 
-       
+        -- Delete from the TEMP tables after insertion
         DELETE FROM TAXATIONLAND_Temp
         WHERE RANDOMNUMBER = ramdom 
           AND USER_ID = userid 
@@ -179,10 +178,16 @@ BEGIN
           AND ANNU_KRAMANK = anu_kramank 
           AND VARD_NUMBER = vard_number;
 
-        SELECT 'successfullydeleted' AS deletes;
+        -- Return a success message
+        SELECT 'successfullydeleted' AS deletes, local_newuserid AS newuserid;
+
+    ELSE
+        -- In case no valid NEWUSER_ID is found, return an error message
+        SELECT 'No matching records found' AS error;
     END IF;
    
-END
+END;
+
 
 
 
