@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
 import { signIn } from "../../services/admin/users.service";
-import { addNewCustomerInNodniFormInfo, getAnnuKramank, getCustomerDetailsById, getMalmattaNotdniList, getNewUserDetails, insertUpdateSillakJoda, softDeleteMalmattaNodniInfo, updateMalmattaNodniInfo } from "../../services/main/customer.service";
+import { addNewCustomerInNodniFormInfo, getAnnuKramank, getConstructionTaxDetails, getCustomerDetailsById, getEntriesDetails, getMalmattaNotdniList, getNewUserDetails, getTaxPayerDetails, gettaxationLandDetails, insertUpdateSillakJoda, softDeleteMalmattaNodniInfo, updateMalmattaNodniInfo } from "../../services/main/customer.service";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
 import { Utils } from "../../utils/util";
 import * as jwt from 'jsonwebtoken';
@@ -150,13 +150,41 @@ export class CustomerController {
             const nextYear = currentYear + 1;
             const year_3 = currentYear + 3;
             const year_4 = currentYear + 4;
+            const years = [
+                {
+                    "currentYear": currentYear,
+                    "previousYear": previousYear,
+                    "nextYear": nextYear,
+                    "year_3": year_3,
+                    "year_4": year_4
+
+                }
+            ];
 
             const newUserDataDB: any = await getNewUserDetails(Number(new_user_id),Number(decoded_user['userId']));
+            
+            const entriesParam = {
+                'district_id': Number(decoded_user['DISTRICT_ID']),
+                'taluka_id': Number(decoded_user['TALUKA_ID']),
+                'panchayat_id': Number(decoded_user['PANCHAYAT_ID']),
+                'gatgrampanchayat_id': Number(decoded_user['GATGRAMPANCHAYAT_id']),
+                'user_id': Number(decoded_user['userId'])
+            }
+            const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
 
-            console.log(newUserDataDB);
+            const taxationlandDB =  await gettaxationLandDetails(Number(decoded_user['userId']), Number(new_user_id));
+            const constructionTaxDetailsDB =  await getConstructionTaxDetails(Number(decoded_user['userId']), Number(new_user_id));
+            const taxPayerDB =  await getTaxPayerDetails(Number(decoded_user['userId']), Number(new_user_id));
+
+            // console.log(taxationlandDB);
             // Use the decoded token as needed
             const all_data = {
                 newUserDataDB: newUserDataDB,
+                entriesDetailsDB: entriesDetailsDB,
+                taxationlandDB: taxationlandDB,
+                constructionTaxDetailsDB: constructionTaxDetailsDB,
+                taxPayerDB: taxPayerDB,
+                years: years
             }
            
 

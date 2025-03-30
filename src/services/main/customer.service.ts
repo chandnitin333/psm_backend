@@ -208,3 +208,118 @@ export async function getNewUserDetails(new_user_id: number, user_id: number): P
         throw error;
     }
 }
+
+export async function getEntriesDetails(data: any): Promise<any | null> {
+    try {
+        const query = `
+            SELECT A.*, 
+                D.DISTRICT_NAME, 
+                T.TALUKA_NAME, 
+                P.PANCHAYAT_NAME 
+            FROM entries A
+            JOIN district D ON D.DISTRICT_ID = A.DISTRICT_ID
+            JOIN taluka T ON T.TALUKA_ID = A.TALUKA_ID
+            JOIN panchayat P ON P.PANCHAYAT_ID = A.PANCHAYAT_ID
+            WHERE A.DISTRICT_ID = ? 
+            AND A.TALUKA_ID = ? 
+            AND A.PANCHAYAT_ID = ? 
+            AND A.gatgrampanchayat_id = ? 
+            AND A.USER_ID = ?
+            AND A.DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [data.district_id, data.taluka_id, data.panchayat_id, data.gatgrampanchayat_id, data.user_id]);
+        if (results.length > 0) {
+            return results as any;
+            //  return (results) ? { 'data': results } : [];
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching new user details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function gettaxationLandDetails(user_id: number, new_user_id: number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT A.*, 
+                M.MILKAT_VAPAR_NAME, 
+                P.PRAKAR_NAME, 
+                G.GATGRAMPANCHAYAT_NAME, 
+                T.VAPARACHE_PRAKAR 
+            FROM taxationland A
+            LEFT JOIN milkat_vapar M ON M.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID
+            LEFT JOIN openplot O ON O.OPENPLOT_ID = A.OPENPLOT_ID
+            LEFT JOIN prakar P ON P.PRAKAR_ID = O.PRAKAR_ID
+            LEFT JOIN gatgrampanchayat G ON G.GATGRAMPANCHAYAT_ID = A.GATGRAMPANCHAYAT_ID
+            LEFT JOIN taxationland T ON T.TAXATIONLAND_ID = A.TAXATIONLAND_ID
+            WHERE A.user_id = ? AND A.newuser_id = ? AND A.DELETED_AT IS NULL
+            LIMIT 3
+        `;
+        const results: any = await executeQuery(query, [user_id, new_user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching transaction land details: ${error.message}`);
+        throw error;
+    }
+}
+export async function getConstructionTaxDetails(user_id: number, new_user_id: number): Promise<any | null> {
+    try {
+        const query = `
+                SELECT A.*, 
+                    M.MILKAT_VAPAR_NAME, 
+                    MAL.DESCRIPTION_NAME, 
+                    C.VAPARACHE_PRAKAR, 
+                    F.FLOOR_NAME 
+                FROM constructiontax A
+                LEFT JOIN milkat_vapar M ON M.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID
+                LEFT JOIN malmatta MAL ON MAL.MALMATTA_ID = A.MALMATTA_ID
+                LEFT JOIN constructiontax C ON C.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID
+                LEFT JOIN floor F ON F.FLOOR_ID = A.FLOOR_ID
+                WHERE A.newuser_id = ? AND A.user_id = ? AND A.DELETED_AT IS NULL
+                ORDER BY A.CONSTRUCTIONTAX_ID ASC 
+                LIMIT 5;
+
+        `;
+        const results: any = await executeQuery(query, [new_user_id,user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching construction tax details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getTaxPayerDetails(user_id: number, new_user_id: number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT A.*, 
+                M.MILKAT_VAPAR_NAME, 
+                MAL.DESCRIPTION_NAME, 
+                T.VAPARACHE_PRAKAR, 
+                MANO.MANORAMASTER_NAME  
+            FROM taxpayers A
+            LEFT JOIN milkat_vapar M ON M.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID
+            LEFT JOIN malmatta MAL ON MAL.MALMATTA_ID = A.MALMATTA_ID
+            LEFT JOIN taxpayers T ON T.TAXPAYERS_ID = A.TAXPAYERS_ID
+            LEFT JOIN manoramaster MANO ON MANO.MANORAMASTER_ID = A.MANORAMASTER_ID
+            WHERE A.newuser_id = ? 
+            AND A.user_id = ? AND A.DELETED_AT IS NULL
+            ORDER BY A.TAXPAYERS_ID ASC 
+            LIMIT 3
+        `;
+        const results: any = await executeQuery(query, [new_user_id, user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching tax payer details: ${error.message}`);
+        throw error;
+    }
+}
