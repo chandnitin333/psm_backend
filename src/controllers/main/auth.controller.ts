@@ -44,6 +44,10 @@ export class AuthController {
                     PANCHAYAT_NAME: result?.data[0]?.PANCHAYAT_NAME,
                     GATGRAMPANCHAYAT_NAME: result?.data[0]?.GATGRAMPANCHAYAT_NAME,
                     FILE_NAME: result?.data[0]?.FILE_NAME,
+                    RNO: result?.data[0]?.RNO,
+                    RANDOM_NUMBER: result?.data[0]?.RandomNumber,
+                    TOKENS: result?.data[0]?.Tokens,
+
 
                 }
                 //encode  param any ecodeded

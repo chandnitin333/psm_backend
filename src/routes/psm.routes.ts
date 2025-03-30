@@ -26,6 +26,7 @@ export class psmRoutes {
     getRoutes() {
         this.router.get('/list', GlobalMiddleware.checkError, district.getDistrictList);
         this.router.get('/get-malmatta-nodni-user-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.getCustomerById);
+        this.router.get('/get-namuna-8-1/:new_user_id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.namuna_8_1);
 
         this.router.get('/get-all-year-list', GlobalMiddleware.checkError, FerFarYadi.getYearList);
 

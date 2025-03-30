@@ -811,14 +811,16 @@ export const signIn = async (
   try {
     if (user_type == "new_user") {
       let query =
-        "SELECT en.*, district.DISTRICT_NAME, taluka.TALUKA_NAME, panchayat.PANCHAYAT_NAME, gatgrampanchayat.GATGRAMPANCHAYAT_NAME, ds.FILE_NAME,ds.FILE_NAME, ds.R_PATH FROM entries en ";
+        "SELECT en.*, district.DISTRICT_NAME, taluka.TALUKA_NAME, panchayat.PANCHAYAT_NAME, gatgrampanchayat.GATGRAMPANCHAYAT_NAME, ds.FILE_NAME,ds.FILE_NAME, ds.R_PATH, nu.RNO,nu.RandomNumber,nu.Tokens FROM entries en ";
       query += "JOIN district ON en.DISTRICT_ID = district.DISTRICT_ID ";
       query += "JOIN taluka ON en.TALUKA_ID = taluka.TALUKA_ID ";
       query += "JOIN panchayat ON en.PANCHAYAT_ID = panchayat.PANCHAYAT_ID ";
       query +=
-        "JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID ";
+        "LEFT JOIN gatgrampanchayat ON en.GATGRAMPANCHAYAT_ID = gatgrampanchayat.GATGRAMPANCHAYAT_ID ";
       query +=
-        "JOIN uploaddatadashboard as ds ON en.PANCHAYAT_ID = ds.PANCHAYAT_ID ";
+        "LEFT JOIN uploaddatadashboard as ds ON en.PANCHAYAT_ID = ds.PANCHAYAT_ID ";
+      query += "LEFT JOIN newuser nu ON en.USER_ID = nu.USER_ID ";
+
       query += "WHERE en.DELETED_AT IS NULL";
 
       let params: any[] = [];

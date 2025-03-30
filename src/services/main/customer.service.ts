@@ -100,7 +100,7 @@ export async function insertUpdateSillakJoda(savakar: any): Promise<void> {
         console.log("if part", sillakJodaExist);
 
         if((sillakJodaExist as any[]).length > 0) {
-            const query = `UPDATE newusersavekar 
+            const query = `UPDATE newusersavekar
                         SET 
                             YEAR_ID = ?,
                             YEAR1_ID = ?,
@@ -114,7 +114,8 @@ export async function insertUpdateSillakJoda(savakar: any): Promise<void> {
                             ETAR_FEES = ?,
                             NOTICE_FEES = ?,
                             less5 = ?,
-                            plus5 = ?
+                            plus5 = ?,
+                            ANNU_KRAMANK=?
                         WHERE 
                             USER_ID = ? 
                             AND NEWUSER_ID = ? 
@@ -122,7 +123,7 @@ export async function insertUpdateSillakJoda(savakar: any): Promise<void> {
                             AND NEWUSERSAVEKAR_ID = ? 
                             AND vard_number = ?`;
                             // sillakJodaExist[0].NEWUSERSAVEKAR_ID
-            await executeQuery(query, [savakar.cmbyear, savakar.cmbyear1, savakar.kar_bhumikar, savakar.divabatti_kar, savakar.aarogya_rakshan_kar, savakar.safai_kar, savakar.samanya_pani_kar, savakar.vishesh_pani_kar, savakar.total, savakar.etar_fees, savakar.notice_fees, savakar.less5, savakar.plus5, savakar.user_id, savakar.newuser_id, savakar.years, sillakJodaExist[0].NEWUSERSAVEKAR_ID, savakar.ward_numbers]);
+            await executeQuery(query, [savakar.cmbyear, savakar.cmbyear1, savakar.kar_bhumikar, savakar.divabatti_kar, savakar.aarogya_rakshan_kar, savakar.safai_kar, savakar.samanya_pani_kar, savakar.vishesh_pani_kar, savakar.total, savakar.etar_fees, savakar.notice_fees, savakar.less5, savakar.plus5,savakar.annu_kramank, savakar.user_id, savakar.newuser_id, savakar.years, sillakJodaExist[0].NEWUSERSAVEKAR_ID, savakar.ward_numbers]);
             logger.info("sillak joda updated successfully");
         } else {
             console.log("savakar Kundan", savakar);
@@ -130,11 +131,11 @@ export async function insertUpdateSillakJoda(savakar: any): Promise<void> {
                 USER_ID, NEWUSER_ID, YEAR_ID, YEAR1_ID, HOMEUSER_NAME, vard_number, 
                 BHUMI_KAR, DIVA_BATTI_KAR, AAROGYA_RAKSHAN_KAR, SAFAI_KAR, 
                 SAMANYA_PANI_KAR, VISHESH_PANI_KAR, ETAR_FEES, NOTICE_FEES, 
-                TOTAL, tdate, ttime, RNO, less5, plus5
+                TOTAL, tdate, ttime, RNO, less5, plus5,ANNU_KRAMANK
             ) VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?,?
             )`;
-            await executeQuery(query, [savakar.user_id, savakar.newuser_id, savakar.cmbyear, savakar.cmbyear1, savakar.homeuser, savakar.ward_numbers, savakar.kar_bhumikar, savakar.divabatti_kar, savakar.aarogya_rakshan_kar, savakar.safai_kar, savakar.samanya_pani_kar, savakar.vishesh_pani_kar, savakar.etar_fees, savakar.notice_fees, savakar.total, savakar.rno, savakar.less5, savakar.plus5]);
+            await executeQuery(query, [savakar.user_id, savakar.newuser_id, savakar.cmbyear, savakar.cmbyear1, savakar.homeuser, savakar.ward_numbers, savakar.kar_bhumikar, savakar.divabatti_kar, savakar.aarogya_rakshan_kar, savakar.safai_kar, savakar.samanya_pani_kar, savakar.vishesh_pani_kar, savakar.etar_fees, savakar.notice_fees, savakar.total, savakar.rno, savakar.less5, savakar.plus5,savakar.annu_kramank]);
             //  await executeQuery(query, [...savakar]);
             logger.info("sillak joda added successfully");
         }
@@ -188,6 +189,22 @@ export async function softDeleteMalmattaNodniInfo(id: number): Promise<void> {
     }
     catch (error) {
         logger.error(`Error deleting malmatta nodani : ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getNewUserDetails(new_user_id: number, user_id: number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT * FROM newuser WHERE user_id = ? AND newuser_id = ? AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id, new_user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching new user details: ${error.message}`);
         throw error;
     }
 }

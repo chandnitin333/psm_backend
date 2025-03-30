@@ -1,9 +1,12 @@
-import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
-import { Utils } from "../../utils/util";
 import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
-import { addNewCustomerInNodniFormInfo, getAnnuKramank, getCustomerDetailsById, getMalmattaNotdniList, insertUpdateSillakJoda, softDeleteMalmattaNodniInfo, updateMalmattaNodniInfo } from "../../services/main/customer.service";
 import { signIn } from "../../services/admin/users.service";
+import { addNewCustomerInNodniFormInfo, getAnnuKramank, getCustomerDetailsById, getMalmattaNotdniList, getNewUserDetails, insertUpdateSillakJoda, softDeleteMalmattaNodniInfo, updateMalmattaNodniInfo } from "../../services/main/customer.service";
+import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
+import { Utils } from "../../utils/util";
+import * as jwt from 'jsonwebtoken';
+import { getEnvironmentVariable } from "../../environments/env";
+// import { getEnvironmentVariable } from "../environments/env";
 
 
 // मालमत्ता धारकाची यादी (Customer List) Module API
@@ -135,5 +138,43 @@ export class CustomerController {
             return _400(res, error.message);
         }
     }
+    static async namuna_8_1(req: Request, res: Response) {
+        try {
+            const new_user_id = Number(req.params.new_user_id);
+            const authHeader = req.headers.authorization;
+            const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
+            const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+            // console.log(decoded_user['userId']);
+            const currentYear = new Date().getFullYear();
+            const previousYear = currentYear - 1;
+            const nextYear = currentYear + 1;
+            const year_3 = currentYear + 3;
+            const year_4 = currentYear + 4;
+
+            const newUserDataDB: any = await getNewUserDetails(Number(new_user_id),Number(decoded_user['userId']));
+
+            console.log(newUserDataDB);
+            // Use the decoded token as needed
+            const all_data = {
+                newUserDataDB: newUserDataDB,
+            }
+           
+
+            // console.log("token", token);
+            // console.log("authHeader", authHeader);
+            // if (!new_user_id) {
+            //     return _400(res, "Invalid or missing New User ID");
+            // }
+            // const customers: any = await getCustomerDetailsById(Number(new_user_id));
+            // if (!customers) {
+            //     return _404(res, "customer details not found");
+            // }
+            return _200(res, "Customer details fetched successfully", { status: 200, data: all_data });
+        } catch (error) {
+            logger.error(error);
+            return _400(res, error.message);
+        }
+    }
 }
+
 
