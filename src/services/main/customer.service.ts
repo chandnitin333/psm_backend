@@ -1,3 +1,4 @@
+import exp = require("constants");
 import { executeQuery } from "../../config/db/db";
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
@@ -196,7 +197,7 @@ export async function softDeleteMalmattaNodniInfo(id: number): Promise<void> {
 export async function getNewUserDetails(new_user_id: number, user_id: number): Promise<any | null> {
     try {
         const query = `
-            SELECT * FROM newuser WHERE user_id = ? AND newuser_id = ? AND DELETED_AT IS NULL
+            SELECT * FROM newuser WHERE user_id = ? AND NEWUSER_ID = ? AND DELETED_AT IS NULL
         `;
         const results: any = await executeQuery(query, [user_id, new_user_id]);
         if (results.length > 0) {
@@ -320,6 +321,251 @@ export async function getTaxPayerDetails(user_id: number, new_user_id: number): 
         return null;
     } catch (error) {
         logger.error(`Error fetching tax payer details: ${error.message}`);
+        throw error;
+    }
+}
+export async function getYear(): Promise<any | null> {
+    try {
+        const query = `
+           SELECT Year_id, Year_name AS yyy 
+            FROM year 
+            WHERE Year_name = YEAR(CURDATE()) AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query,[]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching year details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getNewUserSevakarDetails(sevakar:any): Promise<any | null> {
+    try {
+        // const sevakarParam = {
+        //     'user_id': Number(decoded_user['userId']),
+        //     "previousYear_id": Number(years_response[0].Year_id) - 1,
+        //     "vard_number": newUserDataDB[0].VARD_NUMBER,
+        //     "newuser_id":newUserDataDB[0].NEWUSER_ID,
+        // }
+        const binding = [sevakar.user_id, sevakar.previousYear_id, sevakar.vard_number, sevakar.newuser_id];
+        const query = `
+                     SELECT 
+                        IFNULL(SUM(bhumi_kar), 0) AS bhumi,
+                        IFNULL(SUM(diva_batti_kar), 0) AS diva,
+                        IFNULL(SUM(aarogya_rakshan_kar), 0) AS aarogya,
+                        IFNULL(SUM(safai_kar), 0) AS safai,
+                        IFNULL(SUM(samanya_pani_kar), 0) AS samanya,
+                        IFNULL(SUM(vishesh_pani_kar), 0) AS vishesh,
+                        IFNULL(SUM(etar_fees), 0) AS etar,
+                        IFNULL(SUM(notice_fees), 0) AS notice,
+                        IFNULL(SUM(total), 0) AS total,
+                        IFNULL(SUM(less5), 0) AS less,
+                        IFNULL(SUM(plus5), 0) AS plus
+                    FROM newusersavekar
+                    WHERE USER_ID = ? AND YEAR_ID = ? AND vard_number = ? AND NEWUSER_ID = ? AND DELETED_AT IS NULL;
+
+        `;
+        const results: any = await executeQuery(query, binding);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching new user sevakar details: ${error.message}`);
+        throw error;
+    }
+}
+export async function getNewDistinctUserDetails(new_user_id: number, user_id: number): Promise<any | null> {
+    try {
+        const query = `
+        SELECT DISTINCT newuser_id AS newww, vard_number, annu_kramank 
+        FROM newuser 
+        WHERE user_id = ? 
+        AND newuser_id = ? AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id, new_user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching new user details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getEntriesDetailsForNamuna8Sarkari(data: any): Promise<any | null> {
+    try {
+        const query = `
+            SELECT 
+                A.*, 
+                D.DISTRICT_NAME, 
+                T.TALUKA_NAME, 
+                P.PANCHAYAT_NAME, 
+                G.GATGRAMPANCHAYAT_NAME
+            FROM 
+                entries A
+            LEFT JOIN 
+                district D ON D.DISTRICT_ID = A.DISTRICT_ID
+            LEFT JOIN 
+                taluka T ON T.TALUKA_ID = A.TALUKA_ID
+            LEFT JOIN 
+                panchayat P ON P.PANCHAYAT_ID = A.PANCHAYAT_ID
+            LEFT JOIN 
+                gatgrampanchayat G ON G.GATGRAMPANCHAYAT_ID = A.GATGRAMPANCHAYAT_ID
+            WHERE 
+                A.DISTRICT_ID = ? AND
+                A.TALUKA_ID = ? AND
+                A.PANCHAYAT_ID = ? AND
+                A.GATGRAMPANCHAYAT_ID = ? AND
+                A.USER_ID = ?
+                AND A.DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [data.district_id, data.taluka_id, data.panchayat_id, data.gatgrampanchayat_id, data.user_id]);
+        if (results.length > 0) {
+            return results as any;
+            //  return (results) ? { 'data': results } : [];
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching new user details: ${error.message}`);
+        throw error;
+    }
+
+}
+export async function countConstructiontax(new_user_id: number, user_id: number): Promise<any | null> {
+    try {
+        const query = `
+        SELECT COUNT(constructiontax_id) AS count1
+        FROM constructiontax
+        WHERE user_id = ? AND newuser_id = ? AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id, new_user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching new user details: ${error.message}`);
+        throw error;
+    }
+}
+export async function countTaxationLand(new_user_id: number, user_id: number): Promise<any | null> {
+    try {
+        const query = `
+        SELECT IFNULL(COUNT(taxationland_id), 0) AS count
+        FROM taxationland
+        WHERE user_id = ? AND newuser_id = ? AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id, new_user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching new user details: ${error.message}`);
+        throw error;
+    }
+}
+export async function countTaxPayer(new_user_id: number, user_id: number): Promise<any | null> {
+    try {
+        const query = `
+        SELECT COUNT(taxpayers_id) AS count2
+        FROM taxpayers
+        WHERE user_id = ? AND newuser_id = ? AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id, new_user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching new user details: ${error.message}`);
+        throw error;
+    }
+}
+export async function getTaxationLandDetails(new_user_id: number, user_id: number): Promise<any | null> {
+    try {
+        const query = `
+                    SELECT 
+                    IFNULL(SUM(A.TOTALAREA), 0) AS TOTALAREA,
+                    IFNULL(SUM(A.TOTALAREA1), 0) AS TOTALAREA1,
+                    IFNULL(SUM(A.capital), 0) AS capital,
+                    IFNULL(SUM(A.LEVYRATE), 0) AS LEVYRATE,
+                    IFNULL(SUM(A.taxation), 0) AS taxation,
+                    IFNULL(SUM(A.ANNUALVALUE), 0) AS ANNUALVALUE
+                    FROM taxationland A
+                    WHERE A.user_id = ? AND A.newuser_id = ? AND A.DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id, new_user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching new user details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getTaxationandMilkat(new_user_id: number, user_id: number): Promise<any | null> {
+    try {
+        const query = `
+                    SELECT 
+                    MV.MILKAT_VAPAR_NAME
+                    FROM 
+                    taxationland A
+                    LEFT JOIN 
+                    milkat_vapar MV ON MV.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID
+                    WHERE A.user_id = ? AND A.newuser_id = ? AND A.DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id, new_user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching new user details: ${error.message}`);
+        throw error;
+    }
+}
+
+
+export async function getConstructionForsarkari8(new_user_id: number, user_id: number): Promise<any | null> {
+    try {
+        const query = `
+                    SELECT 
+                    A.*,
+                    MV.MILKAT_VAPAR_NAME,
+                    MM.DESCRIPTION_NAME,
+                    CT2.VAPARACHE_PRAKAR,
+                    F.FLOOR_NAME
+                    FROM 
+                        constructiontax A
+                    LEFT JOIN 
+                        milkat_vapar MV ON MV.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID
+                    LEFT JOIN 
+                        malmatta MM ON MM.MALMATTA_ID = A.MALMATTA_ID
+                    LEFT JOIN 
+                        constructiontax CT2 ON CT2.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID
+                    LEFT JOIN 
+                        floor F ON F.FLOOR_ID = A.FLOOR_ID
+                    WHERE 
+                        A.newuser_id = ? AND A.user_id = ? AND A.DELETED_AT IS NULL
+                    ORDER BY 
+                        A.CONSTRUCTIONTAX_ID ASC
+                    LIMIT 5
+        `;
+        const results: any = await executeQuery(query, [new_user_id,user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching new user details: ${error.message}`);
         throw error;
     }
 }
