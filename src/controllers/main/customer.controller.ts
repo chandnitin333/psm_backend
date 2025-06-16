@@ -67,6 +67,7 @@ export class CustomerController {
             if(user_id == 0) {
                 return _400(res, "Invalid or missing User ID");
             }
+            console.log("console", page_number, search, user_id)
             const data: any = await getMalmattaNotdniList(page_number, search, user_id);
             return _200(res, "Malmatta nodni list fetched successfully", { status: 200, data: data.data, total_count: data.total_count });
         } catch (error) {

@@ -27,7 +27,7 @@ export async function getAnnuKramank(annu_details: any): Promise<any | null> {
         annu_details = Object.values(annu_details);
         const results: any = await executeQuery(query, [...annu_details]);
         if (results.length > 0) {
-             console.log("console", results[0]['ANNU_KRAMANK'])
+            //  console.log("console", results[0]['ANNU_KRAMANK'])
             if(results[0]['ANNU_KRAMANK'] == null) {
                 return {"ANNU_KRAMANK":1};
             }
@@ -66,11 +66,20 @@ export async function getMalmattaNotdniList(page: number = 1, search: string = "
         `;
         const values: any[] = [user_id];
         if (search) {
-            query += ` AND LOWER(HOMEUSER_NAME) LIKE LOWER(?) OR LOWER(BHOGATWARGARACHE_NAME) LIKE LOWER(?)`;
-            values.push(`%${search}%`,`%${search}%`);
+            query += ` AND (LOWER(HOMEUSER_NAME) LIKE LOWER(?) OR 
+            LOWER(BHOGATWARGARACHE_NAME) LIKE LOWER(?) OR 
+            LOWER(ANNU_KRAMANK) LIKE LOWER(?) OR 
+            LOWER(MALMATTA_NUMBER) LIKE LOWER(?) OR 
+            LOWER(VARD_NUMBER) LIKE LOWER(?) OR 
+            LOWER(PLOT_NO) LIKE LOWER(?) OR 
+            LOWER(KHASARA_KRAMANK) LIKE LOWER(?) OR 
+            LOWER(SURVEY_KRAMANK) LIKE LOWER(?) OR 
+            LOWER(ADDRESS_NAGAR_SOCIETY) LIKE LOWER(?))`;
+            values.push(`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`);
         }
         let totalCount = await getMalmattaNotdniRecordCount(query, values);
         query += ` ORDER BY NEWUSER_ID DESC LIMIT ${limit} OFFSET ${offset}`;
+        // console.log("query", query);
         return executeQuery(query, values).then(result => {    
             (result) ? result : null;
             return (result) ? { 'data': result, 'total_count': totalCount } : null;
@@ -98,7 +107,7 @@ export async function insertUpdateSillakJoda(savakar: any): Promise<void> {
     try {
         let selectParamValue = {'year_id': savakar.years, 'user_id': savakar.user_id, "newuser_id": savakar.newuser_id, "ward_no": savakar.ward_numbers};
         let sillakJodaExist = await checkSillakJodaExist(selectParamValue);
-        console.log("if part", sillakJodaExist);
+        // console.log("if part", sillakJodaExist);
 
         if((sillakJodaExist as any[]).length > 0) {
             const query = `UPDATE newusersavekar
@@ -127,7 +136,7 @@ export async function insertUpdateSillakJoda(savakar: any): Promise<void> {
             await executeQuery(query, [savakar.cmbyear, savakar.cmbyear1, savakar.kar_bhumikar, savakar.divabatti_kar, savakar.aarogya_rakshan_kar, savakar.safai_kar, savakar.samanya_pani_kar, savakar.vishesh_pani_kar, savakar.total, savakar.etar_fees, savakar.notice_fees, savakar.less5, savakar.plus5,savakar.annu_kramank, savakar.user_id, savakar.newuser_id, savakar.years, sillakJodaExist[0].NEWUSERSAVEKAR_ID, savakar.ward_numbers]);
             logger.info("sillak joda updated successfully");
         } else {
-            console.log("savakar Kundan", savakar);
+            // console.log("savakar Kundan", savakar);
             const query = `INSERT INTO newusersavekar (
                 USER_ID, NEWUSER_ID, YEAR_ID, YEAR1_ID, HOMEUSER_NAME, vard_number, 
                 BHUMI_KAR, DIVA_BATTI_KAR, AAROGYA_RAKSHAN_KAR, SAFAI_KAR, 
@@ -241,6 +250,7 @@ export async function getEntriesDetails(data: any): Promise<any | null> {
 }
 
 export async function gettaxationLandDetails(user_id: number, new_user_id: number): Promise<any | null> {
+    // console.log("user_id", user_id, "new_user_id", new_user_id);
     try {
         const query = `
             SELECT A.*, 
@@ -298,6 +308,7 @@ export async function getConstructionTaxDetails(user_id: number, new_user_id: nu
 
 export async function getTaxPayerDetails(user_id: number, new_user_id: number): Promise<any | null> {
     try {
+        console.log("user_id-->", user_id, "new_user_id-->", new_user_id);
         const query = `
             SELECT A.*, 
                 M.MILKAT_VAPAR_NAME, 
@@ -566,6 +577,138 @@ export async function getConstructionForsarkari8(new_user_id: number, user_id: n
         return null;
     } catch (error) {
         logger.error(`Error fetching new user details: ${error.message}`);
+        throw error;
+    }
+}
+
+
+
+export async function getYearByYearId(year:number): Promise<any | null> {
+    try {
+        const query = `
+           SELECT Year_id, Year_name AS year 
+            FROM year 
+            WHERE Year_id = ? AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query,[year]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching year details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getRecordBasedOnStartandEnd(user_id: number, ward_number: number, start: number, end: number): Promise<any | null> {
+    try {
+        const query = `
+           SELECT * 
+            FROM newuser 
+            WHERE user_id = ? 
+            AND VARD_NUMBER = ? 
+            AND ANNU_KRAMANK BETWEEN ? AND ? 
+            AND DELETED_AT IS NULL
+            ORDER BY ANNU_KRAMANK ASC
+        `;
+        const results: any = await executeQuery(query, [user_id, ward_number, start, end]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching records based on start and end: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getTaxLandData(user_id: number, ward_number: number, start: number, end: number): Promise<any | null> {
+    try {
+        const query = `
+           SELECT newuser_id, Annu_kramank
+            FROM taxationland
+            WHERE user_id = ?
+            AND vard_number = ?
+            AND extra = 1
+            AND taxpayersss = 1
+            AND Annu_kramank BETWEEN ? AND ?
+            AND DELETED_AT IS NULL
+            ORDER BY CAST(Annu_kramank AS UNSIGNED) asc
+        `;
+        const results: any = await executeQuery(query, [user_id, ward_number, start, end]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching tax land data: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getUserDataForRs3(user_id:number, new_user_id:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT *
+            FROM newuser
+            WHERE user_id = ?
+            AND newuser_id = ?
+            AND DELETED_AT IS NULL;
+        `;
+        const results: any = await executeQuery(query, [user_id, new_user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getUserDataForGharKar(user_id: number, ward_number: number, start: number, end: number): Promise<any | null> {
+    try {
+        const query = `
+           SELECT *
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR = 'घर कर लावायचा आहे'
+            AND vard_number = ?
+            AND annu_kramank BETWEEN ? AND ?
+            AND DELETED_AT IS NULL
+            ORDER BY annu_kramank ASC
+        `;
+        const results: any = await executeQuery(query, [user_id, ward_number,start,end]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getUserDataForAdhikrutGharkul(user_id: number, ward_number: number, start: number, end: number): Promise<any | null> {
+    try {
+        const query = `
+           SELECT *
+            FROM newuser
+            WHERE user_id = ?
+            AND (MILKAR_PRAKAR = 'अधिकृत' OR MILKAR_PRAKAR = 'घरकुल')
+            AND vard_number = ?
+            AND annu_kramank BETWEEN ? AND ?
+            AND DELETED_AT IS NULL
+            ORDER BY annu_kramank ASC
+        `;
+        const results: any = await executeQuery(query, [user_id, ward_number,start,end]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
         throw error;
     }
 }

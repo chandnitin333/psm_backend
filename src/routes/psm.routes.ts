@@ -11,6 +11,9 @@ import { CustomerController } from "../controllers/main/customer.controller";
 import { FerFarYadi } from "../controllers/main/ferfar-yadi.controller";
 import { Nodni } from "../controllers/main/nodni.controller";
 import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
+import { AdharWardList } from "../controllers/main/adhar-ward-list.controller";
+import { MalamattaGrahakYadiList } from "../controllers/main/malmatta-grahak-yadi.controller";
+import { Namuna8Controller } from "../controllers/main/namuna-8.controller";
 
 export class psmRoutes {
     public router: Router;
@@ -30,8 +33,10 @@ export class psmRoutes {
         this.router.get('/get-namuna-8-1/:new_user_id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.namuna_8_1);
         this.router.get('/get-namuna-9-1/:new_user_id/:ward_number', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.namuna_9_1);
         this.router.get('/get-namuna-8-sarkari/:new_user_id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.namuna_8_sarkari);
+        this.router.get('/get-ward-wise-adhar-list/:ward_no', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AdharWardList.get_adhar_list);
 
         this.router.get('/get-all-year-list', GlobalMiddleware.checkError, FerFarYadi.getYearList);
+        this.router.get('/get-all-ward-list', GlobalMiddleware.checkError, AdharWardList.get_ward_number_by_user_id);
 
     }
 
@@ -72,7 +77,11 @@ export class psmRoutes {
         this.router.post('/save-bandh-kam', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveBandhKamFrm);
 
         this.router.post('/save-tax-payer', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveTaxPeryers);
-
+        this.router.post('/malmatta-darkachi-yadi-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalamattaGrahakYadiList.get_malmatta_darkachi_yadi_list);
+        this.router.post('/malmatta-grahak-yadi-khula-bhukhand', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalamattaGrahakYadiList.get_malmatta_grahak_yadi_khula_bhukhand);
+        this.router.post('/malmatta-grahak-yadi-ghar-karni', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalamattaGrahakYadiList.get_malmatta_grahak_yadi_ghar_kar);
+        this.router.post('/get-namuna-8-anukramnika', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Namuna8Controller.get_namuna_8_anukramnika);
+        this.router.post('/get-namuna-8-vard-new', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Namuna8Controller.get_namuna_8_vard_new);
 
     }
 
