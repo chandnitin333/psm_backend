@@ -1,6 +1,7 @@
 import { executeQuery } from "../../config/db/db";
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
+import { Utils } from "../../utils/util";
 
 
 
@@ -150,7 +151,7 @@ export async function updateMalmattaNodniInfo( data: any): Promise<void> {
 
 export async function softDeleteFerfarYadi(id: number): Promise<void> {
     try {
-        const query = `UPDATE ferfar SET DELETED_AT = NOW() WHERE FERFARUSER_ID = ?`;
+        const query = `UPDATE ferfar SET DELETED_AT = NOW() WHERE FERFAR_ID = ?`;
         await executeQuery(query, [id]);
         logger.info("Ferfar yadi deleted successfully");
     }
@@ -314,3 +315,82 @@ export async function updateFerfarYadi(ferfar_id: number, data: any, user_id: nu
         throw error;
     }
 }   
+
+export async function getFerfarNamunaYadiDDL(): Promise<any[]> {
+    try {
+        const query = `
+            SELECT FERFARNAMUNAYADI_ID, FERFARNAMUNAYADI_NAME FROM ferfarnamunayadi WHERE DELETED_AT IS NULL
+        `;
+        const results: any[] = await executeQuery(query, []);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching Ferfar Namuna Yadi DDL: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getPanchayatIdById(panchayat_id: number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT PANCHAYAT_ID, PANCHAYAT_NAME FROM panchayat WHERE PANCHAYAT_ID = ? AND DELETED_AT IS NULL
+        `;
+        const results: any[] = await executeQuery(query, [panchayat_id]);
+        if (results.length > 0) {
+            return results[0];
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching Panchayat by ID: ${error.message}`);
+        throw error;
+    }
+}
+export async function softDeleteFerfarYadiPDF(pdf_id: number): Promise<void> {
+    try {
+        const query = `UPDATE uploadpdf SET DELETED_AT = NOW() WHERE UPLOADPDF_ID = ?`;
+        await executeQuery(query, [pdf_id]);
+        logger.info("Ferfar yadi PDF deleted successfully");
+    } catch (error) {
+        logger.error(`Error deleting Ferfar yadi PDF: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function createUploadFerFarPDFData(pdfData: any): Promise<void> {
+    try {
+        console.log("pdfData", pdfData);
+        const dateNow = await Utils.getCurrentDateTime();
+        const query = `
+            INSERT INTO uploadpdf (TALUKA_ID, PANCHAYAT_ID, GATGRAMPANCHAYAT_ID, FERFAR_ID, FILE_NAME, R_PATH, USER_ID, TDATE, TTIME, DISTRICT_ID, newuser_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const values = [pdfData.decoded_user.TALUKA_ID, pdfData.decoded_user.PANCHAYAT_ID, pdfData.decoded_user.GATGRAMPANCHAYAT_id, pdfData.ferfar_id, pdfData.name, pdfData.r_path, pdfData.decoded_user.userId, dateNow, dateNow, pdfData.decoded_user.DISTRICT_ID, pdfData.decoded_user.newuser_id];
+        await executeQuery(query, values);
+        logger.info("Ferfar yadi PDF data created successfully");
+    } catch (error) {
+        logger.error(`Error creating Ferfar yadi PDF data: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getPDFFerfarYadi(page_number,ferfar_id, user_id): Promise<any | null> {
+    try {
+        let limit: number = PAGINATION.LIMIT;
+        const offset = (page_number - 1) * limit;
+        let query = `
+            SELECT * FROM uploadpdf WHERE FERFAR_ID = ? AND user_id = ? AND DELETED_AT IS NULL
+        `;
+        let params: (number | string)[] = [ferfar_id, user_id, limit, offset];
+        let totalCount = await getMalmattaNotdniRecordCount(query, params);
+        query += ` ORDER BY FERFAR_ID DESC LIMIT ${limit} OFFSET ${offset}`;
+        const results: any[] = await executeQuery(query, params);
+        return executeQuery(query, params).then(result => {    
+            (result) ? result : null;
+            return (result) ? { 'data': result, 'total_count': totalCount } : null;
+        }).catch(error => {
+            console.error("geFerFarYadiList fetch data error: ", error);
+            return null;
+        });
+    } catch (error) {
+        logger.error(`Error fetching Ferfar Yadi PDF: ${error.message}`);
+        throw error;
+    }
+}

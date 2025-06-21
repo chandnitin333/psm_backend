@@ -71,6 +71,12 @@ export class psmRoutes {
         this.router.get('/get-ferfar-yadi-by-id/:ferfar_id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.getFerfarDetailById);
         this.router.put('/update-ferfar-yadi-by-id/:ferfar_id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.updateFerfarYadi);
         this.router.put('/delete-ferfar-yadi-by-id/:ferfar_id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.deleteFerfarYadi);
+        this.router.post('/pdf-ferfar-yadi', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.pdfFerfarYadi);
+        this.router.get('/ferfar-namuna-yadi-ddl', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.getFerfarNamunaYadiList);
+        this.router.get('/ferfar-panchayat-list-ddl', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.getPanchayatListOnPanchayatId);
+        this.router.put('/delete-ferfar-yadi-pdf-by-id/:pdf_id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.deleteFerfarYadiPDF);
+        this.router.post('/add-ferfar-yadi-pdf', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.addUploadPDFFerfarData);
+
 
         this.router.post('/get-open-construction-tax-assessment', GlobalMiddleware.checkError, Nodni.getOpenConstructionTaxAssessment);
         this.router.post('/get-tax-assessment-construction', GlobalMiddleware.checkError, Nodni.getTaxAssessmentForConstruction);
