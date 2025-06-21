@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
 import { signIn } from "../../services/admin/users.service";
-import { addNewCustomerInNodniFormInfo, countConstructiontax, countTaxPayer, countTaxationLand, getAnnuKramank, getConstructionForsarkari8, getConstructionTaxDetails, getCustomerDetailsById, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getMalmattaNotdniList, getNewDistinctUserDetails, getNewUserDetails, getNewUserSevakarDetails, getTaxPayerDetails, getTaxationLandDetails, getTaxationandMilkat, getYear, gettaxationLandDetails, insertUpdateSillakJoda, softDeleteMalmattaNodniInfo, updateMalmattaNodniInfo } from "../../services/main/customer.service";
+import { addNewCustomerInNodniFormInfo, countConstructiontax, countTaxPayer, countTaxationLand, getAnnuKramank, getConstructionForsarkari8, getConstructionTaxDetails, getCustomerDetailsById, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getMalmattaNotdniList, getNewDistinctUserDetails, getNewUserDetails, getNewUserSevakarDetails, getTaxPayerDetails, getTaxationLandDetails, getTaxationandMilkat, getYear, gettaxationLandDetails, insertUpdateSillakJoda, searchCustomer, softDeleteMalmattaNodniInfo, updateMalmattaNodniInfo } from "../../services/main/customer.service";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
 import { Utils } from "../../utils/util";
 import * as jwt from 'jsonwebtoken';
@@ -12,18 +12,18 @@ import { getEnvironmentVariable } from "../../environments/env";
 // मालमत्ता धारकाची यादी (Customer List) Module API
 export class CustomerController {
     static async createCustomerInfo(req: Request, res: Response) {
-        const validationError = Utils.validateRequestBody(req.body, ["annu_kramank","malmatta_no","ward_no","khate_dharkache_name","address"]); // Add required fields here
-        if (validationError) {
-            return _400(res, validationError);
-        }
+        // const validationError = Utils.validateRequestBody(req.body, ["annu_kramank","malmatta_no","ward_no","khate_dharkache_name","address"]); // Add required fields here
+        // if (validationError) {
+        //     return _400(res, validationError);
+        // }
 
-        try {
-            const member: any = await addNewCustomerInNodniFormInfo(req.body);
-            return _201(res, "Successfully added new customer in malmatta nodni form", { status: 201, data: member });
-        } catch (error) {
-            logger.error("Error creating new customer in malmatta nodni form", error);
-            return _400(res, "Error creating new customer in malmatta nodni form");
-        }
+        // try {
+            // const member: any = await addNewCustomerInNodniFormInfo(req.body);
+        //     return _201(res, "Successfully added new customer in malmatta nodni form", { status: 201, data: member });
+        // } catch (error) {
+        //     logger.error("Error creating new customer in malmatta nodni form", error);
+        //     return _400(res, "Error creating new customer in malmatta nodni form");
+        // }
     }
 
     static async getAnnuKramank(req: Request, res: Response) {
@@ -67,7 +67,7 @@ export class CustomerController {
             if(user_id == 0) {
                 return _400(res, "Invalid or missing User ID");
             }
-            console.log("console", page_number, search, user_id)
+            // console.log("console", page_number, search, user_id)
             const data: any = await getMalmattaNotdniList(page_number, search, user_id);
             return _200(res, "Malmatta nodni list fetched successfully", { status: 200, data: data.data, total_count: data.total_count });
         } catch (error) {
@@ -361,6 +361,19 @@ export class CustomerController {
             return _400(res, error.message);
         }
 
+    }
+    static async searchCustomers(req: Request, res: Response) {
+        try {
+            const authHeader = req.headers.authorization;
+            const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
+            const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+            let page_number: number = req.body.page_number ? Number(req.body.page_number) : 1;
+            const customerData = await searchCustomer(Number(decoded_user['userId']), req.body,page_number);
+            return _200(res, "Customer details fetched successfully", customerData);
+        } catch (error) {
+            console.error('Error in search:', error);
+            return _400(res, error.message);
+        }
     }
 }
 

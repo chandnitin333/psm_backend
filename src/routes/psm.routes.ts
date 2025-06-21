@@ -58,13 +58,19 @@ export class psmRoutes {
         this.router.post('/get-member-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getMemberDetails);
 
         this.router.post('/add-new-customer-in-malmatta-nodni', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.createCustomerInfo);
+        this.router.post('/search-customer-in-malmatta-nodni', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.searchCustomers);
         this.router.post('/get-annu-kramank-in-malmatta-nodni', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.getAnnuKramank);
         this.router.post('/get-malmatta-nodni-list-info', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.getMalmattaNodniInfoList);
         this.router.post('/insert-update-sillak-joda', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.createUpdateSillakJoda);
         this.router.post('/verify-user-for-permission', GlobalMiddleware.checkError, CustomerController.verifyUser);
 
         this.router.post('/add-new-ferfar-yadi', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.createNewFerfarYadiInfo);
+        this.router.post('/search-ferfar-yadi', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.searchFerfarYadi);
         this.router.post('/get-annu-kramank-in-ferfar-yadi', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.getAnnuKramankFerfarYadi);
+        this.router.post('/get-ferfar-yadi-list-info', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.getFerfarYadiList);
+        this.router.get('/get-ferfar-yadi-by-id/:ferfar_id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.getFerfarDetailById);
+        this.router.put('/update-ferfar-yadi-by-id/:ferfar_id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.updateFerfarYadi);
+        this.router.put('/delete-ferfar-yadi-by-id/:ferfar_id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.deleteFerfarYadi);
 
         this.router.post('/get-open-construction-tax-assessment', GlobalMiddleware.checkError, Nodni.getOpenConstructionTaxAssessment);
         this.router.post('/get-tax-assessment-construction', GlobalMiddleware.checkError, Nodni.getTaxAssessmentForConstruction);

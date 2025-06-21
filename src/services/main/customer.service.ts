@@ -712,3 +712,87 @@ export async function getUserDataForAdhikrutGharkul(user_id: number, ward_number
         throw error;
     }
 }
+
+
+export async function searchCustomer(user_id: number, data: any, page:number): Promise<any | null> {
+    try {
+        let limit: number = PAGINATION.LIMIT;
+        const offset = (page - 1) * limit;
+        let sql = `
+            SELECT DISTINCT b.ANNU_KRAMANK,
+                       c.MALMATTA_NUMBER,
+                       d.VARD_NUMBER,
+                       e.PLOT_NO,
+                       f.KHASARA_KRAMANK,
+                       g.SURVEY_KRAMANK,
+                       h.HOMEUSER_NAME,
+                       i.BHOGATWARGARACHE_NAME,
+                       a.*
+                FROM newuser a
+                LEFT JOIN newuser b ON b.NEWUSER_ID = a.NEWUSER_ID
+                LEFT JOIN newuser c ON c.NEWUSER_ID = a.NEWUSER_ID
+                LEFT JOIN newuser d ON d.NEWUSER_ID = a.NEWUSER_ID
+                LEFT JOIN newuser e ON e.NEWUSER_ID = a.NEWUSER_ID
+                LEFT JOIN newuser f ON f.NEWUSER_ID = a.NEWUSER_ID
+                LEFT JOIN newuser g ON g.NEWUSER_ID = a.NEWUSER_ID
+                LEFT JOIN newuser h ON h.NEWUSER_ID = a.NEWUSER_ID
+                LEFT JOIN newuser i ON i.NEWUSER_ID = a.NEWUSER_ID
+                WHERE a.DELETED_AT IS NULL AND  a.USER_ID = ?
+        `;
+        const params: (number | string)[] = [user_id];
+
+            if (data.txtnumber) {
+                sql += ' AND a.ANNU_KRAMANK LIKE ?';
+                params.push(`%${data.txtnumber}%`);
+            }
+            if (data.txt_malmatta_number) {
+                sql += ' AND a.MALMATTA_NUMBER LIKE ?';
+                params.push(`%${data.txt_malmatta_number}%`);
+            }
+            if (data.txt_vard_number) {
+                sql += ' AND a.VARD_NUMBER LIKE ?';
+                params.push(`%${data.txt_vard_number}%`);
+            }
+            if (data.txt_plot_number) {
+                sql += ' AND a.PLOT_NO LIKE ?';
+                params.push(`%${data.txt_plot_number}%`);
+            }
+            if (data.txt_khasara_number) {
+                sql += ' AND a.KHASARA_KRAMANK LIKE ?';
+                params.push(`%${data.txt_khasara_number}%`);
+            }
+            if (data.txt_survey_number) {
+                sql += ' AND a.SURVEY_KRAMANK LIKE ?';
+                params.push(`%${data.txt_survey_number}%`);
+            }
+            if (data.txt_khatedarache_name) {
+                sql += ' AND a.HOMEUSER_NAME LIKE ?';
+                params.push(`%${data.txt_khatedarache_name}%`);
+            }
+            if (data.txt_bhogatwarache_name) {
+                sql += ' AND a.BHOGATWARGARACHE_NAME LIKE ?';
+                params.push(`%${data.txt_bhogatwarache_name}%`);
+            }
+            if (data.txt_patta) {
+                sql += ' AND a.address_nagar_society LIKE ?';
+                params.push(`%${data.txt_patta}%`);
+            }
+        let totalCount = await getMalmattaNotdniRecordCount(sql, params);
+        sql += ` ORDER BY NEWUSER_ID DESC LIMIT ${limit} OFFSET ${offset}`;
+        const results: any = await executeQuery(sql, params);
+        // if (results.length > 0) {
+        //     return results as any;
+        // }
+        // return [];
+        return executeQuery(sql, params).then(result => {    
+            (result) ? result : null;
+            return (result) ? { 'data': result, 'total_count': totalCount } : null;
+        }).catch(error => {
+            console.error("searchCustomer fetch data error: ", error);
+            return [];
+        });
+    } catch (error) {
+        logger.error(`Error searching customer: ${error.message}`);
+        throw error;
+    }
+}

@@ -6,29 +6,30 @@ import { logger } from "../../logger/Logger";
 
 
 
-export async function getCustomerDetailsById(customerId: number): Promise<any | null> {
+export async function getFerFarYadiDetailById(ferfar_id: number): Promise<any | null> {
     try {
         const query = `
-            SELECT ANNU_KRAMANK, MALMATTA_NUMBER, VARD_NUMBER, PLOT_NO, KHASARA_KRAMANK, SURVEY_KRAMANK, HOMEUSER_NAME, BHOGATWARGARACHE_NAME, ADDRESS_NAGAR_SOCIETY FROM newuser
-            WHERE NEWUSER_ID = ? AND DELETED_AT IS NULL
+            select * from ferfar where FERFAR_ID = ? AND DELETED_AT IS NULL
         `;
-        const results: any = await executeQuery(query, [customerId]);
+        const results: any = await executeQuery(query, [ferfar_id]);
         if (results.length > 0) {
             return results[0] as any;
         }
         return null;
     } catch (error) {
-        logger.error(`Error fetching open plot details by ID: ${error.message}`);
+        logger.error(`Error fetching ferfar details by ferfar id: ${error.message}`);
         throw error;
     }
 }
 
-export async function getMalmattaNotdniList(page: number = 1, search: string = "", user_id:Number): Promise<any[]> {
+export async function geFerFarYadiList(page: number = 1, search: string = "", user_id:Number): Promise<any[]> {
     try {
         let limit: number = PAGINATION.LIMIT;
         const offset = (page - 1) * limit;
         let query = `
-            SELECT * FROM newuser WHERE user_id = ? AND DELETED_AT IS NULL
+            SELECT A.*, (SELECT X.YEAR_NAME FROM year X WHERE X.YEAR_ID=A.YEAR_ID) AS YEAR_NAME
+            FROM ferfar A
+            WHERE user_id = ? AND DELETED_AT IS NULL
         `;
         const values: any[] = [user_id];
         if (search) {
@@ -36,16 +37,16 @@ export async function getMalmattaNotdniList(page: number = 1, search: string = "
             values.push(`%${search}%`,`%${search}%`);
         }
         let totalCount = await getMalmattaNotdniRecordCount(query, values);
-        query += ` ORDER BY NEWUSER_ID DESC LIMIT ${limit} OFFSET ${offset}`;
+        query += ` ORDER BY FERFAR_ID DESC LIMIT ${limit} OFFSET ${offset}`;
         return executeQuery(query, values).then(result => {    
             (result) ? result : null;
             return (result) ? { 'data': result, 'total_count': totalCount } : null;
         }).catch(error => {
-            console.error("getMilkatList fetch data error: ", error);
+            console.error("geFerFarYadiList fetch data error: ", error);
             return null;
         });
     } catch (error) {
-        logger.error(`Error fetching malmatta nodani info list: ${error.message}`);
+        logger.error(`Error fetching ferfar yadi info list: ${error.message}`);
         throw error;
     }
 }
@@ -147,14 +148,14 @@ export async function updateMalmattaNodniInfo( data: any): Promise<void> {
     }
 }
 
-export async function softDeleteMalmattaNodniInfo(id: number): Promise<void> {
+export async function softDeleteFerfarYadi(id: number): Promise<void> {
     try {
-        const query = `UPDATE newuser SET DELETED_AT = NOW() WHERE NEWUSER_ID = ?`;
+        const query = `UPDATE ferfar SET DELETED_AT = NOW() WHERE FERFARUSER_ID = ?`;
         await executeQuery(query, [id]);
-        logger.info("malmatta nodani deleted successfully");
+        logger.info("Ferfar yadi deleted successfully");
     }
     catch (error) {
-        logger.error(`Error deleting malmatta nodani : ${error.message}`);
+        logger.error(`Error deleting ferfar yadi : ${error.message}`);
         throw error;
     }
 }
@@ -196,18 +197,120 @@ export async function getAnnuKramank(annu_details: any): Promise<any | null> {
     }
 }
 
-export async function addNewFerfarYadiFormInfo(customer: any): Promise<void> {
+export async function addNewFerfarYadiFormInfo(data: any, user_id: number): Promise<void> {
     try {
         const query = `
-            INSERT INTO ferfar (YEAR_ID, YEAR1_ID, ANNU_KRAMANK, MALMATTA_NUMBER, VARD_NUMBER, PLOT_NO, KHASARA_KRAMANK, SURVEY_KRAMANK, JUNEKHATEDAR_NAME, NAVINKHATEDAR_NAME,USER_ID)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO ferfar (FERFARNAMUNAYADI_ID, PANCHAYAT_ID, YEAR_ID, YEAR1_ID, NEWUSER_ID, ANNU_KRAMANK, MALMATTA_NUMBER, VARD_NUMBER, PLOT_NO, KHASARA_KRAMANK, SURVEY_KRAMANK,MASIKSABHA,THARAV,DATE, JUNEKHATEDAR_NAME, NAVINKHATEDAR_NAME,SACHIV,SARPANCH,UPSARPANCH,TIP,USER_ID)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?,?)
         `;
 
-        customer = Object.values(customer);
-        await executeQuery(query, [...customer]);
+        data = Object.values(data);
+        await executeQuery(query, [...data,user_id]);
         logger.info("new customer in ferfar yadi form added successfully");
     } catch (error) {
         logger.error(`Error adding new ferfar form: ${error.message}`);
         throw error;
     }
 }
+
+export async function searchFerFarYadi(user_id: number, data: any, page:number): Promise<any | null> {
+    try {
+        let limit: number = PAGINATION.LIMIT;
+        const offset = (page - 1) * limit;
+        let sql = `
+             SELECT DISTINCT
+        (SELECT a.FERFARNAMUNAYADI_NAME FROM ferfarnamunayadi a WHERE a.FERFARNAMUNAYADI_ID=A.FERFARNAMUNAYADI_ID) AS FERFARNAMUNAYADI_NAME,
+        (SELECT b.PANCHAYAT_NAME FROM panchayat b WHERE b.PANCHAYAT_ID=A.PANCHAYAT_ID) AS PANCHAYAT_NAME,
+        (SELECT c.YEAR_NAME FROM year c WHERE c.YEAR_ID=A.YEAR_ID) AS YEAR_NAME,
+        (SELECT d.YEAR_NAME FROM year d WHERE d.YEAR_ID=A.YEAR1_ID) AS YEAR_NAME2,
+        (SELECT e.ANNU_KRAMANK FROM ferfar e WHERE e.FERFAR_ID=A.FERFAR_ID) AS ANNU_KRAMANK,
+        (SELECT f.MALMATTA_NUMBER FROM ferfar f WHERE f.FERFAR_ID=A.FERFAR_ID) AS MALMATTA_NUMBER,
+        (SELECT g.VARD_NUMBER FROM ferfar g WHERE g.FERFAR_ID=A.FERFAR_ID) AS VARD_NUMBER,
+        (SELECT h.PLOT_NO FROM ferfar h WHERE h.FERFAR_ID=A.FERFAR_ID) AS PLOT_NO,
+        (SELECT i.KHASARA_KRAMANK FROM ferfar i WHERE i.FERFAR_ID=A.FERFAR_ID) AS KHASARA_KRAMANK,
+        (SELECT j.SURVEY_KRAMANK FROM ferfar j WHERE j.FERFAR_ID=A.FERFAR_ID) AS SURVEY_KRAMANK,
+        (SELECT k.MASIKSABHA FROM ferfar k WHERE k.FERFAR_ID=A.FERFAR_ID) AS MASIKSABHA,
+        (SELECT l.THARAV FROM ferfar l WHERE l.FERFAR_ID=A.FERFAR_ID) AS THARAV,
+        (SELECT m.DATE FROM ferfar m WHERE m.FERFAR_ID=A.FERFAR_ID) AS DATE,
+        (SELECT o.JUNEKHATEDAR_NAME FROM ferfar o WHERE o.FERFAR_ID=A.FERFAR_ID) AS JUNEKHATEDAR_NAME,
+        (SELECT p.NAVINKHATEDAR_NAME FROM ferfar p WHERE p.FERFAR_ID=A.FERFAR_ID) AS NAVINKHATEDAR_NAME,
+        (SELECT q.SACHIV FROM ferfar q WHERE q.FERFAR_ID=A.FERFAR_ID) AS SACHIV,
+        (SELECT r.SARPANCH FROM ferfar r WHERE r.FERFAR_ID=A.FERFAR_ID) AS SARPANCH,
+        (SELECT s.UPSARPANCH FROM ferfar s WHERE s.FERFAR_ID=A.FERFAR_ID) AS UPSARPANCH,
+        (SELECT t.TIP FROM ferfar t WHERE t.FERFAR_ID=A.FERFAR_ID) AS TIP,
+        a.*
+      FROM ferfar A
+      WHERE A.DELETED_AT IS NULL AND A.USER_ID = ?
+        `;
+        const params: (number | string)[] = [user_id];
+
+        if (data.cmbyear) {
+            sql += ' AND A.YEAR_ID LIKE ?';
+            params.push(`%${data.cmbyear}%`);
+        }
+        if (data.cmbyear1) {
+            sql += ' AND A.YEAR1_ID LIKE ?';
+            params.push(`%${data.cmbyear1}%`);
+        }
+        if (data.txtnumber) {
+            sql += ' AND A.ANNU_KRAMANK LIKE ?';
+            params.push(`%${data.txtnumber}%`);
+        }
+        if (data.txt_malmatta_number) {
+            sql += ' AND A.MALMATTA_NUMBER LIKE ?';
+            params.push(`%${data.txt_malmatta_number}%`);
+        }
+        if (data.txt_vard_number) {
+            sql += ' AND A.VARD_NUMBER LIKE ?';
+            params.push(`%${data.txt_vard_number}%`);
+        }
+        if (data.txt_plot_number) {
+            sql += ' AND A.PLOT_NO LIKE ?';
+            params.push(`%${data.txt_plot_number}%`);
+        }
+        if (data.txt_khasara_number) {
+            sql += ' AND A.KHASARA_KRAMANK LIKE ?';
+            params.push(`%${data.txt_khasara_number}%`);
+        }
+        if (data.txt_survey_number) {
+            sql += ' AND A.SURVEY_KRAMANK LIKE ?';
+            params.push(`%${data.txt_survey_number}%`);
+        }
+        if (data.txt_khatedarache_name) {
+            sql += ' AND A.JUNEKHATEDAR_NAME LIKE ?';
+            params.push(`%${data.txt_khatedarache_name}%`);
+        }
+        if (data.txt_bhogatwarache_name) {
+            sql += ' AND A.NAVINKHATEDAR_NAME LIKE ?';
+            params.push(`%${data.txt_bhogatwarache_name}%`);
+        }
+        let totalCount = await getMalmattaNotdniRecordCount(sql, params);
+        sql += ` ORDER BY FERFAR_ID DESC LIMIT ${limit} OFFSET ${offset}`;
+        return executeQuery(sql, params).then(result => {    
+            (result) ? result : null;
+            return (result) ? { 'data': result, 'total_count': totalCount } : null;
+        }).catch(error => {
+            console.error("geFerFarYadiList fetch data error: ", error);
+            return null;
+        });
+    } catch (error) {
+        logger.error(`Error searching customer: ${error.message}`);
+        throw error;
+    }
+}
+export async function updateFerfarYadi(ferfar_id: number, data: any, user_id: number): Promise<any | null> {
+    try {
+        const query = `
+            UPDATE ferfar
+            SET FERFARNAMUNAYADI_ID = ?, PANCHAYAT_ID = ?, YEAR_ID = ?, YEAR1_ID = ?,NEWUSER_ID = ?, ANNU_KRAMANK = ?, MALMATTA_NUMBER = ?, VARD_NUMBER = ?, PLOT_NO = ?, KHASARA_KRAMANK = ?, SURVEY_KRAMANK = ?, MASIKSABHA = ?, THARAV = ?, DATE = ?, JUNEKHATEDAR_NAME = ?, NAVINKHATEDAR_NAME = ?, SACHIV = ?, SARPANCH = ?, UPSARPANCH = ?, TIP = ?
+            WHERE FERFAR_ID = ? AND USER_ID = ?
+        `;
+        
+        data = Object.values(data);
+        await executeQuery(query, [...data,ferfar_id,user_id]);
+        logger.info("Ferfar Yadi updated successfully");
+    } catch (error) {
+        logger.error(`Error updating Ferfar Yadi: ${error.message}`);
+        throw error;
+    }
+}   
