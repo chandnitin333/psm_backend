@@ -286,7 +286,7 @@ export async function searchFerFarYadi(user_id: number, data: any, page:number):
             params.push(`%${data.txt_bhogatwarache_name}%`);
         }
         let totalCount = await getMalmattaNotdniRecordCount(sql, params);
-        sql += ` ORDER BY FERFAR_ID DESC LIMIT ${limit} OFFSET ${offset}`;
+        sql += ` ORDER BY A.FERFAR_ID DESC LIMIT ${limit} OFFSET ${offset}`;
         return executeQuery(sql, params).then(result => {    
             (result) ? result : null;
             return (result) ? { 'data': result, 'total_count': totalCount } : null;

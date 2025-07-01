@@ -2,8 +2,9 @@ import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
 import { _200, _201, _400 } from "../../utils/ApiResponse";
 
-import { openConstructionTaxAssessment, otherTaxCalculation, saveBandhKam, saveKhaliBhuKhand, saveNondni, saveTaxPayers, taxAssessmentForConstruction, taxAssessmentForTowers } from "../../services/admin/nodni.service";
-
+import * as jwt from 'jsonwebtoken';
+import { getEnvironmentVariable } from "../../environments/env";
+import { get_AllWardNoList, get_buildingKar_MalmattechePrakar, get_buildingKar_MalmattecheVarnan, get_buildingKar_bandkamachaMajla, get_khulaBhukhandKar_Gavthan, get_khulaBhukhandKar_MalmattechePrakar, get_monoraKar_MalmattechePrakar, get_monoraKar_MalmattecheVarnan, get_monoraKar_ManoracheBhag, openConstructionTaxAssessment, otherTaxCalculation, saveBandhKam, saveKhaliBhuKhand, saveNondni, saveTaxPayers, taxAssessmentForConstruction, taxAssessmentForTowers } from "../../services/admin/nodni.service";
 
 // फेरफार यादी (Ferfar Yadi) Module API     
 export class Nodni {
@@ -40,6 +41,7 @@ export class Nodni {
     }
     static getOtherTaxCalculation = async (req: Request, res: Response) => {
         try {
+            console.log("Request body for otherTaxCalculation:", req.body);
             const anu_details: any = await otherTaxCalculation(req.body);
             return _201(res, "taxAssessmentForTowers successfully", { status: 201, data: anu_details });
         } catch (error) {
@@ -89,6 +91,103 @@ export class Nodni {
             return _400(res, "Error saveTaxPeryers");
         }
     }
+
+    static async khulaBhukhandKar_MalmattechePrakar( req: Request, res: Response) {
+        try {
+            const data: any = await get_khulaBhukhandKar_MalmattechePrakar();
+            return _200(res, "Khula Bhukhand Kar Malmatteche Prakar List successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching Khula Bhukhand Kar Malmatteche Prakar", error);
+            return _400(res, "Error fetching Khula Bhukhand Kar Malmatteche Prakar");
+        }
+    }
    
+    static async khulaBhukhandKar_Gavthan( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.panchayat_id);
+            if (!id) {
+                return _400(res, "Invalid or missing panchayat ID");
+            }
+            const data: any = await get_khulaBhukhandKar_Gavthan(id);
+            return _200(res, "खुला भूखंडाची कर गावठाण/गावठाण बाहेरचे List fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching Khula Bhukhand Kar Gavthan", error);
+            return _400(res, "Error fetching Khula Bhukhand Kar Gavthan");
+        }
+    }
+
+    static async buildingKar_MalmattechePrakar( req: Request, res: Response) {
+        try {
+            const data: any = await get_buildingKar_MalmattechePrakar();
+            return _200(res, "Building Kar Malmatteche Prakar List fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching Building Kar Malmatteche Prakar", error);
+            return _400(res, "Error fetching Building Kar Malmatteche Prakar");
+        }
+    }
+
+    static async buildingKar_MalmattecheVarnan( req: Request, res: Response) {
+        try {
+            const data: any = await get_buildingKar_MalmattecheVarnan();
+            return _200(res, "बिल्डिंग कर आकारणी मालमत्तेचे वर्णन List fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching बिल्डिंग कर आकारणी मालमत्तेचे वर्णन", error);
+            return _400(res, "Error fetching बिल्डिंग कर आकारणी मालमत्तेचे वर्णन");
+        }
+    }
+
+    static async buildingKar_bandkamachaMajla( req: Request, res: Response) {
+        try {
+            const data: any = await get_buildingKar_bandkamachaMajla();
+            return _200(res, "बिल्डिंग कर आकारणी बांधकामाचा मजला List fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching बिल्डिंग कर आकारणी बांधकामाचा मजला", error);
+            return _400(res, "Error fetching बिल्डिंग कर आकारणी बांधकामाचा मजला");
+        }
+    }
+
+    static async monoraKar_MalmattechePrakar( req: Request, res: Response) {
+        try {
+            const data: any = await get_monoraKar_MalmattechePrakar();
+            return _200(res, "मनोरा कर आकारणी मालमत्तेचे प्रकार List fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching मनोरा कर आकारणी मालमत्तेचे प्रकार", error);
+            return _400(res, "Error fetching मनोरा कर आकारणी मालमत्तेचे प्रकार");
+        }
+    }
+
+    static async monoraKar_MalmattecheVarnan( req: Request, res: Response) {
+        try {
+            const data: any = await get_monoraKar_MalmattecheVarnan();
+            return _200(res, "मनोरा कर आकारणी मालमत्तेचे वर्णन List fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching मनोरा कर आकारणी मालमत्तेचे वर्णन", error);
+            return _400(res, "Error fetching मनोरा कर आकारणी मालमत्तेचे वर्णन");
+        }
+    }
+
+    static async monoraKar_ManoracheBhag( req: Request, res: Response) {
+        try {
+            const data: any = await get_monoraKar_ManoracheBhag();
+            return _200(res, "मनोरा कर आकारणी मनोऱ्याचे भाग List fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching मनोरा कर आकारणी मनोऱ्याचे भाग", error);
+            return _400(res, "Error fetching मनोरा कर आकारणी मनोऱ्याचे भाग");
+        }
+    }
+
+    static async getAllWardNoList( req: Request, res: Response) {
+        try {
+            const authHeader = req.headers.authorization;
+            const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
+            const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+            // console.log("Decoded User:", decoded_user);
+            const data: any = await get_AllWardNoList(Number(decoded_user['userId']));
+            return _200(res, "वार्ड नं. List fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching वार्ड नं.", error);
+            return _400(res, "Error fetching वार्ड नं.");
+        }
+    }
 }
 

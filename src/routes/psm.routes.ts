@@ -14,6 +14,7 @@ import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
 import { AdharWardList } from "../controllers/main/adhar-ward-list.controller";
 import { MalamattaGrahakYadiList } from "../controllers/main/malmatta-grahak-yadi.controller";
 import { Namuna8Controller } from "../controllers/main/namuna-8.controller";
+import { taxGenerationController } from "../controllers/main/tax-generation.controller";
 
 export class psmRoutes {
     public router: Router;
@@ -88,12 +89,25 @@ export class psmRoutes {
         this.router.post('/save-khali-bhukhand', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveKhaliBhuKhand);
         this.router.post('/save-bandh-kam', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveBandhKamFrm);
 
+        this.router.get('/get-khula-bhukhand-kar-malmatteche-prakar-ddl', GlobalMiddleware.checkError, Nodni.khulaBhukhandKar_MalmattechePrakar);
+        this.router.get('/get-khula-bhukhand-kar-gavthan-ddl/:panchayat_id', GlobalMiddleware.checkError, Nodni.khulaBhukhandKar_Gavthan);
+        this.router.get('/get-building-kar-malmatteche-prakar-ddl', GlobalMiddleware.checkError, Nodni.buildingKar_MalmattechePrakar);
+        this.router.get('/get-building-kar-malmatteche-varnan-ddl', GlobalMiddleware.checkError, Nodni.buildingKar_MalmattecheVarnan);
+        this.router.get('/get-building-kar-bandkamacha-majla-ddl', GlobalMiddleware.checkError, Nodni.buildingKar_bandkamachaMajla);
+        this.router.get('/get-monora-kar-malmatteche-prakar-ddl', GlobalMiddleware.checkError, Nodni.monoraKar_MalmattechePrakar);
+        this.router.get('/get-monora-kar-malmatteche-varnan-ddl', GlobalMiddleware.checkError, Nodni.monoraKar_MalmattecheVarnan);
+        this.router.get('/get-monora-kar-manorache-bhag-ddl', GlobalMiddleware.checkError, Nodni.monoraKar_ManoracheBhag);
+        this.router.get('/get-all-ward-no-list-ddl', GlobalMiddleware.checkError, Nodni.getAllWardNoList);
+
+
         this.router.post('/save-tax-payer', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveTaxPeryers);
         this.router.post('/malmatta-darkachi-yadi-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalamattaGrahakYadiList.get_malmatta_darkachi_yadi_list);
         this.router.post('/malmatta-grahak-yadi-khula-bhukhand', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalamattaGrahakYadiList.get_malmatta_grahak_yadi_khula_bhukhand);
         this.router.post('/malmatta-grahak-yadi-ghar-karni', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalamattaGrahakYadiList.get_malmatta_grahak_yadi_ghar_kar);
         this.router.post('/get-namuna-8-anukramnika', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Namuna8Controller.get_namuna_8_anukramnika);
         this.router.post('/get-namuna-8-vard-new', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Namuna8Controller.get_namuna_8_vard_new);
+
+        this.router.post('/get-tax-generation', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, taxGenerationController.getTaxGeneration);
 
     }
 

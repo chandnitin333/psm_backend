@@ -126,13 +126,13 @@ export const otherTaxCalculation = async (data: any) => {
     try {
         let sql = `SELECT 
                 A.*, 
-                (SELECT X.TAXRATE1 FROM CREATEOTHERTAX X WHERE X.CREATEOTHERTAX_ID = A.CREATEOTHERTAX_ID) AS TAXRATE1,
-                (SELECT X.TAXRATE2 FROM CREATEOTHERTAX X WHERE X.CREATEOTHERTAX_ID = A.CREATEOTHERTAX_ID) AS TAXRATE2,
-                (SELECT X.TAXRATE3 FROM CREATEOTHERTAX X WHERE X.CREATEOTHERTAX_ID = A.CREATEOTHERTAX_ID) AS TAXRATE3,
-                (SELECT X.TAXRATE4 FROM CREATEOTHERTAX X WHERE X.CREATEOTHERTAX_ID = A.CREATEOTHERTAX_ID) AS TAXRATE4,
-                (SELECT X.TAXRATE5 FROM CREATEOTHERTAX X WHERE X.CREATEOTHERTAX_ID = A.CREATEOTHERTAX_ID) AS TAXRATE5
+                (SELECT X.TAXRATE1 FROM createothertax X WHERE X.CREATEOTHERTAX_ID = A.CREATEOTHERTAX_ID) AS TAXRATE1,
+                (SELECT X.TAXRATE2 FROM createothertax X WHERE X.CREATEOTHERTAX_ID = A.CREATEOTHERTAX_ID) AS TAXRATE2,
+                (SELECT X.TAXRATE3 FROM createothertax X WHERE X.CREATEOTHERTAX_ID = A.CREATEOTHERTAX_ID) AS TAXRATE3,
+                (SELECT X.TAXRATE4 FROM createothertax X WHERE X.CREATEOTHERTAX_ID = A.CREATEOTHERTAX_ID) AS TAXRATE4,
+                (SELECT X.TAXRATE5 FROM createothertax X WHERE X.CREATEOTHERTAX_ID = A.CREATEOTHERTAX_ID) AS TAXRATE5
             FROM 
-                CREATEOTHERTAX A
+                createothertax A
             WHERE 
                 DISTRICT_ID = ?
                 AND TALUKA_ID = ?
@@ -183,7 +183,7 @@ export const saveNondni = async (data: any) => {
             return { status: 200, message: "This Annu Kramank Already Exists" };
         } else {
             // Corrected insert query
-            const insertQuery = `INSERT INTO NEWUSER (
+            const insertQuery = `INSERT INTO newuser (
                     ANNU_KRAMANK, MALMATTA_NUMBER, VARD_NUMBER, PLOT_NO, KHASARA_KRAMANK, 
                     SURVEY_KRAMANK, VOTERCARD_NUMBER, AADHARCARD_NUMBER, MOBILE_NUMBER, 
                     HOMEUSER_NAME, HOMEUSER_NAME1, BHOGATWARGARACHE_NAME, ADDRESS_NAGAR_SOCIETY, 
@@ -371,3 +371,124 @@ export const saveTaxPayers = async (data: any) => {
 
 
 
+
+
+export async function get_khulaBhukhandKar_MalmattechePrakar(): Promise<any[]> {
+    try {
+        const query = `
+            SELECT MILKAT_VAPAR_ID, MILKAT_VAPAR_NAME FROM milkat_vapar WHERE MILKAT_VAPAR_ID=14 AND DELETED_AT IS NULL
+        `;
+        const results: any[] = await executeQuery(query, []);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching Khula Bhukhand Malmatteche Prakar DDL: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function get_khulaBhukhandKar_Gavthan(id: number): Promise<any[]> {
+    try {
+        const query = `
+            SELECT B.openplot_id,
+                (SELECT A.PRAKAR_NAME
+                    FROM prakar A
+                    WHERE A.PRAKAR_ID = B.PRAKAR_ID) AS PRAKAR_NAME
+            FROM openplot B
+            WHERE B.GATGRAMPANCHAYAT_ID = ?  AND DELETED_AT IS NULL
+        `;
+        const results: any[] = await executeQuery(query, [id]);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching Khula Bhukhand Gavthan DDL: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function get_buildingKar_MalmattechePrakar(): Promise<any[]> {
+    try {
+        const query = `
+            SELECT MILKAT_VAPAR_ID, MILKAT_VAPAR_NAME FROM milkat_vapar WHERE MILKAT_VAPAR_ID IN(6,7,8) AND DELETED_AT IS NULL
+        `;
+        const results: any[] = await executeQuery(query, []);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching Building Kar Malmatteche Prakar DDL: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function get_buildingKar_MalmattecheVarnan(): Promise<any[]> {
+    try {
+        const query = `
+            SELECT * FROM malmatta WHERE MALMATTA_ID IN(1,2,3,4) AND DELETED_AT IS NULL
+        `;
+        const results: any[] = await executeQuery(query, []);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching बिल्डिंग कर आकारणी मालमत्तेचे वर्णन DDL: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function get_buildingKar_bandkamachaMajla(): Promise<any[]> {
+    try {
+        const query = `
+            SELECT * FROM floor WHERE DELETED_AT IS NULL
+        `;
+        const results: any[] = await executeQuery(query, []);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching बिल्डिंग कर आकारणी बांधकामाचा मजला DDL: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function get_monoraKar_MalmattechePrakar(): Promise<any[]> {
+    try {
+        const query = `
+            SELECT MILKAT_VAPAR_ID, MILKAT_VAPAR_NAME FROM milkat_vapar WHERE MILKAT_VAPAR_ID IN(13) AND DELETED_AT IS NULL
+        `;
+        const results: any[] = await executeQuery(query, []);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching मनोरा कर आकारणी मालमत्तेचे प्रकार DDL: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function get_monoraKar_MalmattecheVarnan(): Promise<any[]> {
+    try {
+        const query = `
+            SELECT * FROM malmatta WHERE MALMATTA_ID IN(1,5) AND DELETED_AT IS NULL
+        `;
+        const results: any[] = await executeQuery(query, []);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching मनोरा कर आकारणी मालमत्तेचे वर्णन DDL: ${error.message}`);
+        throw error;
+    }
+}
+export async function get_monoraKar_ManoracheBhag(): Promise<any[]> {
+    try {
+        const query = `
+            SELECT * FROM manoramaster WHERE DELETED_AT IS NULL
+        `;
+        const results: any[] = await executeQuery(query, []);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching मनोरा कर आकारणी मनोऱ्याचे भाग DDL: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function get_AllWardNoList(user_id:number): Promise<any[]> {
+    try {
+        const query = `
+            SELECT distinct(VARD_NUMBER)as vard_number FROM newuser WHERE user_id=? AND DELETED_AT IS NULL`;
+        const results: any[] = await executeQuery(query, [user_id]);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching मनोरा कर आकारणी मनोऱ्याचे भाग DDL: ${error.message}`);
+        throw error;
+    }
+}
