@@ -239,7 +239,7 @@ export async function searchFerFarYadi(user_id: number, data: any, page:number):
         (SELECT r.SARPANCH FROM ferfar r WHERE r.FERFAR_ID=A.FERFAR_ID) AS SARPANCH,
         (SELECT s.UPSARPANCH FROM ferfar s WHERE s.FERFAR_ID=A.FERFAR_ID) AS UPSARPANCH,
         (SELECT t.TIP FROM ferfar t WHERE t.FERFAR_ID=A.FERFAR_ID) AS TIP,
-        a.*
+        A.*
       FROM ferfar A
       WHERE A.DELETED_AT IS NULL AND A.USER_ID = ?
         `;
