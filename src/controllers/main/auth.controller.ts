@@ -7,6 +7,7 @@ import { logger } from "../../logger/Logger";
 import { getCounts, getMemberList, signIn } from "../../services/admin/users.service";
 import { _200, _400 } from "../../utils/ApiResponse";
 import e = require("express");
+import { Utils } from "../../utils/util";
 export class AuthController {
 
 
@@ -59,7 +60,9 @@ export class AuthController {
                 });
                 response['data'] = {
                     counts: result?.userCounts ?? 0,
-                    token: token
+                    token: token,
+                    RNO: await Utils.generateRNO(),
+                    RandomNumber: await Utils.generateRandomNumber(),
                 };
 
 

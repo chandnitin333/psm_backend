@@ -158,8 +158,9 @@ export const saveNondni = async (data: any) => {
             txt_mobile_number, txt_home_name, txt_spouse, txt_bhogatwadarache_name, txt_address,
             txt_kamayacha_address, txt_bhogatwarache_malak, txt_east, txt_west, txt_north, txt_south,
             txt_water, txt_washroom, txt_milkat_prakar, txt_emarat_jamin, txt_emarat_mokdi,
-            txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,
-            user_id, randomNumber, token, rno
+            txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,user_id, randomNumber, rno, token,
+            urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,
+            gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio
         } = data;
 
 
@@ -189,9 +190,12 @@ export const saveNondni = async (data: any) => {
                     HOMEUSER_NAME, HOMEUSER_NAME1, BHOGATWARGARACHE_NAME, ADDRESS_NAGAR_SOCIETY, 
                     KAMAYACHA_ADDRESS, BHOGATDARACHE_MALAK, PURVA, PACHHIM, UTTAR, DAKSIN, 
                     PINIYACHA_PANI, SOUNCHALAY, MILKAR_PRAKAR, EMARTICHE_JAMIN, EMARTICHE_MOKDI, 
-                    LAMBI, RUNDI, SQUARE_FOOT, SQUARE_METER
+                    LAMBI, RUNDI, SQUARE_FOOT, SQUARE_METER, user_id, RandomNumber, RNO, Tokens,
+                    URVATICH_KHALI_JAGA, URVATICH_KHALI_JAGAS, EMARTICHE_RUPESS, JAMINICHE_RUPEES, TOTAL,
+                    EMARTICHE_KARAAKARNI, KHULA_BHUKAND, TOTALS,
+                    BHUMIKAR, CHALU_KAR, MAGIL_BAKI, EEKUN_KAR_BHARNA, MAJAHUN_GHAT,vanijya
                 ) VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?
                 )`;
 
             const insertParams = [
@@ -200,12 +204,13 @@ export const saveNondni = async (data: any) => {
                 txt_home_name, txt_spouse, txt_bhogatwadarache_name, txt_address,
                 txt_kamayacha_address, txt_bhogatwarache_malak, txt_east, txt_west, txt_north, txt_south,
                 txt_water, txt_washroom, txt_milkat_prakar, txt_emarat_jamin, txt_emarat_mokdi,
-                txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter
+                txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,user_id, randomNumber, rno, token,
+                urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio
             ];
 
 
             await executeQuery(insertQuery, insertParams);
-
+            console.log("test",data)
             let outParam = 0; // Declare outParam to store the returned value.
             let result = await executeQuery(`CALL multipleinsertdata(?, ?, ?, ?, ?, ?)`,
                 [txt_number, txt_vard_number, randomNumber, user_id, rno, token]);
@@ -224,32 +229,32 @@ export const saveNondni = async (data: any) => {
 
 export const saveKhaliBhuKhand = async (data: any) => {
     try {
-        let sql = `INSERT INTO TAXATIONLAND (
+        let sql = `INSERT INTO taxationland_temp (
                 newuser_id, user_id, MILKAT_VAPAR_ID, MILKAT_VAPAR_ID1, VAPARACHE_PRAKAR, 
                 GATGRAMPANCHAYAT_ID, OPENPLOT_ID, AREAP, AREAI, TOTALAREA, 
                 AREAP1, AREAI1, TOTALAREA1, ANNUALVALUE, LEVYRATE, 
-                CAPITAL, TAXATION, RNO, EXTRA, taxpayersss, 
-                tax1000, vard_number, annu_kramank, Year_id, Year_name, 
-                reg_date, tdate, ttime
+                CAPITAL, TAXATION, RNO, extra, taxpayersss, 
+                tax1000, vard_number, Annu_kramank, Year_id, Year_name, 
+                reg_date, tdate, ttime,RandomNumber,Token
             ) VALUES (
                 ?, ?, ?, ?, ?, 
                 ?, ?, ?, ?, ?, 
                 ?, ?, ?, ?, ?, 
                 ?, ?, ?, ?, ?, 
                 ?, ?, ?, ?, ?, 
-                ?, ?, ?
+                ?, ?, ?,?, ?
             )`;
         const params = [
             data.newuser_id, data.user_id, data.milkat_vapar_id, data.milkat_vapar_id1, data.vaparache_prakar,
             data.gatgrampanchayat_id, data.openplot_id, data.areap, data.areai, data.totalarea,
             data.areap1, data.areai1, data.totalarea1, data.annualvalue, data.levyrate,
-            data.capital, data.taxation, data.rno, data.extra, data.taxpayersss,
-            data.tax1000, data.vard_number, data.annu_kramank, data.year_id, data.year_name,
-            new Date(), new Date(), new Date()
+            data.capital, data.taxation, data.rno, 1, 1,
+            1000, data.vard_number, data.annu_kramank, data.year_id, data.year_name,
+            new Date(), new Date(), new Date(), data.randomNumber,""
         ];
         const result = await executeQuery(sql, params);
         if (result) {
-            return { status: 200, message: "Open Plat rate added Successfully." };
+            return true;
         } else {
             return { status: 400, message: "Data Insertion Failed" };
         }
@@ -264,41 +269,52 @@ export const saveKhaliBhuKhand = async (data: any) => {
 
 export const saveBandhKam = async (data: any) => {
     try {
-        let sql = `INSERT INTO CONSTRUCTIONTAX (
-                newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, FLOOR_ID, AREAP, AREAI, TOTALAREA, 
-                AREAP1, AREAI1, TOTALAREA1, LIFESPAN, CONSTRUCTING, DEPRECIATION, WEIGHTTAGE, ANNUALCOST, LEVYRATE, 
-                ONE, TWO, RNO, cons1000, vard_number, annu_kramank, Year_id, Year_name, reg_date, tdate, ttime
-            ) VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-            )`;
+        // javaNew.js 1135 line number vala krna hain
+        // let sql = `INSERT INTO CONSTRUCTIONTAX (
+        //         newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, FLOOR_ID, AREAP, AREAI, TOTALAREA, 
+        //         AREAP1, AREAI1, TOTALAREA1, LIFESPAN, CONSTRUCTING, DEPRECIATION, WEIGHTTAGE, ANNUALCOST, LEVYRATE, 
+        //         ONE, TWO, RNO, cons1000, vard_number, annu_kramank, Year_id, Year_name, reg_date, tdate, ttime
+        //     ) VALUES (
+        //         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        //     )`;
+        let sql = `INSERT INTO CONSTRUCTIONTAX_temp (
+            newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, FLOOR_ID,
+            AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, LIFESPAN, CONSTRUCTING,
+            DEPRECIATION, WEIGHTTAGE, ANNUALCOST, LEVYRATE, ONE, TWO, RNO, cons1000,
+            annu_kramank, vard_number, Year_id, Year_name, reg_date, tdate, ttime,
+            RandomNumber, Token
+        ) VALUES (
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        )`;
         const params = [
-            data.newuser_id, data.user_id, data.malmatta_id,
+            data.newuser_id, data.user_id, data.milkat_vapar_id,
+            data.malmatta_id,
             data.vaparache_prakar,
-            data.floor_id,
+            data.manoramaster_id,
             data.areap,
             data.areai,
             data.totalarea,
-            data.totalarea_x,
+            data.areap1,
+            data.areai1,
             data.totalarea1,
             data.lifespan,
             data.constructing,
             data.depreciation,
-            data.weighttage,
-            data.annualcost,
+            data.weighted,
+            data.annual_cost,
             data.levyrate,
             data.one,
-            data.one_x,
             data.two,
-            data.two_x,
             data.rno,
             data.cons1000,
-            data.vard_number,
             data.annu_kramank,
+            data.vard_number,
             data.year_id,
             data.year_name,
             new Date(),
             new Date(),
-            new Date()
+            new Date(),
+            data.random_number,data.token
         ];
 
         console.log("params", params);
@@ -489,6 +505,87 @@ export async function get_AllWardNoList(user_id:number): Promise<any[]> {
         return results;
     } catch (error) {
         logger.error(`Error fetching मनोरा कर आकारणी मनोऱ्याचे भाग DDL: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getAnnualRateAkarniDar(id:number, district_id:number, taluka_id:number, panchayat_id:number): Promise<any[]> {
+    try {
+        const query = `
+            SELECT ANNUALCOST_NAME, LEVYRATE_NAME
+            FROM openplot
+            WHERE OPENPLOT_ID = ?
+            AND DISTRICT_ID = ?
+            AND TALUKA_ID = ?
+            AND PANCHAYAT_ID = ?
+            AND DELETED_AT IS NULL`;
+            // console.log("query",query)
+        const results: any[] = await executeQuery(query, [id,district_id, taluka_id, panchayat_id]);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching जमिनीचे वार्षिक मूल्य आणि आकारणी दर DDL: ${error.message}`);
+        throw error;
+    }
+}
+export async function getYearIdAndYearName(): Promise<any[]> {
+    try {
+        const query = `
+            select YEAR_ID,YEAR_NAME from year where year_name=(SELECT YEAR(CURDATE()) AS yyy) AND DELETED_AT IS null;
+        `;
+        const results: any[] = await executeQuery(query, []);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching वर्ष ID आणि वर्ष नाव DDL: ${error.message}`);
+        throw error;
+    }
+}
+export async function getBharankFromMalmattecheDDL(id:number): Promise<any[]> {
+    try {
+        const query = `
+            SELECT BUILDINGWEIGHTS_NAME 
+            FROM BUILDINGWEIGHTS 
+            WHERE MILKAT_VAPAR_ID = ? AND DELETED_AT IS null
+        `;
+        const results: any[] = await executeQuery(query, [id]);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching भारांक: ${error.message}`);
+        throw error;
+    }
+}
+export async function getBuildingAnnuRateAndAkaranidar(malmatta_id:number, milkat_vapar_id:number, district_id:number): Promise<any[]> {
+    try {
+        const query = `
+            SELECT ANNUALPRICE_NAME, LEVYRATE_NAME 
+            FROM annualtax 
+            WHERE malmatta_id = ?
+            AND milkat_vapar_id = ?
+            AND district_id = ?
+            AND DELETED_AT IS null
+        `;
+        const results: any[] = await executeQuery(query, [malmatta_id, milkat_vapar_id, district_id]);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching भारांक: ${error.message}`);
+        throw error;
+    }
+}
+export async function getBharankDar_buildingModal(malmatta_varnan_id:number, vayoman:number): Promise<any[]> {
+    try {
+        const query = `
+        SELECT DEPRECIATION_NAME 
+        FROM DEPRECIATION 
+        WHERE AGEOFBUILDING_ID = (
+            SELECT AGEOFBUILDING_ID 
+            FROM ageofbuilding a 
+            WHERE MIN_AGE <= ? 
+            ORDER BY AGEOFBUILDING_ID DESC 
+            LIMIT 1
+        ) AND MALMATTA_ID = ? AND DELETED_AT IS null LIMIT 1`;
+        const results: any[] = await executeQuery(query, [vayoman, malmatta_varnan_id]);
+        return results;
+    } catch (error) {
+        logger.error(`Error fetching भारांक: ${error.message}`);
         throw error;
     }
 }

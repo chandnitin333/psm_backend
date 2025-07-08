@@ -210,6 +210,30 @@ export class Utils {
         return { simpleDate: onlyDate, dateWithAMPM: formattedDateTime }
     }
 
+    static async generateRNO(size = 6): Promise<number> {
+        const min = Math.pow(10, size - 1);
+        const max = Math.pow(10, size) - 1;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+     static async generateRandomNumber() {
+        const groups = [8, 6, 6, 6, 12]; // define lengths of each group
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+
+        for (let i = 0; i < groups.length; i++) {
+            let group = '';
+            for (let j = 0; j < groups[i]; j++) {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            group += characters[randomIndex];
+            }
+            result += group;
+            if (i < groups.length - 1) {
+            result += '-';
+            }
+        }
+
+        return result;
+    }
 }
 
 

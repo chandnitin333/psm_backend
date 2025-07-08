@@ -4,7 +4,7 @@ import { _200, _201, _400 } from "../../utils/ApiResponse";
 
 import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
-import { get_AllWardNoList, get_buildingKar_MalmattechePrakar, get_buildingKar_MalmattecheVarnan, get_buildingKar_bandkamachaMajla, get_khulaBhukhandKar_Gavthan, get_khulaBhukhandKar_MalmattechePrakar, get_monoraKar_MalmattechePrakar, get_monoraKar_MalmattecheVarnan, get_monoraKar_ManoracheBhag, openConstructionTaxAssessment, otherTaxCalculation, saveBandhKam, saveKhaliBhuKhand, saveNondni, saveTaxPayers, taxAssessmentForConstruction, taxAssessmentForTowers } from "../../services/admin/nodni.service";
+import { getAnnualRateAkarniDar, getBharankDar_buildingModal, getBharankFromMalmattecheDDL, getBuildingAnnuRateAndAkaranidar, getYearIdAndYearName, get_AllWardNoList, get_buildingKar_MalmattechePrakar, get_buildingKar_MalmattecheVarnan, get_buildingKar_bandkamachaMajla, get_khulaBhukhandKar_Gavthan, get_khulaBhukhandKar_MalmattechePrakar, get_monoraKar_MalmattechePrakar, get_monoraKar_MalmattecheVarnan, get_monoraKar_ManoracheBhag, openConstructionTaxAssessment, otherTaxCalculation, saveBandhKam, saveKhaliBhuKhand, saveNondni, saveTaxPayers, taxAssessmentForConstruction, taxAssessmentForTowers } from "../../services/admin/nodni.service";
 
 // फेरफार यादी (Ferfar Yadi) Module API     
 export class Nodni {
@@ -64,7 +64,7 @@ export class Nodni {
     static saveKhaliBhuKhand = async (req: Request, res: Response) => {
         try {
             const anu_details: any = await saveKhaliBhuKhand(req.body);
-            return _201(res, "Khali Bhu Khand successfully added", { status: 201, data: anu_details });
+            return _201(res, "Khali Bhu Khand successfully added",anu_details);
         } catch (error) {
             logger.error("Error saveKhaliBhuKhand ::", error);
             return _400(res, "Error saveKhaliBhuKhand");
@@ -181,12 +181,76 @@ export class Nodni {
             const authHeader = req.headers.authorization;
             const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
             const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
-            // console.log("Decoded User:", decoded_user);
+            console.log("Decoded User:", decoded_user);
             const data: any = await get_AllWardNoList(Number(decoded_user['userId']));
             return _200(res, "वार्ड नं. List fetched successfully", { status: 200, data: data });
         } catch (error) {
             logger.error("Error fetching वार्ड नं.", error);
             return _400(res, "Error fetching वार्ड नं.");
+        }
+    }
+    static async getJaminicheVarshikMulyAndAkarniRate( req: Request, res: Response) {
+        try {
+            const authHeader = req.headers.authorization;
+            const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
+            const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+            const district_id = Number(decoded_user['DISTRICT_ID']);
+            const taluka_id = Number(decoded_user['TALUKA_ID']);
+            const panchayat_id = Number(decoded_user['PANCHAYAT_ID']);
+
+            const id = Number(req.params.id);
+            const data: any = await getAnnualRateAkarniDar(id, district_id, taluka_id, panchayat_id);
+            return _200(res, "जमिनीचे वार्षिक मूल्य आणि आकारणी दर List fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching जमिनीचे वार्षिक मूल्य आणि आकारणी दर", error);
+            return _400(res, "Error fetching जमिनीचे वार्षिक मूल्य आणि आकारणी दर");
+        }
+    }
+    static async getYearIdAndYearName(req: Request, res: Response) {
+        try {
+            const data: any = await getYearIdAndYearName(); // Assuming this function exists in your service
+            return _200(res, "Year ID and Year Name fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching Year ID and Year Name", error);
+            return _400(res, "Error fetching Year ID and Year Name");
+        }
+    }
+
+    static async getBharankFromMalmattechDDLSelect( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            const data: any = await getBharankFromMalmattecheDDL(id);
+            return _200(res, "भारांक value fetch successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching भारांक", error);
+            return _400(res, "Error fetching भारांक");
+        }
+    }
+
+    static async getBuildingAnnualRateAkaraniDar( req: Request, res: Response) {
+        try {
+            const authHeader = req.headers.authorization;
+            const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
+            const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+            const district_id = Number(decoded_user['DISTRICT_ID']);
+            const malmatta_id = Number(req.params.malmatta_id);
+            const milkat_vapar_id = Number(req.params.milkat_vapar_id);
+            const data: any = await getBuildingAnnuRateAndAkaranidar(malmatta_id,milkat_vapar_id, district_id);
+            return _200(res, "इमारतीचे वार्षिक मुल्य and आकारणी दर value fetch successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching इमारतीचे वार्षिक मुल्य and आकारणी दर", error);
+            return _400(res, "Error fetching इमारतीचे वार्षिक मुल्य and आकारणी दर");
+        }
+    }
+        static async getGhasaraDarBuildingModal( req: Request, res: Response) {
+        try {
+            const malmatta_varnan_id = Number(req.params.malmatta_varnan_id);
+            const vayoman = Number(req.params.vayoman);
+            const data: any = await getBharankDar_buildingModal(malmatta_varnan_id,vayoman);
+            return _200(res, "घसारा दर value fetch successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching घसारा दर", error);
+            return _400(res, "Error fetching घसारा दर");
         }
     }
 }

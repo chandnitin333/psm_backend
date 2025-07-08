@@ -98,6 +98,12 @@ export class psmRoutes {
         this.router.get('/get-monora-kar-malmatteche-varnan-ddl', GlobalMiddleware.checkError, Nodni.monoraKar_MalmattecheVarnan);
         this.router.get('/get-monora-kar-manorache-bhag-ddl', GlobalMiddleware.checkError, Nodni.monoraKar_ManoracheBhag);
         this.router.get('/get-all-ward-no-list-ddl', GlobalMiddleware.checkError, Nodni.getAllWardNoList);
+        this.router.get('/get-jamin-anual-rate-akarani-dar/:id', GlobalMiddleware.checkError, Nodni.getJaminicheVarshikMulyAndAkarniRate);
+        this.router.get('/get-year-id-year-name', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.getYearIdAndYearName);
+        this.router.get('/get-bharank-from-malmatteche-prakar-select/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.getBharankFromMalmattechDDLSelect);
+        this.router.get('/get-anual-building-value-aakarani-dar-building-modal/:malmatta_id/:milkat_vapar_id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.getBuildingAnnualRateAkaraniDar);
+        this.router.get('/get-new-ghasara-dar-building-modal/:malmatta_varnan_id/:vayoman', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.getGhasaraDarBuildingModal);
+        
 
 
         this.router.post('/save-tax-payer', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveTaxPeryers);
