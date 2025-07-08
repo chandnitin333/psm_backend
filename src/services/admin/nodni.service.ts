@@ -574,7 +574,7 @@ export async function getBharankDar_buildingModal(malmatta_varnan_id:number, vay
     try {
         const query = `
         SELECT DEPRECIATION_NAME 
-        FROM DEPRECIATION 
+        FROM depreciation 
         WHERE AGEOFBUILDING_ID = (
             SELECT AGEOFBUILDING_ID 
             FROM ageofbuilding a 
