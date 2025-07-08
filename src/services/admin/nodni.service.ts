@@ -543,7 +543,7 @@ export async function getBharankFromMalmattecheDDL(id:number): Promise<any[]> {
     try {
         const query = `
             SELECT BUILDINGWEIGHTS_NAME 
-            FROM BUILDINGWEIGHTS 
+            FROM buildingweights 
             WHERE MILKAT_VAPAR_ID = ? AND DELETED_AT IS null
         `;
         const results: any[] = await executeQuery(query, [id]);
