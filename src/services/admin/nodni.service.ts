@@ -7,22 +7,24 @@ export const openConstructionTaxAssessment = async (data: any) => {
     try {
         let sql = `SELECT 
                 A.*, 
-                (SELECT X.MILKAT_VAPAR_NAME FROM MILKAT_VAPAR X WHERE X.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID) AS MILKAT_VAPAR_NAME,
-                (SELECT X.PRAKAR_NAME FROM PRAKAR X WHERE X.PRAKAR_ID IN (SELECT Y.PRAKAR_ID FROM OPENPLOT Y WHERE Y.OPENPLOT_ID = A.OPENPLOT_ID)) AS PRAKAR_NAME,
-                (SELECT X.GATGRAMPANCHAYAT_NAME FROM GATGRAMPANCHAYAT X WHERE X.GATGRAMPANCHAYAT_ID = A.GATGRAMPANCHAYAT_ID) AS GATGRAMPANCHAYAT_NAME,
-                (SELECT X.VAPARACHE_PRAKAR FROM TAXATIONLAND_Temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS VAPARACHE_PRAKAR,
-                (SELECT X.AREAP FROM TAXATIONLAND_Temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS AREAP,
-                (SELECT X.AREAI FROM TAXATIONLAND_Temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS AREAI,
-                (SELECT X.TOTALAREA FROM TAXATIONLAND_Temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS TOTALAREA,
-                (SELECT X.AREAP1 FROM TAXATIONLAND_Temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS AREAP1,
-                (SELECT X.AREAI1 FROM TAXATIONLAND_Temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS AREAI1,
-                (SELECT X.TOTALAREA1 FROM TAXATIONLAND_Temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS TOTALAREA1,
-                (SELECT X.ANNUALVALUE FROM TAXATIONLAND_Temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS ANNUALVALUE,
-                (SELECT X.LEVYRATE FROM TAXATIONLAND_Temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS LEVYRATE,
-                (SELECT X.CAPITAL FROM TAXATIONLAND_Temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS CAPITAL,
-                (SELECT X.TAXATION FROM TAXATIONLAND_Temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS TAXATION
+                (SELECT X.MILKAT_VAPAR_NAME FROM milkat_vapar X WHERE X.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID) AS MILKAT_VAPAR_NAME,
+                (SELECT X.MILKAT_VAPAR_NAME FROM milkat_vapar X WHERE X.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID) AS MILKAT_VAPAR_NAME1,
+                (SELECT X.PRAKAR_NAME FROM PRAKAR X WHERE X.PRAKAR_ID IN (SELECT Y.PRAKAR_ID FROM openplot Y WHERE Y.OPENPLOT_ID = A.OPENPLOT_ID)) AS PRAKAR_NAME,
+                (SELECT X.GATGRAMPANCHAYAT_NAME FROM gatgrampanchayat X WHERE X.GATGRAMPANCHAYAT_ID = A.GATGRAMPANCHAYAT_ID) AS GATGRAMPANCHAYAT_NAME,
+                (SELECT X.VAPARACHE_PRAKAR FROM taxationland_temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS VAPARACHE_PRAKAR,
+                (SELECT X.AREAP FROM taxationland_temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS AREAP,
+                (SELECT X.AREAI FROM taxationland_temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS AREAI,
+                (SELECT X.TOTALAREA FROM taxationland_temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS TOTALAREA,
+                (SELECT X.AREAP1 FROM taxationland_temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS AREAP1,
+                (SELECT X.AREAI1 FROM taxationland_temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS AREAI1,
+                (SELECT X.TOTALAREA1 FROM taxationland_temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS TOTALAREA1,
+                (SELECT X.ANNUALVALUE FROM taxationland_temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS ANNUALVALUE,
+                (SELECT X.LEVYRATE FROM taxationland_temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS LEVYRATE,
+                (SELECT X.CAPITAL FROM taxationland_temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS CAPITAL,
+                (SELECT X.TAXATION FROM taxationland_temp X WHERE X.TAXATIONLAND_ID = A.TAXATIONLAND_ID) AS TAXATION,
+                '' as action
             FROM 
-                TAXATIONLAND_Temp A
+                taxationland_temp A
             WHERE 
                 RandomNumber = ?
                 AND user_id = ?
@@ -47,27 +49,27 @@ export const taxAssessmentForConstruction = async (data: any) => {
     try {
         let sql = `SELECT 
             A.*,
-            (SELECT X.MILKAT_VAPAR_NAME FROM MILKAT_VAPAR X WHERE X.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID) AS MILKAT_VAPAR_NAME,
-            (SELECT X.DESCRIPTION_NAME FROM MALMATTA X WHERE X.MALMATTA_ID = A.MALMATTA_ID) AS DESCRIPTION_NAME,
-            (SELECT X.VAPARACHE_PRAKAR FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS VAPARACHE_PRAKAR,
-            (SELECT X.FLOOR_NAME FROM FLOOR X WHERE X.FLOOR_ID = A.FLOOR_ID) AS FLOOR_NAME,
-            (SELECT X.AREAP FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS AREAP,
-            (SELECT X.AREAI FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS AREAI,
-            (SELECT X.TOTALAREA FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS TOTALAREA,
-            (SELECT IFNULL(X.TOTALAREA, 0) FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID AND X.floor_id = 3) AS TOTALAREA_X,
-            (SELECT X.TOTALAREA1 FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS TOTALAREA1,
-            (SELECT X.LIFESPAN FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS LIFESPAN,
-            (SELECT X.CONSTRUCTING FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS CONSTRUCTING,
-            (SELECT X.DEPRECIATION FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS DEPRECIATION,
-            (SELECT X.WEIGHTTAGE FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS WEIGHTTAGE,
-            (SELECT X.ANNUALCOST FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS ANNUALCOST,
-            (SELECT X.LEVYRATE FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS LEVYRATE,
-            (SELECT X.ONE FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS ONE,
-            (SELECT IFNULL(X.ONE, 0) FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID AND X.floor_id = 3) AS ONE_X,
-            (SELECT X.TWO FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS TWO,
-            (SELECT IFNULL(X.TWO, 0) FROM CONSTRUCTIONTAX_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID AND X.floor_id = 3) AS TWO_X
+            (SELECT X.MILKAT_VAPAR_NAME FROM milkat_vapar X WHERE X.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID) AS MILKAT_VAPAR_NAME,
+            (SELECT X.DESCRIPTION_NAME FROM malmatta X WHERE X.MALMATTA_ID = A.MALMATTA_ID) AS DESCRIPTION_NAME,
+            (SELECT X.VAPARACHE_PRAKAR FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS VAPARACHE_PRAKAR,
+            (SELECT X.FLOOR_NAME FROM floor X WHERE X.FLOOR_ID = A.FLOOR_ID) AS FLOOR_NAME,
+            (SELECT X.AREAP FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS AREAP,
+            (SELECT X.AREAI FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS AREAI,
+            (SELECT X.TOTALAREA FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS TOTALAREA,
+            (SELECT IFNULL(X.TOTALAREA, 0) FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID AND X.floor_id = 3) AS TOTALAREA_X,
+            (SELECT X.TOTALAREA1 FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS TOTALAREA1,
+            (SELECT X.LIFESPAN FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS LIFESPAN,
+            (SELECT X.CONSTRUCTING FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS CONSTRUCTING,
+            (SELECT X.DEPRECIATION FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS DEPRECIATION,
+            (SELECT X.WEIGHTTAGE FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS WEIGHTTAGE,
+            (SELECT X.ANNUALCOST FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS ANNUALCOST,
+            (SELECT X.LEVYRATE FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS LEVYRATE,
+            (SELECT X.ONE FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS ONE,
+            (SELECT IFNULL(X.ONE, 0) FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID AND X.floor_id = 3) AS ONE_X,
+            (SELECT X.TWO FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS TWO,
+            (SELECT IFNULL(X.TWO, 0) FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID AND X.floor_id = 3) AS TWO_X
         FROM 
-            CONSTRUCTIONTAX_temp A
+            constructiontax_temp A
         WHERE 
             RandomNumber = ?
             AND user_id = ? 
@@ -91,17 +93,17 @@ export const taxAssessmentForConstruction = async (data: any) => {
 export const taxAssessmentForTowers = async (data: any) => {
     try {
         let sql = `SELECT A.*,
-        (SELECT X.MILKAT_VAPAR_NAME FROM MILKAT_VAPAR X WHERE X.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID) AS MILKAT_VAPAR_NAME,
-        (SELECT X.DESCRIPTION_NAME FROM MALMATTA X WHERE X.MALMATTA_ID = A.MALMATTA_ID) AS DESCRIPTION_NAME,
-        (SELECT X.VAPARACHE_PRAKAR FROM TAXPAYERS_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS VAPARACHE_PRAKAR,
-        (SELECT X.MANORAMASTER_NAME FROM MANORAMASTER X WHERE X.MANORAMASTER_ID = A.MANORAMASTER_ID) AS MANORAMASTER_NAME,
-        (SELECT X.AREAP FROM TAXPAYERS_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS AREAP,
-        (SELECT X.AREAI FROM TAXPAYERS_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS AREAI,
-        (SELECT X.TOTALAREA FROM TAXPAYERS_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS TOTALAREA,
-        (SELECT X.TOTALAREA1 FROM TAXPAYERS_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS TOTALAREA1,
-        (SELECT X.CAPITAL FROM TAXPAYERS_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS CAPITAL,
-        (SELECT X.TAXATION FROM TAXPAYERS_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS TAXATION
-        FROM TAXPAYERS_temp A
+        (SELECT X.MILKAT_VAPAR_NAME FROM milkat_vapar X WHERE X.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID) AS MILKAT_VAPAR_NAME,
+        (SELECT X.DESCRIPTION_NAME FROM malmatta X WHERE X.MALMATTA_ID = A.MALMATTA_ID) AS DESCRIPTION_NAME,
+        (SELECT X.VAPARACHE_PRAKAR FROM taxpayers_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS VAPARACHE_PRAKAR,
+        (SELECT X.MANORAMASTER_NAME FROM manoramaster X WHERE X.MANORAMASTER_ID = A.MANORAMASTER_ID) AS MANORAMASTER_NAME,
+        (SELECT X.AREAP FROM taxpayers_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS AREAP,
+        (SELECT X.AREAI FROM taxpayers_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS AREAI,
+        (SELECT X.TOTALAREA FROM taxpayers_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS TOTALAREA,
+        (SELECT X.TOTALAREA1 FROM taxpayers_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS TOTALAREA1,
+        (SELECT X.CAPITAL FROM taxpayers_temp X WHERE X.TAXPAYERS_ID    = A.TAXPAYERS_ID) AS CAPITAL,
+        (SELECT X.TAXATION FROM taxpayers_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS TAXATION
+        FROM taxpayers_temp A
         WHERE RandomNumber = ?
         AND user_id =?
         AND RNO = ?
@@ -306,7 +308,7 @@ export const saveBandhKam = async (data: any) => {
             data.one,
             data.two,
             data.rno,
-            data.cons1000,
+            1000,
             data.annu_kramank,
             data.vard_number,
             data.year_id,
@@ -334,17 +336,29 @@ export const saveBandhKam = async (data: any) => {
 
 export const saveTaxPayers = async (data: any) => {
     try {
-        let sql = `INSERT INTO TAXPAYERS (
-                newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, MANORAMASTER_ID, 
-                AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, CAPITAL, TAXATION, RNO, 
-                taxp1000, vard_number, annu_kramank, Year_id, Year_name, reg_date, tdate, ttime
-            ) 
-            VALUES (
-                ?, ?, ?, ?, ?, ?, 
-                ?, ?, ?, ?, ?, ?, 
-                ?, ?, ?, ?, ?, ?, 
-                ?, ?, ?, ?, ?
-            )`;
+        // let sql = `INSERT INTO TAXPAYERS (
+        //         newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, MANORAMASTER_ID, 
+        //         AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, CAPITAL, TAXATION, RNO, 
+        //         taxp1000, vard_number, annu_kramank, Year_id, Year_name, reg_date, tdate, ttime
+        //     ) 
+        //     VALUES (
+        //         ?, ?, ?, ?, ?, ?, 
+        //         ?, ?, ?, ?, ?, ?, 
+        //         ?, ?, ?, ?, ?, ?, 
+        //         ?, ?, ?, ?, ?
+        //     )`;
+        let sql = `INSERT INTO TAXPAYERS_temp (
+                    newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR,
+                    MANORAMASTER_ID, AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1,
+                    CAPITAL, TAXATION, RNO, taxp1000, vard_number, annu_kramank, Year_id,
+                    Year_name, reg_date, tdate, ttime,RandomNumber, Token
+                                ) 
+                                VALUES (
+                                    ?, ?, ?, ?, ?, ?, 
+                                    ?, ?, ?, ?, ?, ?, 
+                                    ?, ?, ?, ?, ?, ?, 
+                                    ?, ?, ?, ?, ?, ?,?
+                                )`;
         const params = [
             data.newuser_id,
             data.user_id,
@@ -358,17 +372,19 @@ export const saveTaxPayers = async (data: any) => {
             data.areap1,
             data.areai1,
             data.totalarea1,
-            data.capital,
-            data.taxation,
+            data.levyrate,
+            data.karAkarani,
             data.rno,
-            data.taxp1000,
+            1000,
             data.vard_number,
             data.annu_kramank,
             data.year_id,
             data.year_name,
             new Date().toISOString().slice(0, 10) + ' ' + new Date().toTimeString().slice(0, 8), // reg_date
             new Date().toISOString().slice(0, 10) + ' ' + new Date().toTimeString().slice(0, 8), // tdate
-            new Date().toISOString().slice(0, 10) + ' ' + new Date().toTimeString().slice(0, 8)  // ttime
+            new Date().toISOString().slice(0, 10) + ' ' + new Date().toTimeString().slice(0, 8),  // ttime
+            data.random_number,
+            data.token
         ];
 
         console.log("params", params);
