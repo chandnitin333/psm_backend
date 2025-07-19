@@ -330,7 +330,7 @@ export const saveBandhKam = async (data: any) => {
         //     ) VALUES (
         //         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
         //     )`;
-        let sql = `INSERT INTO CONSTRUCTIONTAX_temp (
+        let sql = `INSERT INTO constructiontax_temp (
             newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, FLOOR_ID,
             AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, LIFESPAN, CONSTRUCTING,
             DEPRECIATION, WEIGHTTAGE, ANNUALCOST, LEVYRATE, ONE, TWO, RNO, cons1000,
@@ -398,7 +398,7 @@ export const saveTaxPayers = async (data: any) => {
         //         ?, ?, ?, ?, ?, ?, 
         //         ?, ?, ?, ?, ?
         //     )`;
-        let sql = `INSERT INTO TAXPAYERS_temp (
+        let sql = `INSERT INTO taxpayers_temp (
                     newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR,
                     MANORAMASTER_ID, AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1,
                     CAPITAL, TAXATION, RNO, taxp1000, vard_number, annu_kramank, Year_id,
