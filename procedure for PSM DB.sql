@@ -1,5 +1,3 @@
-DELIMITER //
-
 CREATE PROCEDURE `multipleinsertdata`(
     IN anu_kramank VARCHAR(100),
     IN vard_number VARCHAR(100),
@@ -105,9 +103,6 @@ BEGIN
     END IF;
    
 END;
-//
-
-DELIMITER ;
 
 
 
@@ -118,7 +113,7 @@ DELIMITER ;
 
 
 
-DELIMITER //
+
 
 CREATE PROCEDURE DBMS_District_List()
 BEGIN
@@ -126,13 +121,9 @@ BEGIN
     FROM district 
     ORDER BY District_Name;
 END;
-//
-
-DELIMITER ;
 
 
 
-DELIMITER //
 
 CREATE PROCEDURE DBMS_Taluka_List_By_District_ID(
     IN IN_District_ID INT
@@ -143,14 +134,10 @@ BEGIN
     WHERE DISTRICT_ID = IN_District_ID 
     ORDER BY TALUKA_NAME;
 END;
-//
-
-DELIMITER ;
 
 
 
 
-DELIMITER //
 CREATE PROCEDURE Delete_Record(
     IN ramdom VARCHAR(100),
     IN userid INT,
@@ -176,15 +163,11 @@ BEGIN
       AND RNO = rno 
       AND Token = token;
 END;
-//
-
-DELIMITER ;
 
 
 
 
 
-DELIMITER //
 CREATE PROCEDURE desk()
 BEGIN
     DECLARE a VARCHAR(100);
@@ -214,14 +197,8 @@ BEGIN
     END LOOP simple_loop;
 
 END;
-//
-
-DELIMITER ; 
 
 
-
-
-DELIMITER //
 CREATE PROCEDURE GRAM()
 BEGIN
     DECLARE YEARS FLOAT;
@@ -245,14 +222,10 @@ BEGIN
         SELECT YEARS AS yyy;
     END IF;
 END;
-//
-
-DELIMITER ; 
 
 
 
 
-DELIMITER //
 CREATE PROCEDURE taxationdata(
     IN userid INT,
     IN newuserid INT
@@ -279,16 +252,11 @@ BEGIN
         WHERE A.user_id = userid AND A.newuser_id = newuserid
         LIMIT 1;
     END IF;
-END;
-//
-
-DELIMITER ; 
+END; 
 
 
 
 
-
-DELIMITER //
 CREATE PROCEDURE taxationtemp(
     IN ramdom VARCHAR(100),
     IN userid INT,
@@ -316,12 +284,8 @@ BEGIN
     ORDER BY TAXATIONLAND_ID ASC
     LIMIT 3;
 END;
-//
-
-DELIMITER ;
 
 
-DELIMITER //
 CREATE PROCEDURE getUserCounts(IN user_id INT)
 BEGIN
     SELECT 
@@ -331,11 +295,8 @@ BEGIN
         (SELECT COUNT(milkar_prakar) FROM newuser WHERE milkar_prakar = 'इमलाकर' AND user_id = user_id) AS IMLAKAR,
         (SELECT COUNT(milkar_prakar) FROM newuser WHERE MILKAR_PRAKAR = 'घर कर लावायचा आहे' AND user_id = user_id) AS HOME_KAR;
 END;
- //
 
-DELIMITER ;
 
-DELIMITER //
 CREATE PROCEDURE getMemberList(IN panachayt_id INT)
 BEGIN
     SELECT 
@@ -352,7 +313,4 @@ BEGIN
     WHERE 
         A.PANCHAYAT_ID = panachayt_id;
 END;
- //
-
-DELIMITER ; 
 
