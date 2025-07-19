@@ -29,11 +29,10 @@ export const openConstructionTaxAssessment = async (data: any) => {
                 RandomNumber = ?
                 AND user_id = ?
                 AND RNO = ?
-                AND Token = ?
             ORDER BY 
                 TAXATIONLAND_ID ASC
             LIMIT 3`
-        const result = await executeQuery(sql, [data.randomNumber, data.userId, data.rno, data.token]);
+        const result = await executeQuery(sql, [data.randomNumber, data.userId, data.rno]);
 
         return result;
 
@@ -67,18 +66,18 @@ export const taxAssessmentForConstruction = async (data: any) => {
             (SELECT X.ONE FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS ONE,
             (SELECT IFNULL(X.ONE, 0) FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID AND X.floor_id = 3) AS ONE_X,
             (SELECT X.TWO FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID) AS TWO,
-            (SELECT IFNULL(X.TWO, 0) FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID AND X.floor_id = 3) AS TWO_X
+            (SELECT IFNULL(X.TWO, 0) FROM constructiontax_temp X WHERE X.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID AND X.floor_id = 3) AS TWO_X,
+            '' as action
         FROM 
             constructiontax_temp A
         WHERE 
             RandomNumber = ?
             AND user_id = ? 
             AND RNO = ?
-            AND Token = ?
         ORDER BY 
             CONSTRUCTIONTAX_ID ASC
         LIMIT 5`
-        const result = await executeQuery(sql, [data.randomNumber, data.userId, data.rno, data.token]);
+        const result = await executeQuery(sql, [data.randomNumber, data.userId, data.rno]);
 
         return result;
 
@@ -102,15 +101,14 @@ export const taxAssessmentForTowers = async (data: any) => {
         (SELECT X.TOTALAREA FROM taxpayers_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS TOTALAREA,
         (SELECT X.TOTALAREA1 FROM taxpayers_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS TOTALAREA1,
         (SELECT X.CAPITAL FROM taxpayers_temp X WHERE X.TAXPAYERS_ID    = A.TAXPAYERS_ID) AS CAPITAL,
-        (SELECT X.TAXATION FROM taxpayers_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS TAXATION
+        (SELECT X.TAXATION FROM taxpayers_temp X WHERE X.TAXPAYERS_ID = A.TAXPAYERS_ID) AS TAXATION, '' as action
         FROM taxpayers_temp A
         WHERE RandomNumber = ?
         AND user_id =?
         AND RNO = ?
-        AND Token = ?
         ORDER BY TAXPAYERS_ID ASC
         LIMIT 3`
-        const result = await executeQuery(sql, [data.randomNumber, data.userId, data.rno, data.token]);
+        const result = await executeQuery(sql, [data.randomNumber, data.userId, data.rno]);
 
         return result;
 
@@ -154,15 +152,25 @@ export const otherTaxCalculation = async (data: any) => {
 
 export const saveNondni = async (data: any) => {
     try {
-        const {
-            txt_number, txt_vard_number, txt_malmatta_number, txt_plot_number,
-            txt_khasara_number, txt_survey_number, txt_voter_card_number, txt_aadhar_card_number,
-            txt_mobile_number, txt_home_name, txt_spouse, txt_bhogatwadarache_name, txt_address,
+        // const {
+        //     txt_number, txt_vard_number, txt_malmatta_number, txt_plot_number,
+        //     txt_khasara_number, txt_survey_number, txt_voter_card_number, txt_aadhar_card_number,
+        //     txt_mobile_number, txt_home_name, txt_spouse, txt_bhogatwadarache_name, txt_address,
+        //     txt_kamayacha_address, txt_bhogatwarache_malak, txt_east, txt_west, txt_north, txt_south,
+        //     txt_water, txt_washroom, txt_milkat_prakar, txt_emarat_jamin, txt_emarat_mokdi,
+        //     txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,user_id, randomNumber, rno, token,
+        //     urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,
+        //     gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio
+        // } = data;
+        let {
+            txt_number, txt_malmatta_number, txt_vard_number, txt_plot_number, txt_khasara_number,
+            txt_survey_number, txt_voter_card_number, txt_aadhar_card_number, txt_mobile_number,
+            txt_home_name, txt_spouse, txt_bhogatwadarache_name, txt_address,
             txt_kamayacha_address, txt_bhogatwarache_malak, txt_east, txt_west, txt_north, txt_south,
             txt_water, txt_washroom, txt_milkat_prakar, txt_emarat_jamin, txt_emarat_mokdi,
             txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,user_id, randomNumber, rno, token,
-            urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,
-            gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio
+            urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio, 
+            check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar
         } = data;
 
 
@@ -195,10 +203,33 @@ export const saveNondni = async (data: any) => {
                     LAMBI, RUNDI, SQUARE_FOOT, SQUARE_METER, user_id, RandomNumber, RNO, Tokens,
                     URVATICH_KHALI_JAGA, URVATICH_KHALI_JAGAS, EMARTICHE_RUPESS, JAMINICHE_RUPEES, TOTAL,
                     EMARTICHE_KARAAKARNI, KHULA_BHUKAND, TOTALS,
-                    BHUMIKAR, CHALU_KAR, MAGIL_BAKI, EEKUN_KAR_BHARNA, MAJAHUN_GHAT,vanijya
+                    BHUMIKAR, CHALU_KAR, MAGIL_BAKI, EEKUN_KAR_BHARNA, MAJAHUN_GHAT,vanijya,
+                    CHECK1,VIZ_DIVVABATTIKAR,CHECK2,AAROGYA_RAKSHAN_KAR,CHECK3,SAFAI_KAR,CHECK4,SAMANYA_PANI_KAR,CHECK5,VISHESH_PANI_KAR,EKUN
                 ) VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?
                 )`;
+                // check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar
+                if(check1 === 0){
+                   check1 = null;
+                   viz_divabatti_kar = 0;
+                }
+                if(check2 === 0){
+                    check2 = null;
+                    aaraogya_rakashan_kar = 0;
+                }
+                if(check3 === 0){
+                    check3 = null;
+                    safae_kar = 0;
+                }
+                if(check4 === 0){
+                    check4 = null;
+                    samanya_pani_kar = 0;
+                }
+                if(check5 === 0){
+                    check5 = null;
+                    vishesh_pani_kar = 0;
+                }
+                let ekun = viz_divabatti_kar + aaraogya_rakashan_kar+ safae_kar + samanya_pani_kar + vishesh_pani_kar;
 
             const insertParams = [
                 txt_number, txt_malmatta_number, txt_vard_number, txt_plot_number, txt_khasara_number,
@@ -207,12 +238,32 @@ export const saveNondni = async (data: any) => {
                 txt_kamayacha_address, txt_bhogatwarache_malak, txt_east, txt_west, txt_north, txt_south,
                 txt_water, txt_washroom, txt_milkat_prakar, txt_emarat_jamin, txt_emarat_mokdi,
                 txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,user_id, randomNumber, rno, token,
-                urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio
+                urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio,
+                check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar, ekun
+                
             ];
 
 
             await executeQuery(insertQuery, insertParams);
-            console.log("test",data)
+            
+            // const insertedIdQuery = `SELECT LAST_INSERT_ID() AS id`;
+            // const insertedIdResult = await executeQuery(insertedIdQuery,[]);
+            // const insertedId = insertedIdResult[0]?.id;
+
+// check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar
+        //     check1: this.viz_divabatti_kar_checkbox,
+        // viz_divabatti_kar: this.viz_divabatti_kar,
+        // check2: this.aaraogya_rakashan_kar_checkbox,
+        // aaraogya_rakashan_kar: this.aaraogya_rakashan_kar,
+        // check3: this.safae_kar_checkbox,
+        // safae_kar: this.safae_kar,
+        // check4: this.samanya_pani_kar_checkbox,
+        // samanya_pani_kar: this.samanya_pani_kar,
+        // check5: this.vishesh_pani_kar_checkbox,
+        // vishesh_pani_kar: this.vishesh_pani_kar,
+
+
+            // console.log("test",data)
             let outParam = 0; // Declare outParam to store the returned value.
             let result = await executeQuery(`CALL multipleinsertdata(?, ?, ?, ?, ?, ?)`,
                 [txt_number, txt_vard_number, randomNumber, user_id, rno, token]);
@@ -603,5 +654,192 @@ export async function getBharankDar_buildingModal(malmatta_varnan_id:number, vay
     } catch (error) {
         logger.error(`Error fetching भारांक: ${error.message}`);
         throw error;
+    }
+}
+export async function getKhulabhukhandModalData(id:any): Promise<any[]> {
+    try{
+        const query = `
+        SELECT * 
+        FROM taxationland_temp 
+        WHERE TAXATIONLAND_ID = ? AND DELETED_AT IS null LIMIT 1`;
+        const results: any[] = await executeQuery(query, [id]);
+        return results;
+    }catch (error) {
+        logger.error(`Error fetching खुला भूखंड कर आकारणी modal data: ${error.message}`);
+        throw error;
+    }
+}
+export async function updateKhaliBhukhand(data:any, id:any): Promise<any> {
+    try {
+        const sql = `UPDATE taxationland_temp SET 
+                    MILKAT_VAPAR_ID = ?, 
+                    MILKAT_VAPAR_ID1 = ?, 
+                    VAPARACHE_PRAKAR = ?, 
+                    GATGRAMPANCHAYAT_ID = ?, 
+                    OPENPLOT_ID = ?, 
+                    AREAP = ?, 
+                    AREAI = ?, 
+                    TOTALAREA = ?, 
+                    AREAP1 = ?, 
+                    AREAI1 = ?, 
+                    TOTALAREA1 = ?, 
+                    ANNUALVALUE = ?, 
+                    LEVYRATE = ?, 
+                    CAPITAL = ?, 
+                    TAXATION = ?
+                WHERE TAXATIONLAND_ID = ?`;
+        data = Object.values(data);
+        await executeQuery(sql, [...data,id]);
+    } catch (err) {
+        logger.error('Error ::updateKhaliBhukhand :', err);
+        throw err;
+    }
+}
+
+export async function deleteKhaliBhukhand(id:number): Promise<any> {
+    try {
+        const sql = `DELETE FROM taxationland_temp WHERE TAXATIONLAND_ID = ?`;
+        await executeQuery(sql, [id]);
+        return { status: 200, message: "Data Deleted Successfully" };
+    } catch (err) {
+        logger.error('Error ::deleteKhaliBhukhand :', err);
+        throw err;
+    }
+}
+
+export async function getBhandkamModalData(id:any): Promise<any[]> {
+    try{
+        const query = `
+        SELECT * 
+        FROM constructiontax_temp 
+        WHERE CONSTRUCTIONTAX_ID = ? AND DELETED_AT IS null LIMIT 1`;
+        const results: any[] = await executeQuery(query, [id]);
+        return results;
+    }catch (error) {
+        logger.error(`Error fetching बांधकाम कर आकारणी modal data: ${error.message}`);
+        throw error;
+    }
+}
+export async function updateBandkamModalRecords(data:any, id:any): Promise<any> {
+    try {
+        const sql = `UPDATE constructiontax_temp SET 
+                    MILKAT_VAPAR_ID = ?, 
+                    MALMATTA_ID = ?, 
+                    VAPARACHE_PRAKAR = ?, 
+                    FLOOR_ID = ?, 
+                    AREAP = ?, 
+                    AREAI = ?, 
+                    TOTALAREA = ?, 
+                    AREAP1 = ?, 
+                    AREAI1 = ?, 
+                    TOTALAREA1 = ?, 
+                    LIFESPAN = ?, 
+                    CONSTRUCTING = ?, 
+                    DEPRECIATION = ?, 
+                    WEIGHTTAGE = ?, 
+                    ANNUALCOST = ?, 
+                    LEVYRATE = ?, 
+                    ONE = ?, 
+                    TWO = ?
+                WHERE CONSTRUCTIONTAX_ID = ?`;
+        data = Object.values(data);
+        await executeQuery(sql, [...data,id]);
+    } catch (err) {
+        logger.error('Error ::updateBandkamModalRecords :', err);
+        throw err;
+    }
+}
+export async function deletebandkamKarAkkarniRecord(id:number): Promise<any> {
+    try {
+        const sql = `DELETE FROM constructiontax_temp WHERE CONSTRUCTIONTAX_ID = ?`;
+        await executeQuery(sql, [id]);
+        return { status: 200, message: "Data Deleted Successfully" };
+    } catch (err) {
+        logger.error('Error ::deleteBandkamModalRecords :', err);
+        throw err;
+    }
+}
+
+export async function getManoraKarAkaraniRecortds(id:any): Promise<any[]> {
+    try{
+        const query = `
+        SELECT * 
+        FROM taxpayers_temp 
+        WHERE TAXPAYERS_ID = ? AND DELETED_AT IS null LIMIT 1`;
+        const results: any[] = await executeQuery(query, [id]);
+        return results;
+    }catch (error) {
+        logger.error(`Error fetching मनोरा कर आकारणी modal data: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function updateManoraKarAkaraniRecords(data:any, id:any): Promise<any> {
+    try {
+        const sql = `UPDATE taxpayers_temp SET 
+                    MILKAT_VAPAR_ID = ?, 
+                    MALMATTA_ID = ?, 
+                    VAPARACHE_PRAKAR = ?, 
+                    MANORAMASTER_ID = ?, 
+                    AREAP = ?, 
+                    AREAI = ?, 
+                    TOTALAREA = ?, 
+                    AREAP1 = ?, 
+                    AREAI1 = ?, 
+                    TOTALAREA1 = ?, 
+                    CAPITAL = ?, 
+                    TAXATION = ?
+                WHERE TAXPAYERS_ID = ?`;
+        data = Object.values(data);
+        await executeQuery(sql, [...data,id]);
+    } catch (err) {
+        logger.error('Error ::updateManoraKarAkaraniRecords :', err);
+        throw err;
+    }
+}
+export async function deleteManoraKarAkaraniRecord(id:number): Promise<any> {
+    try {
+        const sql = `DELETE FROM taxpayers_temp WHERE TAXPAYERS_ID = ?`;
+        await executeQuery(sql, [id]);
+        return { status: 200, message: "Data Deleted Successfully" };
+    } catch (err) {
+        logger.error('Error ::deleteManoraKarAkaraniRecord :', err);
+        throw err;
+    }
+}
+
+export async function deleteKhulaBhukhandBySession(data:any): Promise<{ status: number; message: string; }> {
+    try {
+        const sql = `DELETE FROM taxationland_temp WHERE RandomNumber = ? AND user_id = ? AND RNO = ?`;
+        const params = [data.randomNumber, data.user_id, data.rno];
+        const result = await executeQuery(sql, params);
+        return { status: 200, message: "Data Deleted Successfully" };
+    } catch (err) {
+        logger.error('Error ::deleteKhulaBhukhandBySession :', err);
+        throw err;
+    }
+}
+
+export async function delete_buildingKarAkarniSession(data:any): Promise<{ status: number; message: string; }> {
+    try {
+        const sql = `DELETE FROM constructiontax_temp WHERE RandomNumber = ? AND user_id = ? AND RNO = ?`;
+        const params = [data.randomNumber, data.user_id, data.rno];
+        const result = await executeQuery(sql, params);
+        return { status: 200, message: "Data Deleted Successfully" };
+    } catch (err) {
+        logger.error('Error ::delete_buildingKarAkarniSession :', err);
+        throw err;
+    }
+}
+
+export async function delete_manoraKarBySession(data:any):Promise<{ status: number; message: string; }> {
+    try {
+        const sql = `DELETE FROM taxpayers_temp WHERE RandomNumber = ? AND user_id = ? AND RNO = ?`;
+        const params = [data.randomNumber, data.user_id, data.rno];
+        const result = await executeQuery(sql, params);
+        return { status: 200, message: "Data Deleted Successfully" };
+    } catch (err) {
+        logger.error('Error ::delete_manoraKarBySession :', err);
+        throw err;
     }
 }

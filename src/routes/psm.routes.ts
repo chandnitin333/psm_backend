@@ -6,15 +6,15 @@ import { grampanchayat } from "../controllers/admin/grampanchayat.controller";
 import { KaryaKarniCommitee } from "../controllers/admin/karyakarni-commitee.controller";
 import { Malmatta } from "../controllers/admin/malmatta.controller";
 import { taluka } from "../controllers/admin/taluka.controller";
+import { AdharWardList } from "../controllers/main/adhar-ward-list.controller";
 import { AuthController } from "../controllers/main/auth.controller";
 import { CustomerController } from "../controllers/main/customer.controller";
 import { FerFarYadi } from "../controllers/main/ferfar-yadi.controller";
-import { Nodni } from "../controllers/main/nodni.controller";
-import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
-import { AdharWardList } from "../controllers/main/adhar-ward-list.controller";
 import { MalamattaGrahakYadiList } from "../controllers/main/malmatta-grahak-yadi.controller";
 import { Namuna8Controller } from "../controllers/main/namuna-8.controller";
+import { Nodni } from "../controllers/main/nodni.controller";
 import { taxGenerationController } from "../controllers/main/tax-generation.controller";
+import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
 
 export class psmRoutes {
     public router: Router;
@@ -103,7 +103,22 @@ export class psmRoutes {
         this.router.get('/get-bharank-from-malmatteche-prakar-select/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.getBharankFromMalmattechDDLSelect);
         this.router.get('/get-anual-building-value-aakarani-dar-building-modal/:malmatta_id/:milkat_vapar_id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.getBuildingAnnualRateAkaraniDar);
         this.router.get('/get-new-ghasara-dar-building-modal/:malmatta_varnan_id/:vayoman', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.getGhasaraDarBuildingModal);
+
+        this.router.get('/edit-khula-bhukhand-modal-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.editKhulaBhukhand_modal);
+        this.router.put('/update-khula-bhukhand-modal/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.updateKhulaBhukhand);
+        this.router.delete('/delete-khula-bhukhand-record/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.deleteKhulaBhukhandModal);
+
+        this.router.get('/edit-bandkam-kar-aakarni-modal-data/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.editbandkamkarAakaraniModal);
+        this.router.put('/update-bandkam-kar-aakarani-modal/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.updateBandhKam);
+        this.router.delete('/delete-bandkam-kar-aakarni-record/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.deleteBandhKamModal);
         
+        this.router.get('/edit-manora-kar-aakarni-modal-data/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.editManoraKarAkarniModal);
+        this.router.put('/update-manora-kar-aakarani-modal/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.updateManoraKarAkaraniData);
+        this.router.delete('/delete-manora-kar-aakarni-record/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.deleteManoraKarAkaraniRecord);
+
+        this.router.post('/delete-khula-bhukhand-session-wise-clear-api', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.delete_khulabhukahnd_by_session_wise);
+        this.router.post('/delete-building-kar-session-wise-clear-api', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.delete_buildingKarKarano_by_session_wise);
+        this.router.post('/delete-monora-kar-session-wise-clear-api', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.delete_manoraKarAkarani_by_session_wise);
 
 
         this.router.post('/save-tax-payer', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveTaxPeryers);

@@ -4,7 +4,7 @@ import { _200, _201, _400 } from "../../utils/ApiResponse";
 
 import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
-import { getAnnualRateAkarniDar, getBharankDar_buildingModal, getBharankFromMalmattecheDDL, getBuildingAnnuRateAndAkaranidar, getYearIdAndYearName, get_AllWardNoList, get_buildingKar_MalmattechePrakar, get_buildingKar_MalmattecheVarnan, get_buildingKar_bandkamachaMajla, get_khulaBhukhandKar_Gavthan, get_khulaBhukhandKar_MalmattechePrakar, get_monoraKar_MalmattechePrakar, get_monoraKar_MalmattecheVarnan, get_monoraKar_ManoracheBhag, openConstructionTaxAssessment, otherTaxCalculation, saveBandhKam, saveKhaliBhuKhand, saveNondni, saveTaxPayers, taxAssessmentForConstruction, taxAssessmentForTowers } from "../../services/admin/nodni.service";
+import { deleteKhaliBhukhand, deleteKhulaBhukhandBySession, deleteManoraKarAkaraniRecord, delete_buildingKarAkarniSession, delete_manoraKarBySession, deletebandkamKarAkkarniRecord, getAnnualRateAkarniDar, getBhandkamModalData, getBharankDar_buildingModal, getBharankFromMalmattecheDDL, getBuildingAnnuRateAndAkaranidar, getKhulabhukhandModalData, getManoraKarAkaraniRecortds, getYearIdAndYearName, get_AllWardNoList, get_buildingKar_MalmattechePrakar, get_buildingKar_MalmattecheVarnan, get_buildingKar_bandkamachaMajla, get_khulaBhukhandKar_Gavthan, get_khulaBhukhandKar_MalmattechePrakar, get_monoraKar_MalmattechePrakar, get_monoraKar_MalmattecheVarnan, get_monoraKar_ManoracheBhag, openConstructionTaxAssessment, otherTaxCalculation, saveBandhKam, saveKhaliBhuKhand, saveNondni, saveTaxPayers, taxAssessmentForConstruction, taxAssessmentForTowers, updateBandkamModalRecords, updateKhaliBhukhand, updateManoraKarAkaraniRecords } from "../../services/admin/nodni.service";
 
 // फेरफार यादी (Ferfar Yadi) Module API     
 export class Nodni {
@@ -63,6 +63,9 @@ export class Nodni {
 
     static saveKhaliBhuKhand = async (req: Request, res: Response) => {
         try {
+            // if(req.body.annu_kramank == null || req.body.annu_kramank == undefined || req.body.annu_kramank == '' || req.body.vard_number == null || req.body.vard_number == undefined || req.body.vard_number == '') {
+            //     return _400(res, "अनु क्रमांक आणि वॉर्ड क्रमांक आवश्यक आहे.");
+            // }
             const anu_details: any = await saveKhaliBhuKhand(req.body);
             return _201(res, "Khali Bhu Khand successfully added",anu_details);
         } catch (error) {
@@ -72,6 +75,9 @@ export class Nodni {
     }
     static saveBandhKamFrm = async (req: Request, res: Response) => {
         try {
+            // if(req.body.annu_kramank == null || req.body.annu_kramank == undefined || req.body.annu_kramank == '' || req.body.vard_number == null || req.body.vard_number == undefined || req.body.vard_number == '') {
+            //     return _400(res, "अनु क्रमांक आणि वॉर्ड क्रमांक आवश्यक आहे.");
+            // }
             const anu_details: any = await saveBandhKam(req.body);
             return _201(res, "Bandh Kam successfully added", { status: 201, data: anu_details });
         } catch (error) {
@@ -84,6 +90,9 @@ export class Nodni {
 
     static saveTaxPeryers = async (req: Request, res: Response) => {
         try {
+            // if(req.body.annu_kramank == null || req.body.annu_kramank == undefined || req.body.annu_kramank == '' || req.body.vard_number == null || req.body.vard_number == undefined || req.body.vard_number == '') {
+            //     return _400(res, "अनु क्रमांक आणि वॉर्ड क्रमांक आवश्यक आहे.");
+            // }
             const anu_details: any = await saveTaxPayers(req.body);
             return _201(res, "Tax Payers successfully added", { status: 201, data: anu_details });
         } catch (error) {
@@ -242,7 +251,7 @@ export class Nodni {
             return _400(res, "Error fetching इमारतीचे वार्षिक मुल्य and आकारणी दर");
         }
     }
-        static async getGhasaraDarBuildingModal( req: Request, res: Response) {
+    static async getGhasaraDarBuildingModal( req: Request, res: Response) {
         try {
             const malmatta_varnan_id = Number(req.params.malmatta_varnan_id);
             const vayoman = Number(req.params.vayoman);
@@ -251,6 +260,170 @@ export class Nodni {
         } catch (error) {
             logger.error("Error fetching घसारा दर", error);
             return _400(res, "Error fetching घसारा दर");
+        }
+    }
+    // taxationland_temp
+    static async editKhulaBhukhand_modal( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const data: any = await getKhulabhukhandModalData(id);
+            return _200(res, "खुला भूखंडाची कर मालमत्तेचे प्रकार List fetched successfully",  {data: data} );
+        } catch (error) {
+            logger.error("Error fetching खुला भूखंडाची कर मालमत्तेचे प्रकार", error);
+            return _400(res, "Error fetching खुला भूखंडाची कर मालमत्तेचे प्रकार");
+        }
+    }
+    static async updateKhulaBhukhand( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const updatedData = req.body;
+            // Assuming there's a service function to update the Khula Bhukhand
+            const data: any = await updateKhaliBhukhand(updatedData, id );
+            return _200(res, "खुला भूखंडाची कर मालमत्तेचे प्रकार updated successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error updating खुला भूखंडाची कर मालमत्तेचे प्रकार", error);
+            return _400(res, "Error updating खुला भूखंडाची कर मालमत्तेचे प्रकार");
+        }
+    }
+    static async deleteKhulaBhukhandModal( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            // Assuming there's a service function to delete the Khula Bhukhand
+            const data: any = await deleteKhaliBhukhand(id);
+            return _200(res, "खुला भूखंडाची कर मालमत्तेचे प्रकार deleted successfully");
+        } catch (error) {
+            logger.error("Error deleting खुला भूखंडाची कर मालमत्तेचे प्रकार", error);
+            return _400(res, "Error deleting खुला भूखंडाची कर मालमत्तेचे प्रकार");
+        }
+    }
+    static async editbandkamkarAakaraniModal( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const data: any = await getBhandkamModalData(id);
+            return _200(res, "बांधकाम कर आकारणी modal data fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching बांधकाम कर आकारणी modal data", error);
+            return _400(res, "Error fetching बांधकाम कर आकारणी modal data");
+        }
+    }
+
+    static async updateBandhKam( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const updatedData = req.body;
+            // Assuming there's a service function to update the Bandh Kam
+            const data: any = await updateBandkamModalRecords(updatedData, id);
+            return _200(res, "बांधकाम कर आकारणी updated successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error updating बांधकाम कर आकारणी", error);
+            return _400(res, "Error updating बांधकाम कर आकारणी");
+        }
+    }
+
+    static async deleteBandhKamModal( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            // Assuming there's a service function to delete the Bandh Kam
+            const data: any = await deletebandkamKarAkkarniRecord(id);
+            return _200(res, "बांधकाम कर आकारणी deleted successfully");
+        } catch (error) {
+            logger.error("Error deleting बांधकाम कर आकारणी", error);
+            return _400(res, "Error deleting बांधकाम कर आकारणी");
+        }
+    }
+
+    static async editManoraKarAkarniModal( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            // Assuming there's a service function to get the Manora Kar Akarni modal data
+            const data: any = await getManoraKarAkaraniRecortds(id);
+            return _200(res, "मनोरा कर आकारणी modal data fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching मनोरा कर आकारणी modal data", error);
+            return _400(res, "Error fetching मनोरा कर आकारणी modal data");
+        }
+    }
+    static async updateManoraKarAkaraniData( req: Request, res: Response) { 
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const updatedData = req.body;
+            // Assuming there's a service function to update the Manora Kar Akarani data
+            const data: any = await updateManoraKarAkaraniRecords(updatedData, id);
+            return _200(res, "मनोरा कर आकारणी updated successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error updating मनोरा कर आकारणी", error);
+            return _400(res, "Error updating मनोरा कर आकारणी");
+        }
+    }
+    static async deleteManoraKarAkaraniRecord( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            // Assuming there's a service function to delete the Manora Kar Akarani record
+            const data: any = await deleteManoraKarAkaraniRecord(id);
+            return _200(res, "मनोरा कर आकारणी deleted successfully");
+        } catch (error) {
+            logger.error("Error deleting मनोरा कर आकारणी", error);
+            return _400(res, "Error deleting मनोरा कर आकारणी");
+        }
+    }
+    static async delete_khulabhukahnd_by_session_wise( req: Request, res: Response) {
+        try {
+            const payload = req.body;
+            // Assuming there's a service function to delete the Khula Bhukhand by session
+            const data: any = await deleteKhulaBhukhandBySession(payload);
+            return _200(res, "खुला भूखंडाची कर मालमत्तेचे प्रकार deleted successfully");
+        } catch (error) {
+            logger.error("Error deleting खुला भूखंडाची कर मालमत्तेचे प्रकार", error);
+            return _400(res, "Error deleting खुला भूखंडाची कर मालमत्तेचे प्रकार");
+        }
+    }
+    static async delete_buildingKarKarano_by_session_wise( req: Request, res: Response) {
+        try {
+            const payload = req.body;
+            // Assuming there's a service function to delete the Building Kar by session
+            const data: any = await delete_buildingKarAkarniSession(payload);
+            return _200(res, "बिल्डिंग कर आकारणी deleted successfully");
+        } catch (error) {
+            logger.error("Error deleting बिल्डिंग कर आकारणी", error);
+            return _400(res, "Error deleting बिल्डिंग कर आकारणी");
+        }
+    }
+    static async delete_manoraKarAkarani_by_session_wise( req: Request, res: Response) {
+        try {
+            const payload = req.body;
+            // Assuming there's a service function to delete the Manora Kar Akarani by session
+            const data: any = await delete_manoraKarBySession(payload);
+            return _200(res, "मनोरा कर आकारणी deleted successfully");
+        } catch (error) {
+            logger.error("Error deleting मनोरा कर आकारणी", error);
+            return _400(res, "Error deleting मनोरा कर आकारणी");
         }
     }
 }
