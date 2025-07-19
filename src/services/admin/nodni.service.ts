@@ -175,7 +175,7 @@ export const saveNondni = async (data: any) => {
 
 
         // Check if ANNU_KRAMANK already exists
-        const checkQuery = `SELECT ANNU_KRAMANK FROM NEWUSER WHERE ANNU_KRAMANK = ? AND VARD_NUMBER = ? AND user_id = ?`;
+        const checkQuery = `SELECT ANNU_KRAMANK FROM newuser WHERE ANNU_KRAMANK = ? AND VARD_NUMBER = ? AND user_id = ?`;
         const checkParams = [txt_number, txt_vard_number, user_id];
         const checkResult = await executeQuery(checkQuery, checkParams) as any[];
 
