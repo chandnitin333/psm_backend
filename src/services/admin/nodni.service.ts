@@ -209,27 +209,27 @@ export const saveNondni = async (data: any) => {
                     ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?
                 )`;
                 // check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar
-                if(check1 === 0){
+                if(check1 === ""){
                    check1 = null;
                    viz_divabatti_kar = 0;
                 }
-                if(check2 === 0){
+                if(check2 === ""){
                     check2 = null;
                     aaraogya_rakashan_kar = 0;
                 }
-                if(check3 === 0){
+                if(check3 === ""){
                     check3 = null;
                     safae_kar = 0;
                 }
-                if(check4 === 0){
+                if(check4 === ""){
                     check4 = null;
                     samanya_pani_kar = 0;
                 }
-                if(check5 === 0){
+                if(check5 === ""){
                     check5 = null;
                     vishesh_pani_kar = 0;
                 }
-                let ekun = viz_divabatti_kar + aaraogya_rakashan_kar+ safae_kar + samanya_pani_kar + vishesh_pani_kar;
+                let ekun = Number(viz_divabatti_kar) + Number(aaraogya_rakashan_kar) + Number(safae_kar) + Number(samanya_pani_kar) + Number(vishesh_pani_kar);
 
             const insertParams = [
                 txt_number, txt_malmatta_number, txt_vard_number, txt_plot_number, txt_khasara_number,
@@ -237,7 +237,7 @@ export const saveNondni = async (data: any) => {
                 txt_home_name, txt_spouse, txt_bhogatwadarache_name, txt_address,
                 txt_kamayacha_address, txt_bhogatwarache_malak, txt_east, txt_west, txt_north, txt_south,
                 txt_water, txt_washroom, txt_milkat_prakar, txt_emarat_jamin, txt_emarat_mokdi,
-                txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,user_id, randomNumber, rno, token,
+                txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,user_id, randomNumber, rno, null,
                 urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio,
                 check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar, ekun
                 
@@ -367,7 +367,7 @@ export const saveBandhKam = async (data: any) => {
             new Date(),
             new Date(),
             new Date(),
-            data.random_number,data.token
+            data.random_number,null
         ];
 
         console.log("params", params);
@@ -435,7 +435,7 @@ export const saveTaxPayers = async (data: any) => {
             new Date().toISOString().slice(0, 10) + ' ' + new Date().toTimeString().slice(0, 8), // tdate
             new Date().toISOString().slice(0, 10) + ' ' + new Date().toTimeString().slice(0, 8),  // ttime
             data.random_number,
-            data.token
+            null
         ];
 
         console.log("params", params);

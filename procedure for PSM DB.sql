@@ -1,56 +1,56 @@
 CREATE PROCEDURE `multipleinsertdata`(
     IN anu_kramank VARCHAR(100),
     IN vard_number VARCHAR(100),
-    IN ramdom TEXT,
+    IN random TEXT,
     IN userid INT,
     IN rno INT,
     IN tokens TEXT
 )
 BEGIN
     DECLARE local_newuserid INT DEFAULT NULL;
-
+ 
     -- Get the NEWUSER_ID from the NEWUSER table
     SELECT NEWUSER_ID INTO local_newuserid
     FROM newuser
-    WHERE ANNU_KRAMANK = anu_kramank 
-      AND VARD_NUMBER = vard_number 
-      AND user_id = userid 
-      AND RNO = rno 
-      AND Tokens = tokens 
-      AND RandomNumber = ramdom;
-
-    -- If a valid NEWUSER_ID is found, proceed with updates and insertions
+    WHERE TRIM(ANNU_KRAMANK) = TRIM(anu_kramank)
+      AND TRIM(VARD_NUMBER) = TRIM(vard_number)
+      AND user_id = userid
+      AND RNO = rno
+      AND TRIM(Tokens) = TRIM(tokens)
+      AND TRIM(RandomNumber) = TRIM(random);
+ 
+    -- If a valid NEWUSER_ID is found, proceed
     IF local_newuserid IS NOT NULL AND local_newuserid <> 0 THEN
-    
-        -- Update the TEMP tables with the new NEWUSER_ID
+ 
+        -- Update temp tables
         UPDATE taxationland_temp
         SET newuser_id = local_newuserid
-        WHERE RandomNumber = ramdom 
-          AND user_id = userid 
-          AND RNO = rno 
-          AND Token = tokens 
-          AND Annu_kramank = anu_kramank 
-          AND vard_number = vard_number;
-
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(Annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+ 
         UPDATE constructiontax_temp
         SET newuser_id = local_newuserid
-        WHERE RandomNumber = ramdom 
-          AND user_id = userid 
-          AND RNO = rno 
-          AND Token = tokens 
-          AND annu_kramank = anu_kramank 
-          AND vard_number = vard_number;
-
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+ 
         UPDATE taxpayers_temp
         SET newuser_id = local_newuserid
-        WHERE RandomNumber = ramdom 
-          AND user_id = userid 
-          AND RNO = rno 
-          AND Token = tokens 
-          AND annu_kramank = anu_kramank 
-          AND vard_number = vard_number;
-
-        -- Insert into the final table TAXATIONLAND
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+ 
+        -- Insert into final table
         INSERT INTO taxationland (
             newuser_id, user_id, extra, taxpayersss, tax1000, vard_number, Annu_kramank,
             RNO, MILKAT_VAPAR_ID, MILKAT_VAPAR_ID1, VAPARACHE_PRAKAR, GATGRAMPANCHAYAT_ID, OPENPLOT_ID,
@@ -62,48 +62,47 @@ BEGIN
                AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, ANNUALVALUE, LEVYRATE,
                CAPITAL, TAXATION, Year_name, Year_id, reg_date, tdate, ttime, RandomNumber, Token
         FROM taxationland_temp
-        WHERE RandomNumber = ramdom 
-          AND user_id = userid 
-          AND RNO = rno 
-          AND Token = tokens 
-          AND Annu_kramank = anu_kramank 
-          AND vard_number = vard_number;
-
-        -- Delete from the TEMP tables after insertion
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(Annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+ 
+        -- Delete from temp tables
         DELETE FROM taxationland_temp
-        WHERE RandomNumber = ramdom 
-          AND user_id = userid 
-          AND RNO = rno 
-          AND Token = tokens 
-          AND Annu_kramank = anu_kramank 
-          AND vard_number = vard_number;
-
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(Annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+ 
         DELETE FROM constructiontax_temp
-        WHERE RandomNumber = ramdom 
-          AND user_id = userid 
-          AND RNO = rno 
-          AND Token = tokens 
-          AND annu_kramank = anu_kramank 
-          AND vard_number = vard_number;
-
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+ 
         DELETE FROM taxpayers_temp
-        WHERE RandomNumber = ramdom 
-          AND user_id = userid 
-          AND RNO = rno 
-          AND Token = tokens 
-          AND annu_kramank = annu_kramank 
-          AND vard_number = vard_number;
-
-        -- Return a success message
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+ 
+        -- Success output
         SELECT 'successfullydeleted' AS deletes, local_newuserid AS newuserid;
-
+ 
     ELSE
-        -- In case no valid NEWUSER_ID is found, return an error message
+        -- No match output
         SELECT 'No matching records found' AS error;
     END IF;
-   
 END;
-
+---------------------- Old proceudre ------------------------
 
 
 
@@ -312,5 +311,150 @@ BEGIN
         membermaster X ON X.MEMBERMASTER_ID = A.MEMBERMASTER_ID
     WHERE 
         A.PANCHAYAT_ID = panachayt_id;
+END;
+
+------------------------ New procedure working -------------------
+CREATE PROCEDURE `multipleinsertdata`(
+    IN anu_kramank VARCHAR(100),
+    IN vard_number VARCHAR(100),
+    IN random TEXT,
+    IN userid INT,
+    IN rno INT,
+    IN tokens TEXT
+)
+BEGIN
+    DECLARE local_newuserid INT DEFAULT NULL;
+ 
+    -- Get the NEWUSER_ID from the NEWUSER table
+    SELECT NEWUSER_ID INTO local_newuserid
+    FROM newuser
+    WHERE TRIM(ANNU_KRAMANK) = TRIM(anu_kramank)
+      AND TRIM(VARD_NUMBER) = TRIM(vard_number)
+      AND user_id = userid
+      AND RNO = rno
+      AND TRIM(Tokens) = TRIM(tokens)
+      AND TRIM(RandomNumber) = TRIM(random);
+ 
+    -- If a valid NEWUSER_ID is found, proceed
+    IF local_newuserid IS NOT NULL AND local_newuserid <> 0 THEN
+ 
+        -- Update temp tables
+        UPDATE taxationland_temp
+        SET newuser_id = local_newuserid
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(Annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+ 
+        UPDATE constructiontax_temp
+        SET newuser_id = local_newuserid
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+ 
+        UPDATE taxpayers_temp
+        SET newuser_id = local_newuserid
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+ 
+        -- Insert into final table
+        INSERT INTO taxationland (
+            newuser_id, user_id, extra, taxpayersss, tax1000, vard_number, Annu_kramank,
+            RNO, MILKAT_VAPAR_ID, MILKAT_VAPAR_ID1, VAPARACHE_PRAKAR, GATGRAMPANCHAYAT_ID, OPENPLOT_ID,
+            AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, ANNUALVALUE, LEVYRATE,
+            CAPITAL, TAXATION, Year_name, Year_id, reg_date, tdate, ttime, RandomNumber, Token
+        )
+        SELECT local_newuserid, user_id, 1, 1, 1000, vard_number, Annu_kramank,
+               RNO, MILKAT_VAPAR_ID, MILKAT_VAPAR_ID1, VAPARACHE_PRAKAR, GATGRAMPANCHAYAT_ID, OPENPLOT_ID,
+               AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, ANNUALVALUE, LEVYRATE,
+               CAPITAL, TAXATION, Year_name, Year_id, reg_date, tdate, ttime, RandomNumber, Token
+        FROM taxationland_temp
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(Annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+         
+        
+        INSERT INTO constructiontax (
+            newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, FLOOR_ID,
+            AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, LIFESPAN, CONSTRUCTING,
+            DEPRECIATION, WEIGHTTAGE, ANNUALCOST, LEVYRATE, ONE, TWO, RNO, cons1000,
+            annu_kramank, vard_number, Year_id, Year_name, reg_date, tdate, ttime,
+            RandomNumber, Token)
+        SELECT local_newuserid, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, FLOOR_ID,
+            AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, LIFESPAN, CONSTRUCTING,
+            DEPRECIATION, WEIGHTTAGE, ANNUALCOST, LEVYRATE, ONE, TWO, RNO, cons1000,
+            annu_kramank, vard_number, Year_id, Year_name, reg_date, tdate, ttime,
+            RandomNumber, Token
+        FROM constructiontax_temp
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+         
+        
+        INSERT INTO taxpayers (
+            newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR,
+            MANORAMASTER_ID, AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1,
+            CAPITAL, TAXATION, RNO, taxp1000, vard_number, annu_kramank, Year_id,
+            Year_name, reg_date, tdate, ttime,RandomNumber, Token)
+        SELECT local_newuserid, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR,
+            MANORAMASTER_ID, AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1,
+            CAPITAL, TAXATION, RNO, taxp1000, vard_number, annu_kramank, Year_id,
+            Year_name, reg_date, tdate, ttime,RandomNumber, Token
+        FROM taxpayers_temp
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+          
+ 
+        -- Delete from temp tables
+        DELETE FROM taxationland_temp
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(Annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+ 
+        DELETE FROM constructiontax_temp
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+ 
+        DELETE FROM taxpayers_temp
+        WHERE TRIM(RandomNumber) = TRIM(random)
+          AND user_id = userid
+          AND RNO = rno
+          AND TRIM(Token) = TRIM(tokens)
+          AND TRIM(annu_kramank) = TRIM(anu_kramank)
+          AND TRIM(vard_number) = TRIM(vard_number);
+ 
+        -- Success output
+        SELECT 'successfullydeleted' AS deletes, local_newuserid AS newuserid;
+ 
+    ELSE
+        -- No match output
+        SELECT 'No matching records found' AS error;
+    END IF;
 END;
 
