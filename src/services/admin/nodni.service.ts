@@ -1,5 +1,6 @@
 import { executeQuery } from "../../config/db/db";
 import { logger } from "../../logger/Logger";
+import { getConstructionBynew_userid, getManoraBynew_userid, getTaxationBynew_userid } from "../main/customer.service";
 
 // khula band kamachi tax
 //खुला बांधकामाची कर आकारणी : // in englis h it is "open construction tax assessment"
@@ -150,7 +151,7 @@ export const otherTaxCalculation = async (data: any) => {
 };
 
 
-export const saveNondni = async (data: any) => {
+export  const saveNondni = async (data: any) => {
     try {
         // const {
         //     txt_number, txt_vard_number, txt_malmatta_number, txt_plot_number,
@@ -168,7 +169,7 @@ export const saveNondni = async (data: any) => {
             txt_home_name, txt_spouse, txt_bhogatwadarache_name, txt_address,
             txt_kamayacha_address, txt_bhogatwarache_malak, txt_east, txt_west, txt_north, txt_south,
             txt_water, txt_washroom, txt_milkat_prakar, txt_emarat_jamin, txt_emarat_mokdi,
-            txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,user_id, randomNumber, rno, token,
+            txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,user_id, randomNumber, rno,
             urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio, 
             check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar
         } = data;
@@ -181,11 +182,11 @@ export const saveNondni = async (data: any) => {
 
         if (checkResult.length > 0) {
             const deleteQueries = [
-                `DELETE FROM taxationland_temp WHERE ANNU_KRAMANK = ? AND VARD_NUMBER = ? AND RandomNumber = ? AND user_id = ? AND RNO = ? AND Token = ?`,
-                `DELETE FROM constructiontax_temp WHERE ANNU_KRAMANK = ? AND VARD_NUMBER = ? AND RandomNumber = ? AND user_id = ? AND RNO = ? AND Token = ?`,
-                `DELETE FROM taxpayers_temp WHERE ANNU_KRAMANK = ? AND VARD_NUMBER = ? AND RandomNumber = ? AND user_id = ? AND RNO = ? AND Token = ?`
+                `DELETE FROM taxationland_temp WHERE ANNU_KRAMANK = ? AND VARD_NUMBER = ? AND RandomNumber = ? AND user_id = ? AND RNO = ?`,
+                `DELETE FROM constructiontax_temp WHERE ANNU_KRAMANK = ? AND VARD_NUMBER = ? AND RandomNumber = ? AND user_id = ? AND RNO = ?`,
+                `DELETE FROM taxpayers_temp WHERE ANNU_KRAMANK = ? AND VARD_NUMBER = ? AND RandomNumber = ? AND user_id = ? AND RNO = ?`
             ];
-            const deleteParams = [txt_number, txt_vard_number, randomNumber, user_id, rno, token];
+            const deleteParams = [txt_number, txt_vard_number, randomNumber, user_id, rno];
 
             for (const query of deleteQueries) {
                 await executeQuery(query, deleteParams);
@@ -194,38 +195,39 @@ export const saveNondni = async (data: any) => {
             return { status: 200, message: "This Annu Kramank Already Exists" };
         } else {
             // Corrected insert query
+            let yearss = await getYearIdAndYearName()
             const insertQuery = `INSERT INTO newuser (
                     ANNU_KRAMANK, MALMATTA_NUMBER, VARD_NUMBER, PLOT_NO, KHASARA_KRAMANK, 
                     SURVEY_KRAMANK, VOTERCARD_NUMBER, AADHARCARD_NUMBER, MOBILE_NUMBER, 
                     HOMEUSER_NAME, HOMEUSER_NAME1, BHOGATWARGARACHE_NAME, ADDRESS_NAGAR_SOCIETY, 
                     KAMAYACHA_ADDRESS, BHOGATDARACHE_MALAK, PURVA, PACHHIM, UTTAR, DAKSIN, 
                     PINIYACHA_PANI, SOUNCHALAY, MILKAR_PRAKAR, EMARTICHE_JAMIN, EMARTICHE_MOKDI, 
-                    LAMBI, RUNDI, SQUARE_FOOT, SQUARE_METER, user_id, RandomNumber, RNO, Tokens,
+                    LAMBI, RUNDI, SQUARE_FOOT, SQUARE_METER, user_id, RandomNumber, RNO,
                     URVATICH_KHALI_JAGA, URVATICH_KHALI_JAGAS, EMARTICHE_RUPESS, JAMINICHE_RUPEES, TOTAL,
                     EMARTICHE_KARAAKARNI, KHULA_BHUKAND, TOTALS,
                     BHUMIKAR, CHALU_KAR, MAGIL_BAKI, EEKUN_KAR_BHARNA, MAJAHUN_GHAT,vanijya,
-                    CHECK1,VIZ_DIVVABATTIKAR,CHECK2,AAROGYA_RAKSHAN_KAR,CHECK3,SAFAI_KAR,CHECK4,SAMANYA_PANI_KAR,CHECK5,VISHESH_PANI_KAR,EKUN
+                    CHECK1,VIZ_DIVVABATTIKAR,CHECK2,AAROGYA_RAKSHAN_KAR,CHECK3,SAFAI_KAR,CHECK4,SAMANYA_PANI_KAR,CHECK5,VISHESH_PANI_KAR,EKUN,manoraaddition,FLAG,YEARS,YEARS_ID,tdate,ttime
                 ) VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
                 )`;
                 // check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar
-                if(check1 === ""){
+                if(check1 === "" || check1 === null){
                    check1 = null;
                    viz_divabatti_kar = 0;
                 }
-                if(check2 === ""){
+                if(check2 === "" || check2 === null){
                     check2 = null;
                     aaraogya_rakashan_kar = 0;
                 }
-                if(check3 === ""){
+                if(check3 === ""  || check3 === null){
                     check3 = null;
                     safae_kar = 0;
                 }
-                if(check4 === ""){
+                if(check4 === "" || check4 === null){
                     check4 = null;
                     samanya_pani_kar = 0;
                 }
-                if(check5 === ""){
+                if(check5 === "" || check5 === null){
                     check5 = null;
                     vishesh_pani_kar = 0;
                 }
@@ -237,39 +239,121 @@ export const saveNondni = async (data: any) => {
                 txt_home_name, txt_spouse, txt_bhogatwadarache_name, txt_address,
                 txt_kamayacha_address, txt_bhogatwarache_malak, txt_east, txt_west, txt_north, txt_south,
                 txt_water, txt_washroom, txt_milkat_prakar, txt_emarat_jamin, txt_emarat_mokdi,
-                txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,user_id, randomNumber, rno, null,
+                txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,user_id, randomNumber, rno,
                 urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio,
-                check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar, ekun
+                check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar, ekun, ekun_kar_bharna,'N', yearss[0].YEAR_NAME,yearss[0].YEAR_ID,new Date(), new Date()
                 
             ];
 
 
             await executeQuery(insertQuery, insertParams);
             
-            // const insertedIdQuery = `SELECT LAST_INSERT_ID() AS id`;
-            // const insertedIdResult = await executeQuery(insertedIdQuery,[]);
-            // const insertedId = insertedIdResult[0]?.id;
+            const insertedIdQuery = `SELECT LAST_INSERT_ID() AS id`;
+            const insertedIdResult = await executeQuery(insertedIdQuery,[]);
+            const insertedId = insertedIdResult[0]?.id;
+            // console.log("Inserted ID-----------------------:", insertedId);
+            let insetedCount = 0;
+            const saveBhukhand = `INSERT INTO taxationland (
+                                newuser_id, user_id, extra, taxpayersss, tax1000, vard_number, Annu_kramank,
+                                RNO, MILKAT_VAPAR_ID, MILKAT_VAPAR_ID1, VAPARACHE_PRAKAR, GATGRAMPANCHAYAT_ID, OPENPLOT_ID,
+                                AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, ANNUALVALUE, LEVYRATE,
+                                CAPITAL, TAXATION, Year_name, Year_id, reg_date, tdate, ttime, RandomNumber, Token
+                            )
+                            SELECT ?, user_id, 1, 1, 1000, vard_number, Annu_kramank,
+                                RNO, MILKAT_VAPAR_ID, MILKAT_VAPAR_ID1, VAPARACHE_PRAKAR, GATGRAMPANCHAYAT_ID, OPENPLOT_ID,
+                                AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, ANNUALVALUE, LEVYRATE,
+                                CAPITAL, TAXATION, Year_name, Year_id, reg_date, tdate, ttime, RandomNumber, Token
+                            FROM taxationland_temp
+                            WHERE TRIM(RandomNumber) = ?
+                            AND user_id = ?
+                            AND RNO = ?
+                            AND TRIM(Annu_kramank) = ?
+                            AND TRIM(vard_number) = ?`;
 
-// check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar
-        //     check1: this.viz_divabatti_kar_checkbox,
-        // viz_divabatti_kar: this.viz_divabatti_kar,
-        // check2: this.aaraogya_rakashan_kar_checkbox,
-        // aaraogya_rakashan_kar: this.aaraogya_rakashan_kar,
-        // check3: this.safae_kar_checkbox,
-        // safae_kar: this.safae_kar,
-        // check4: this.samanya_pani_kar_checkbox,
-        // samanya_pani_kar: this.samanya_pani_kar,
-        // check5: this.vishesh_pani_kar_checkbox,
-        // vishesh_pani_kar: this.vishesh_pani_kar,
+            let result_one = await executeQuery(saveBhukhand, [insertedId, randomNumber, user_id, rno, txt_number, txt_vard_number]) as { affectedRows: number };
+            console.log("result_one",result_one);
+            if (result_one.affectedRows > 0) {
+               insetedCount += 1; 
+            } 
 
+            const buildingkar = `INSERT INTO constructiontax (
+                        newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, FLOOR_ID,
+                        AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, LIFESPAN, CONSTRUCTING,
+                        DEPRECIATION, WEIGHTTAGE, ANNUALCOST, LEVYRATE, ONE, TWO, RNO, cons1000,
+                        annu_kramank, vard_number, Year_id, Year_name, reg_date, tdate, ttime,
+                        RandomNumber, Token)
+                    SELECT ?, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, FLOOR_ID,
+                        AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, LIFESPAN, CONSTRUCTING,
+                        DEPRECIATION, WEIGHTTAGE, ANNUALCOST, LEVYRATE, ONE, TWO, RNO, cons1000,
+                        annu_kramank, vard_number, Year_id, Year_name, reg_date, tdate, ttime,
+                        RandomNumber, Token
+                    FROM constructiontax_temp
+                    WHERE TRIM(RandomNumber) = ?
+                    AND user_id = ?
+                    AND RNO = ?
+                    AND TRIM(annu_kramank) = ?
+                    AND TRIM(vard_number) = ?`;
+            let result_two = await executeQuery(buildingkar, [insertedId, randomNumber, user_id, rno, txt_number, txt_vard_number]) as { affectedRows: number };
+            console.log("result_two",result_two);
+            if (result_two.affectedRows > 0) {
+               insetedCount += 1; 
+            }
+            const taxpayers = `INSERT INTO taxpayers (
+                        newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR,
+                        MANORAMASTER_ID, AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1,
+                        CAPITAL, TAXATION, RNO, taxp1000, vard_number, annu_kramank, Year_id,
+                        Year_name, reg_date, tdate, ttime, RandomNumber, Token)
+                    SELECT ?, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR,
+                        MANORAMASTER_ID, AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1,
+                        CAPITAL, TAXATION, RNO, taxp1000, vard_number, annu_kramank, Year_id,
+                        Year_name, reg_date, tdate, ttime, RandomNumber, Token
+                    FROM taxpayers_temp
+                    WHERE TRIM(RandomNumber) = ?
+                    AND user_id = ?
+                    AND RNO = ?
+                    AND TRIM(annu_kramank) = ?
+                    AND TRIM(vard_number) = ?`;
+            let result_three = await executeQuery(taxpayers, [insertedId, randomNumber, user_id, rno, txt_number, txt_vard_number]) as { affectedRows: number };
+            console.log("result_three",result_three);
+            
+            if (result_three.affectedRows > 0) {
+               insetedCount += 1; 
+            }
+            if(insetedCount === 3) {
+                const deleteFromTempTables = [
+                    `DELETE FROM taxationland_temp WHERE TRIM(RandomNumber) = ? AND user_id = ? AND RNO = ? AND TRIM(Annu_kramank) = ? AND TRIM(vard_number) = ?`,
+                    `DELETE FROM constructiontax_temp WHERE TRIM(RandomNumber) = ? AND user_id = ? AND RNO = ? AND TRIM(annu_kramank) = ? AND TRIM(vard_number) = ?`,
+                    `DELETE FROM taxpayers_temp WHERE TRIM(RandomNumber) = ? AND user_id = ? AND RNO = ?  AND TRIM(annu_kramank) = ? AND TRIM(vard_number) = ?`
+                ];
+
+                for (const query of deleteFromTempTables) {
+                    await executeQuery(query, [randomNumber, user_id, rno, txt_number, txt_vard_number]);
+                }
+                return { status: 200, message: "Data Inserted Successfully" };
+            }else{
+                console.log("Data not inserted in all tables, deleting inserted data from newuser table",insertedId);
+                const deleteQuery = `DELETE FROM newuser WHERE NEWUSER_ID = ?`;
+                await executeQuery(deleteQuery, [insertedId]);
+                const deleteFromTempTables = [
+                    `DELETE FROM taxationland WHERE newuser_id = ?`,
+                    `DELETE FROM constructiontax WHERE newuser_id = ?`,
+                    `DELETE FROM taxpayers WHERE newuser_id = ?`
+                ];
+
+                for (const query of deleteFromTempTables) {
+                    await executeQuery(query, [insertedId]);
+                }
+                
+                return { status: 400, message: "Data Insertion Failed" };
+            }
 
             // console.log("test",data)
-            let outParam = 0; // Declare outParam to store the returned value.
-            let result = await executeQuery(`CALL multipleinsertdata(?, ?, ?, ?, ?, ?)`,
-                [txt_number, txt_vard_number, randomNumber, user_id, rno, token]);
+            // let outParam = 0; // Declare outParam to store the returned value.
+            // let result = await executeQuery(`CALL multipleinsertdata(?, ?, ?, ?, ?, ?)`,
+            //     [txt_number, txt_vard_number, randomNumber, user_id, rno, token]);
 
 
-            return { status: 200, message: "Data Inserted Successfully" };
+            
         }
 
     } catch (err) {
@@ -280,9 +364,9 @@ export const saveNondni = async (data: any) => {
 
 
 
-export const saveKhaliBhuKhand = async (data: any) => {
+export const saveKhaliBhuKhand = async (data: any, table_name:string) => {
     try {
-        let sql = `INSERT INTO taxationland_temp (
+        let sql = `INSERT INTO ${table_name} (
                 newuser_id, user_id, MILKAT_VAPAR_ID, MILKAT_VAPAR_ID1, VAPARACHE_PRAKAR, 
                 GATGRAMPANCHAYAT_ID, OPENPLOT_ID, AREAP, AREAI, TOTALAREA, 
                 AREAP1, AREAI1, TOTALAREA1, ANNUALVALUE, LEVYRATE, 
@@ -320,7 +404,7 @@ export const saveKhaliBhuKhand = async (data: any) => {
 }
 
 
-export const saveBandhKam = async (data: any) => {
+export const saveBandhKam = async (data: any, table_name:string) => {
     try {
         // javaNew.js 1135 line number vala krna hain
         // let sql = `INSERT INTO CONSTRUCTIONTAX (
@@ -330,7 +414,7 @@ export const saveBandhKam = async (data: any) => {
         //     ) VALUES (
         //         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
         //     )`;
-        let sql = `INSERT INTO constructiontax_temp (
+        let sql = `INSERT INTO ${table_name} (
             newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, FLOOR_ID,
             AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, LIFESPAN, CONSTRUCTING,
             DEPRECIATION, WEIGHTTAGE, ANNUALCOST, LEVYRATE, ONE, TWO, RNO, cons1000,
@@ -385,7 +469,7 @@ export const saveBandhKam = async (data: any) => {
 }
 
 
-export const saveTaxPayers = async (data: any) => {
+export const saveTaxPayers = async (data: any, table_name:string) => {
     try {
         // let sql = `INSERT INTO TAXPAYERS (
         //         newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, MANORAMASTER_ID, 
@@ -398,7 +482,7 @@ export const saveTaxPayers = async (data: any) => {
         //         ?, ?, ?, ?, ?, ?, 
         //         ?, ?, ?, ?, ?
         //     )`;
-        let sql = `INSERT INTO taxpayers_temp (
+        let sql = `INSERT INTO ${table_name} (
                     newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR,
                     MANORAMASTER_ID, AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1,
                     CAPITAL, TAXATION, RNO, taxp1000, vard_number, annu_kramank, Year_id,
@@ -656,11 +740,11 @@ export async function getBharankDar_buildingModal(malmatta_varnan_id:number, vay
         throw error;
     }
 }
-export async function getKhulabhukhandModalData(id:any): Promise<any[]> {
+export async function getKhulabhukhandModalData(id:any, table_name:string): Promise<any[]> {
     try{
         const query = `
         SELECT * 
-        FROM taxationland_temp 
+        FROM ${table_name} 
         WHERE TAXATIONLAND_ID = ? AND DELETED_AT IS null LIMIT 1`;
         const results: any[] = await executeQuery(query, [id]);
         return results;
@@ -669,9 +753,9 @@ export async function getKhulabhukhandModalData(id:any): Promise<any[]> {
         throw error;
     }
 }
-export async function updateKhaliBhukhand(data:any, id:any): Promise<any> {
+export async function updateKhaliBhukhand(data:any, id:any, table_name:string): Promise<any> {
     try {
-        const sql = `UPDATE taxationland_temp SET 
+        const sql = `UPDATE ${table_name} SET 
                     MILKAT_VAPAR_ID = ?, 
                     MILKAT_VAPAR_ID1 = ?, 
                     VAPARACHE_PRAKAR = ?, 
@@ -696,22 +780,28 @@ export async function updateKhaliBhukhand(data:any, id:any): Promise<any> {
     }
 }
 
-export async function deleteKhaliBhukhand(id:number): Promise<any> {
+export async function deleteKhaliBhukhand(id:number, table_name:string): Promise<any> {
     try {
-        const sql = `DELETE FROM taxationland_temp WHERE TAXATIONLAND_ID = ?`;
+        const newuserid = `SELECT newuser_id FROM ${table_name} WHERE TAXATIONLAND_ID = ?`;
+        const result = await executeQuery(newuserid, [id]);
+        // console.log("result",result[0].newuser_id);
+        const sql = `DELETE FROM ${table_name} WHERE TAXATIONLAND_ID = ?`;
         await executeQuery(sql, [id]);
-        return { status: 200, message: "Data Deleted Successfully" };
+        const returnData = await getTaxationBynew_userid(result[0].newuser_id);
+        // const returnData = `SELECT * FROM ${table_name} WHERE newuser_id = ?`;
+        // const deletedData = await executeQuery(returnData, [result[0].newuser_id]);
+        return { status: 200, message: "Khula Bhukhand Record Deleted Successfully", data:returnData || []};
     } catch (err) {
         logger.error('Error ::deleteKhaliBhukhand :', err);
         throw err;
     }
 }
 
-export async function getBhandkamModalData(id:any): Promise<any[]> {
+export async function getBhandkamModalData(id:any, table_name:string): Promise<any[]> {
     try{
         const query = `
         SELECT * 
-        FROM constructiontax_temp 
+        FROM ${table_name} 
         WHERE CONSTRUCTIONTAX_ID = ? AND DELETED_AT IS null LIMIT 1`;
         const results: any[] = await executeQuery(query, [id]);
         return results;
@@ -720,9 +810,9 @@ export async function getBhandkamModalData(id:any): Promise<any[]> {
         throw error;
     }
 }
-export async function updateBandkamModalRecords(data:any, id:any): Promise<any> {
+export async function updateBandkamModalRecords(data:any, id:any, table_name:string): Promise<any> {
     try {
-        const sql = `UPDATE constructiontax_temp SET 
+        const sql = `UPDATE ${table_name} SET 
                     MILKAT_VAPAR_ID = ?, 
                     MALMATTA_ID = ?, 
                     VAPARACHE_PRAKAR = ?, 
@@ -749,22 +839,27 @@ export async function updateBandkamModalRecords(data:any, id:any): Promise<any> 
         throw err;
     }
 }
-export async function deletebandkamKarAkkarniRecord(id:number): Promise<any> {
+export async function deletebandkamKarAkkarniRecord(id:number, table_name:string): Promise<any> {
     try {
-        const sql = `DELETE FROM constructiontax_temp WHERE CONSTRUCTIONTAX_ID = ?`;
+        const newuserid = `SELECT newuser_id FROM ${table_name} WHERE CONSTRUCTIONTAX_ID = ?`;
+        const result = await executeQuery(newuserid, [id]);
+        const sql = `DELETE FROM ${table_name} WHERE CONSTRUCTIONTAX_ID = ?`;
         await executeQuery(sql, [id]);
-        return { status: 200, message: "Data Deleted Successfully" };
+        const returnData =  await getConstructionBynew_userid(result[0].newuser_id);
+        // const returnData = `SELECT * FROM ${table_name} WHERE newuser_id = ?`;
+        // const deletedData = await executeQuery(returnData, [result[0].newuser_id]);
+        return { status: 200, message: "Bandkam Record Deleted Successfully", data:returnData || [] };
     } catch (err) {
         logger.error('Error ::deleteBandkamModalRecords :', err);
         throw err;
     }
 }
 
-export async function getManoraKarAkaraniRecortds(id:any): Promise<any[]> {
+export async function getManoraKarAkaraniRecortds(id:any, table_name:string): Promise<any[]> {
     try{
         const query = `
         SELECT * 
-        FROM taxpayers_temp 
+        FROM ${table_name} 
         WHERE TAXPAYERS_ID = ? AND DELETED_AT IS null LIMIT 1`;
         const results: any[] = await executeQuery(query, [id]);
         return results;
@@ -774,9 +869,9 @@ export async function getManoraKarAkaraniRecortds(id:any): Promise<any[]> {
     }
 }
 
-export async function updateManoraKarAkaraniRecords(data:any, id:any): Promise<any> {
+export async function updateManoraKarAkaraniRecords(data:any, id:any, table_name:string): Promise<any> {
     try {
-        const sql = `UPDATE taxpayers_temp SET 
+        const sql = `UPDATE ${table_name} SET 
                     MILKAT_VAPAR_ID = ?, 
                     MALMATTA_ID = ?, 
                     VAPARACHE_PRAKAR = ?, 
@@ -797,11 +892,14 @@ export async function updateManoraKarAkaraniRecords(data:any, id:any): Promise<a
         throw err;
     }
 }
-export async function deleteManoraKarAkaraniRecord(id:number): Promise<any> {
+export async function deleteManoraKarAkaraniRecord(id:number, table_name:string): Promise<any> {
     try {
-        const sql = `DELETE FROM taxpayers_temp WHERE TAXPAYERS_ID = ?`;
+        const newuserid = `SELECT newuser_id FROM ${table_name} WHERE TAXPAYERS_ID = ?`;
+        const result = await executeQuery(newuserid, [id]);
+        const sql = `DELETE FROM ${table_name} WHERE TAXPAYERS_ID = ?`;
         await executeQuery(sql, [id]);
-        return { status: 200, message: "Data Deleted Successfully" };
+        const returnData = await getManoraBynew_userid(result[0].newuser_id);
+        return { status: 200, message: "Manora Kar Deleted Successfully", data:returnData || [] };
     } catch (err) {
         logger.error('Error ::deleteManoraKarAkaraniRecord :', err);
         throw err;
@@ -813,7 +911,7 @@ export async function deleteKhulaBhukhandBySession(data:any): Promise<{ status: 
         const sql = `DELETE FROM taxationland_temp WHERE RandomNumber = ? AND user_id = ? AND RNO = ?`;
         const params = [data.randomNumber, data.user_id, data.rno];
         const result = await executeQuery(sql, params);
-        return { status: 200, message: "Data Deleted Successfully" };
+        return { status: 200, message: "Khula Bhukhand Record Deleted Successfully" };
     } catch (err) {
         logger.error('Error ::deleteKhulaBhukhandBySession :', err);
         throw err;
@@ -825,7 +923,7 @@ export async function delete_buildingKarAkarniSession(data:any): Promise<{ statu
         const sql = `DELETE FROM constructiontax_temp WHERE RandomNumber = ? AND user_id = ? AND RNO = ?`;
         const params = [data.randomNumber, data.user_id, data.rno];
         const result = await executeQuery(sql, params);
-        return { status: 200, message: "Data Deleted Successfully" };
+        return { status: 200, message: "Building Kar Record Deleted Successfully" };
     } catch (err) {
         logger.error('Error ::delete_buildingKarAkarniSession :', err);
         throw err;
@@ -837,9 +935,112 @@ export async function delete_manoraKarBySession(data:any):Promise<{ status: numb
         const sql = `DELETE FROM taxpayers_temp WHERE RandomNumber = ? AND user_id = ? AND RNO = ?`;
         const params = [data.randomNumber, data.user_id, data.rno];
         const result = await executeQuery(sql, params);
-        return { status: 200, message: "Data Deleted Successfully" };
+        return { status: 200, message: "Manora Kar Record Deleted Successfully" };
     } catch (err) {
         logger.error('Error ::delete_manoraKarBySession :', err);
+        throw err;
+    }
+}
+export async function updateNodniForm(data:any, id:any): Promise<any> {
+    try {
+        let {
+            txt_number, txt_malmatta_number, txt_vard_number, txt_plot_number, txt_khasara_number,
+            txt_survey_number, txt_voter_card_number, txt_aadhar_card_number, txt_mobile_number,
+            txt_home_name, txt_spouse, txt_bhogatwadarache_name, txt_address,
+            txt_kamayacha_address, txt_bhogatwarache_malak, txt_east, txt_west, txt_north, txt_south,
+            txt_water, txt_washroom, txt_milkat_prakar, txt_emarat_jamin, txt_emarat_mokdi,
+            txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,
+            urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio, 
+            check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar
+        } = data;
+        if(check1 === "" || check1 === null){
+                   check1 = null;
+                   viz_divabatti_kar = 0;
+                }
+                if(check2 === "" || check2 === null){
+                    check2 = null;
+                    aaraogya_rakashan_kar = 0;
+                }
+                if(check3 === ""  || check3 === null){
+                    check3 = null;
+                    safae_kar = 0;
+                }
+                if(check4 === "" || check4 === null){
+                    check4 = null;
+                    samanya_pani_kar = 0;
+                }
+                if(check5 === "" || check5 === null){
+                    check5 = null;
+                    vishesh_pani_kar = 0;
+                }
+                let ekun = Number(viz_divabatti_kar) + Number(aaraogya_rakashan_kar) + Number(safae_kar) + Number(samanya_pani_kar) + Number(vishesh_pani_kar);
+       
+        const sql = `UPDATE newuser SET 
+            ANNU_KRAMANK = ?, 
+            MALMATTA_NUMBER = ?, 
+            VARD_NUMBER = ?, 
+            PLOT_NO = ?, 
+            KHASARA_KRAMANK = ?, 
+            SURVEY_KRAMANK = ?, 
+            VOTERCARD_NUMBER = ?, 
+            AADHARCARD_NUMBER = ?, 
+            MOBILE_NUMBER = ?, 
+            HOMEUSER_NAME = ?, 
+            HOMEUSER_NAME1 = ?, 
+            BHOGATWARGARACHE_NAME = ?, 
+            ADDRESS_NAGAR_SOCIETY = ?, 
+            KAMAYACHA_ADDRESS = ?, 
+            BHOGATDARACHE_MALAK = ?, 
+            PURVA = ?, 
+            PACHHIM = ?, 
+            UTTAR = ?, 
+            DAKSIN = ?, 
+            PINIYACHA_PANI = ?, 
+            SOUNCHALAY = ?, 
+            MILKAR_PRAKAR = ?, 
+            EMARTICHE_JAMIN = ?, 
+            EMARTICHE_MOKDI = ?, 
+            LAMBI = ?, 
+            RUNDI = ?, 
+            SQUARE_FOOT = ?, 
+            SQUARE_METER = ?, 
+            URVATICH_KHALI_JAGA = ?, 
+            URVATICH_KHALI_JAGAS = ?, 
+            EMARTICHE_RUPESS = ?, 
+            JAMINICHE_RUPEES = ?, 
+            TOTAL = ?, 
+            EMARTICHE_KARAAKARNI = ?, 
+            KHULA_BHUKAND = ?, 
+            TOTALS = ?, 
+            BHUMIKAR = ?, 
+            CHALU_KAR = ?, 
+            MAGIL_BAKI = ?, 
+            EEKUN_KAR_BHARNA = ?, 
+            MAJAHUN_GHAT = ?, 
+            vanijya = ?, 
+            CHECK1 = ?, 
+            VIZ_DIVVABATTIKAR = ?, 
+            CHECK2 = ?, 
+            AAROGYA_RAKSHAN_KAR = ?, 
+            CHECK3 = ?, 
+            SAFAI_KAR = ?, 
+            CHECK4 = ?, 
+            SAMANYA_PANI_KAR = ?, 
+            CHECK5 = ?, 
+            VISHESH_PANI_KAR = ?,
+            EKUN = ?,
+            manoraaddition =  ?
+        WHERE NEWUSER_ID = ?  AND DELETED_AT IS null`;
+        await executeQuery(sql, [txt_number, txt_malmatta_number, txt_vard_number, txt_plot_number, txt_khasara_number,
+            txt_survey_number, txt_voter_card_number, txt_aadhar_card_number, txt_mobile_number,
+            txt_home_name, txt_spouse, txt_bhogatwadarache_name, txt_address,
+            txt_kamayacha_address, txt_bhogatwarache_malak, txt_east, txt_west, txt_north, txt_south,
+            txt_water, txt_washroom, txt_milkat_prakar, txt_emarat_jamin, txt_emarat_mokdi,
+            txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,
+            urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio, 
+            check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar,ekun,ekun_kar_bharna,id]);
+    } catch (err) {
+        logger.error('Error ::updateNodniForm :', err);
         throw err;
     }
 }

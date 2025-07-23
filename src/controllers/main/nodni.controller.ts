@@ -4,7 +4,8 @@ import { _200, _201, _400 } from "../../utils/ApiResponse";
 
 import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
-import { deleteKhaliBhukhand, deleteKhulaBhukhandBySession, deleteManoraKarAkaraniRecord, delete_buildingKarAkarniSession, delete_manoraKarBySession, deletebandkamKarAkkarniRecord, getAnnualRateAkarniDar, getBhandkamModalData, getBharankDar_buildingModal, getBharankFromMalmattecheDDL, getBuildingAnnuRateAndAkaranidar, getKhulabhukhandModalData, getManoraKarAkaraniRecortds, getYearIdAndYearName, get_AllWardNoList, get_buildingKar_MalmattechePrakar, get_buildingKar_MalmattecheVarnan, get_buildingKar_bandkamachaMajla, get_khulaBhukhandKar_Gavthan, get_khulaBhukhandKar_MalmattechePrakar, get_monoraKar_MalmattechePrakar, get_monoraKar_MalmattecheVarnan, get_monoraKar_ManoracheBhag, openConstructionTaxAssessment, otherTaxCalculation, saveBandhKam, saveKhaliBhuKhand, saveNondni, saveTaxPayers, taxAssessmentForConstruction, taxAssessmentForTowers, updateBandkamModalRecords, updateKhaliBhukhand, updateManoraKarAkaraniRecords } from "../../services/admin/nodni.service";
+import { deleteKhaliBhukhand, deleteKhulaBhukhandBySession, deleteManoraKarAkaraniRecord, delete_buildingKarAkarniSession, delete_manoraKarBySession, deletebandkamKarAkkarniRecord, getAnnualRateAkarniDar, getBhandkamModalData, getBharankDar_buildingModal, getBharankFromMalmattecheDDL, getBuildingAnnuRateAndAkaranidar, getKhulabhukhandModalData, getManoraKarAkaraniRecortds, getYearIdAndYearName, get_AllWardNoList, get_buildingKar_MalmattechePrakar, get_buildingKar_MalmattecheVarnan, get_buildingKar_bandkamachaMajla, get_khulaBhukhandKar_Gavthan, get_khulaBhukhandKar_MalmattechePrakar, get_monoraKar_MalmattechePrakar, get_monoraKar_MalmattecheVarnan, get_monoraKar_ManoracheBhag, openConstructionTaxAssessment, otherTaxCalculation, saveBandhKam, saveKhaliBhuKhand, saveNondni, saveTaxPayers, taxAssessmentForConstruction, taxAssessmentForTowers, updateBandkamModalRecords, updateKhaliBhukhand, updateManoraKarAkaraniRecords, updateNodniForm } from "../../services/admin/nodni.service";
+import { getConstructionBynew_userid, getManoraBynew_userid, getTaxationBynew_userid } from "../../services/main/customer.service";
 
 // फेरफार यादी (Ferfar Yadi) Module API     
 export class Nodni {
@@ -54,10 +55,31 @@ export class Nodni {
         try {
 
             const anu_details: any = await saveNondni(req.body);
-            return _201(res, "Nodani  successfully added", { status: 201, data: anu_details });
+            console.log("anu_details:", anu_details);
+            if(!anu_details || anu_details.status === 200) {
+                return _201(res, anu_details.message, { status: 201, data: anu_details });
+            }else{
+                return _400(res, anu_details.message);
+            }
         } catch (error) {
             logger.error("Error saveNondniFrom ::", error);
             return _400(res, "Error saveNondniFrom");
+        }
+    }
+    // 
+    static async updateNondniFrom( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const updatedData = req.body;
+            // Assuming there's a service function to update the Khula Bhukhand
+            const data: any = await updateNodniForm(updatedData, id );
+            return _200(res, "Nodni form updated successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error updating Nodni form", error);
+            return _400(res, "Error updating Nodni form");
         }
     }
 
@@ -66,7 +88,19 @@ export class Nodni {
             // if(req.body.annu_kramank == null || req.body.annu_kramank == undefined || req.body.annu_kramank == '' || req.body.vard_number == null || req.body.vard_number == undefined || req.body.vard_number == '') {
             //     return _400(res, "अनु क्रमांक आणि वॉर्ड क्रमांक आवश्यक आहे.");
             // }
-            const anu_details: any = await saveKhaliBhuKhand(req.body);
+            const anu_details: any = await saveKhaliBhuKhand(req.body,'taxationland_temp');
+            return _201(res, "Khali Bhu Khand successfully added",anu_details);
+        } catch (error) {
+            logger.error("Error saveKhaliBhuKhand ::", error);
+            return _400(res, "Error saveKhaliBhuKhand");
+        }
+    }
+    static saveKhaliBhuKhandFromOriginalTable = async (req: Request, res: Response) => {
+        try {
+            // if(req.body.annu_kramank == null || req.body.annu_kramank == undefined || req.body.annu_kramank == '' || req.body.vard_number == null || req.body.vard_number == undefined || req.body.vard_number == '') {
+            //     return _400(res, "अनु क्रमांक आणि वॉर्ड क्रमांक आवश्यक आहे.");
+            // }
+            const anu_details: any = await saveKhaliBhuKhand(req.body,'taxationland');
             return _201(res, "Khali Bhu Khand successfully added",anu_details);
         } catch (error) {
             logger.error("Error saveKhaliBhuKhand ::", error);
@@ -78,7 +112,7 @@ export class Nodni {
             // if(req.body.annu_kramank == null || req.body.annu_kramank == undefined || req.body.annu_kramank == '' || req.body.vard_number == null || req.body.vard_number == undefined || req.body.vard_number == '') {
             //     return _400(res, "अनु क्रमांक आणि वॉर्ड क्रमांक आवश्यक आहे.");
             // }
-            const anu_details: any = await saveBandhKam(req.body);
+            const anu_details: any = await saveBandhKam(req.body,'constructiontax_temp');
             return _201(res, "Bandh Kam successfully added", { status: 201, data: anu_details });
         } catch (error) {
             logger.error("Error saveBandhKam ::", error);
@@ -86,14 +120,37 @@ export class Nodni {
         }
     }
 
-
+static saveBandhKamFrmFromOriginalTable = async (req: Request, res: Response) => {
+        try {
+            // if(req.body.annu_kramank == null || req.body.annu_kramank == undefined || req.body.annu_kramank == '' || req.body.vard_number == null || req.body.vard_number == undefined || req.body.vard_number == '') {
+            //     return _400(res, "अनु क्रमांक आणि वॉर्ड क्रमांक आवश्यक आहे.");
+            // }
+            const anu_details: any = await saveBandhKam(req.body,'constructiontax');
+            return _201(res, "Bandh Kam successfully added", { status: 201, data: anu_details });
+        } catch (error) {
+            logger.error("Error saveBandhKam ::", error);
+            return _400(res, "Error saveBandhKam");
+        }
+    }
 
     static saveTaxPeryers = async (req: Request, res: Response) => {
         try {
             // if(req.body.annu_kramank == null || req.body.annu_kramank == undefined || req.body.annu_kramank == '' || req.body.vard_number == null || req.body.vard_number == undefined || req.body.vard_number == '') {
             //     return _400(res, "अनु क्रमांक आणि वॉर्ड क्रमांक आवश्यक आहे.");
             // }
-            const anu_details: any = await saveTaxPayers(req.body);
+            const anu_details: any = await saveTaxPayers(req.body,'taxpayers_temp');
+            return _201(res, "Tax Payers successfully added", { status: 201, data: anu_details });
+        } catch (error) {
+            logger.error("Error saveTaxPeryers ::", error);
+            return _400(res, "Error saveTaxPeryers");
+        }
+    }
+    static saveTaxPeryersFromOriginalTable = async (req: Request, res: Response) => {
+        try {
+            // if(req.body.annu_kramank == null || req.body.annu_kramank == undefined || req.body.annu_kramank == '' || req.body.vard_number == null || req.body.vard_number == undefined || req.body.vard_number == '') {
+            //     return _400(res, "अनु क्रमांक आणि वॉर्ड क्रमांक आवश्यक आहे.");
+            // }
+            const anu_details: any = await saveTaxPayers(req.body,'taxpayers');
             return _201(res, "Tax Payers successfully added", { status: 201, data: anu_details });
         } catch (error) {
             logger.error("Error saveTaxPeryers ::", error);
@@ -269,7 +326,34 @@ export class Nodni {
             if (!id) {
                 return _400(res, "Invalid or missing ID");
             }
-            const data: any = await getKhulabhukhandModalData(id);
+            const data: any = await getKhulabhukhandModalData(id,'taxationland_temp');
+            return _200(res, "खुला भूखंडाची कर मालमत्तेचे प्रकार List fetched successfully",  {data: data} );
+        } catch (error) {
+            logger.error("Error fetching खुला भूखंडाची कर मालमत्तेचे प्रकार", error);
+            return _400(res, "Error fetching खुला भूखंडाची कर मालमत्तेचे प्रकार");
+        }
+    }
+    
+    static async getKhulaBhukhandRecordFromoriginalTable( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const taxationData: any = await getTaxationBynew_userid(Number(id));
+            return _200(res, "खुला भूखंडाची कर मालमत्तेचे प्रकार List fetched successfully",  {data: taxationData} );
+        } catch (error) {
+            logger.error("Error fetching खुला भूखंडाची कर मालमत्तेचे प्रकार", error);
+            return _400(res, "Error fetching खुला भूखंडाची कर मालमत्तेचे प्रकार");
+        }
+    }
+    static async editKhulaBhukhand_modal_original_table( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const data: any = await getKhulabhukhandModalData(id,'taxationland');
             return _200(res, "खुला भूखंडाची कर मालमत्तेचे प्रकार List fetched successfully",  {data: data} );
         } catch (error) {
             logger.error("Error fetching खुला भूखंडाची कर मालमत्तेचे प्रकार", error);
@@ -284,7 +368,23 @@ export class Nodni {
             }
             const updatedData = req.body;
             // Assuming there's a service function to update the Khula Bhukhand
-            const data: any = await updateKhaliBhukhand(updatedData, id );
+            const data: any = await updateKhaliBhukhand(updatedData, id,'taxationland_temp' );
+            return _200(res, "खुला भूखंडाची कर मालमत्तेचे प्रकार updated successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error updating खुला भूखंडाची कर मालमत्तेचे प्रकार", error);
+            return _400(res, "Error updating खुला भूखंडाची कर मालमत्तेचे प्रकार");
+        }
+    }
+    
+    static async updateKhulaBhukhand_original_table( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const updatedData = req.body;
+            // Assuming there's a service function to update the Khula Bhukhand
+            const data: any = await updateKhaliBhukhand(updatedData, id,'taxationland' );
             return _200(res, "खुला भूखंडाची कर मालमत्तेचे प्रकार updated successfully", { status: 200, data: data });
         } catch (error) {
             logger.error("Error updating खुला भूखंडाची कर मालमत्तेचे प्रकार", error);
@@ -298,8 +398,23 @@ export class Nodni {
                 return _400(res, "Invalid or missing ID");
             }
             // Assuming there's a service function to delete the Khula Bhukhand
-            const data: any = await deleteKhaliBhukhand(id);
+            const data: any = await deleteKhaliBhukhand(id,'taxationland_temp');
             return _200(res, "खुला भूखंडाची कर मालमत्तेचे प्रकार deleted successfully");
+        } catch (error) {
+            logger.error("Error deleting खुला भूखंडाची कर मालमत्तेचे प्रकार", error);
+            return _400(res, "Error deleting खुला भूखंडाची कर मालमत्तेचे प्रकार");
+        }
+    }
+    
+    static async deleteKhulaBhukhandModal_original_table( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            // Assuming there's a service function to delete the Khula Bhukhand
+            const data: any = await deleteKhaliBhukhand(id,'taxationland');
+            return _200(res, "खुला भूखंडाची कर मालमत्तेचे प्रकार deleted successfully", data);
         } catch (error) {
             logger.error("Error deleting खुला भूखंडाची कर मालमत्तेचे प्रकार", error);
             return _400(res, "Error deleting खुला भूखंडाची कर मालमत्तेचे प्रकार");
@@ -311,14 +426,40 @@ export class Nodni {
             if (!id) {
                 return _400(res, "Invalid or missing ID");
             }
-            const data: any = await getBhandkamModalData(id);
+            const data: any = await getBhandkamModalData(id,'constructiontax_temp');
             return _200(res, "बांधकाम कर आकारणी modal data fetched successfully", { status: 200, data: data });
         } catch (error) {
             logger.error("Error fetching बांधकाम कर आकारणी modal data", error);
             return _400(res, "Error fetching बांधकाम कर आकारणी modal data");
         }
     }
+    static async getbandkamkarAakaraniModalFromOriginalTable( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const constructionData: any = await getConstructionBynew_userid(Number(id));
+            return _200(res, "बांधकाम कर आकारणी modal data fetched successfully", { status: 200, data: constructionData });
+        } catch (error) {
+            logger.error("Error fetching बांधकाम कर आकारणी modal data", error);
+            return _400(res, "Error fetching बांधकाम कर आकारणी modal data");
+        }
+    }
 
+static async editbandkamkarAakaraniModal_original_table( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const data: any = await getBhandkamModalData(id,'constructiontax');
+            return _200(res, "बांधकाम कर आकारणी modal data fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching बांधकाम कर आकारणी modal data", error);
+            return _400(res, "Error fetching बांधकाम कर आकारणी modal data");
+        }
+    }
     static async updateBandhKam( req: Request, res: Response) {
         try {
             const id = Number(req.params.id);
@@ -327,7 +468,22 @@ export class Nodni {
             }
             const updatedData = req.body;
             // Assuming there's a service function to update the Bandh Kam
-            const data: any = await updateBandkamModalRecords(updatedData, id);
+            const data: any = await updateBandkamModalRecords(updatedData, id,'constructiontax_temp');
+            return _200(res, "बांधकाम कर आकारणी updated successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error updating बांधकाम कर आकारणी", error);
+            return _400(res, "Error updating बांधकाम कर आकारणी");
+        }
+    }
+    static async updateBandhKamFromOriginalTable( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const updatedData = req.body;
+            // Assuming there's a service function to update the Bandh Kam
+            const data: any = await updateBandkamModalRecords(updatedData, id,'constructiontax');
             return _200(res, "बांधकाम कर आकारणी updated successfully", { status: 200, data: data });
         } catch (error) {
             logger.error("Error updating बांधकाम कर आकारणी", error);
@@ -342,7 +498,7 @@ export class Nodni {
                 return _400(res, "Invalid or missing ID");
             }
             // Assuming there's a service function to delete the Bandh Kam
-            const data: any = await deletebandkamKarAkkarniRecord(id);
+            const data: any = await deletebandkamKarAkkarniRecord(id,'constructiontax_temp');
             return _200(res, "बांधकाम कर आकारणी deleted successfully");
         } catch (error) {
             logger.error("Error deleting बांधकाम कर आकारणी", error);
@@ -350,6 +506,20 @@ export class Nodni {
         }
     }
 
+static async deleteBandhKamModal_original_table( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            // Assuming there's a service function to delete the Bandh Kam
+            const data: any = await deletebandkamKarAkkarniRecord(id,'constructiontax');
+            return _200(res, "बांधकाम कर आकारणी deleted successfully", data);
+        } catch (error) {
+            logger.error("Error deleting बांधकाम कर आकारणी", error);
+            return _400(res, "Error deleting बांधकाम कर आकारणी");
+        }
+    }
     static async editManoraKarAkarniModal( req: Request, res: Response) {
         try {
             const id = Number(req.params.id);
@@ -357,7 +527,35 @@ export class Nodni {
                 return _400(res, "Invalid or missing ID");
             }
             // Assuming there's a service function to get the Manora Kar Akarni modal data
-            const data: any = await getManoraKarAkaraniRecortds(id);
+            const data: any = await getManoraKarAkaraniRecortds(id,'taxpayers_temp');
+            return _200(res, "मनोरा कर आकारणी modal data fetched successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error fetching मनोरा कर आकारणी modal data", error);
+            return _400(res, "Error fetching मनोरा कर आकारणी modal data");
+        }
+    }
+    
+    static async getManoraKarAkarniModalFromOriginalTable( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const manoraData: any = await getManoraBynew_userid(Number(id));
+            return _200(res, "मनोरा कर आकारणी modal data fetched successfully", { status: 200, data: manoraData });
+        } catch (error) {
+            logger.error("Error fetching मनोरा कर आकारणी modal data", error);
+            return _400(res, "Error fetching मनोरा कर आकारणी modal data");
+        }
+    }
+    static async editManoraKarAkarniModal_original_table( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            // Assuming there's a service function to get the Manora Kar Akarni modal data
+            const data: any = await getManoraKarAkaraniRecortds(id,'taxpayers');
             return _200(res, "मनोरा कर आकारणी modal data fetched successfully", { status: 200, data: data });
         } catch (error) {
             logger.error("Error fetching मनोरा कर आकारणी modal data", error);
@@ -372,13 +570,29 @@ export class Nodni {
             }
             const updatedData = req.body;
             // Assuming there's a service function to update the Manora Kar Akarani data
-            const data: any = await updateManoraKarAkaraniRecords(updatedData, id);
+            const data: any = await updateManoraKarAkaraniRecords(updatedData, id,'taxpayers_temp');
             return _200(res, "मनोरा कर आकारणी updated successfully", { status: 200, data: data });
         } catch (error) {
             logger.error("Error updating मनोरा कर आकारणी", error);
             return _400(res, "Error updating मनोरा कर आकारणी");
         }
     }
+    static async updateManoraKarAkaraniDataFromOriginaltable( req: Request, res: Response) { 
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            const updatedData = req.body;
+            // Assuming there's a service function to update the Manora Kar Akarani data
+            const data: any = await updateManoraKarAkaraniRecords(updatedData, id,'taxpayers');
+            return _200(res, "मनोरा कर आकारणी updated successfully", { status: 200, data: data });
+        } catch (error) {
+            logger.error("Error updating मनोरा कर आकारणी", error);
+            return _400(res, "Error updating मनोरा कर आकारणी");
+        }
+    }
+    
     static async deleteManoraKarAkaraniRecord( req: Request, res: Response) {
         try {
             const id = Number(req.params.id);
@@ -386,8 +600,23 @@ export class Nodni {
                 return _400(res, "Invalid or missing ID");
             }
             // Assuming there's a service function to delete the Manora Kar Akarani record
-            const data: any = await deleteManoraKarAkaraniRecord(id);
+            const data: any = await deleteManoraKarAkaraniRecord(id,'taxpayers_temp');
             return _200(res, "मनोरा कर आकारणी deleted successfully");
+        } catch (error) {
+            logger.error("Error deleting मनोरा कर आकारणी", error);
+            return _400(res, "Error deleting मनोरा कर आकारणी");
+        }
+    }
+    
+    static async deleteManoraKarAkaraniRecord_original_table( req: Request, res: Response) {
+        try {
+            const id = Number(req.params.id);
+            if (!id) {
+                return _400(res, "Invalid or missing ID");
+            }
+            // Assuming there's a service function to delete the Manora Kar Akarani record
+            const data: any = await deleteManoraKarAkaraniRecord(id,'taxpayers');
+            return _200(res, "मनोरा कर आकारणी deleted successfully", data);
         } catch (error) {
             logger.error("Error deleting मनोरा कर आकारणी", error);
             return _400(res, "Error deleting मनोरा कर आकारणी");

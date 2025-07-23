@@ -86,8 +86,12 @@ export class psmRoutes {
 
 
         this.router.post('/save-nodni-from', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveNondniFrom);
+        this.router.put('/update-nodni-form/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.updateNondniFrom);        
         this.router.post('/save-khali-bhukhand', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveKhaliBhuKhand);
+         this.router.post('/save-khali-bhukhand-insert-in-original-table', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveKhaliBhuKhandFromOriginalTable);
+        
         this.router.post('/save-bandh-kam', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveBandhKamFrm);
+        this.router.post('/save-bandh-kam-insert-in-original-table', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveBandhKamFrmFromOriginalTable);
 
         this.router.get('/get-khula-bhukhand-kar-malmatteche-prakar-ddl', GlobalMiddleware.checkError, Nodni.khulaBhukhandKar_MalmattechePrakar);
         this.router.get('/get-khula-bhukhand-kar-gavthan-ddl/:panchayat_id', GlobalMiddleware.checkError, Nodni.khulaBhukhandKar_Gavthan);
@@ -106,22 +110,36 @@ export class psmRoutes {
 
         this.router.get('/edit-khula-bhukhand-modal-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.editKhulaBhukhand_modal);
         this.router.put('/update-khula-bhukhand-modal/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.updateKhulaBhukhand);
+        this.router.put('/update-khula-bhukhand-modal-original-table/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.updateKhulaBhukhand_original_table);
         this.router.delete('/delete-khula-bhukhand-record/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.deleteKhulaBhukhandModal);
+        this.router.get('/edit-khula-bhukhand-modal-by-id-original-edit/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.editKhulaBhukhand_modal_original_table);
+        this.router.delete('/delete-khula-bhukhand-record-original/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.deleteKhulaBhukhandModal_original_table);
+         this.router.get('/get-khula-bhukhand-modal-by-newuserid-from-original/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.getKhulaBhukhandRecordFromoriginalTable);
 
         this.router.get('/edit-bandkam-kar-aakarni-modal-data/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.editbandkamkarAakaraniModal);
         this.router.put('/update-bandkam-kar-aakarani-modal/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.updateBandhKam);
+         this.router.put('/update-bandkam-kar-aakarani-modal-from-original-table/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.updateBandhKamFromOriginalTable);
         this.router.delete('/delete-bandkam-kar-aakarni-record/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.deleteBandhKamModal);
+        this.router.delete('/delete-bandkam-kar-aakarni-record-original/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.deleteBandhKamModal_original_table);
+        this.router.get('/edit-bandkam-kar-aakarni-modal-data-original-edit/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.editbandkamkarAakaraniModal_original_table);
+        this.router.get('/get-bandkam-kar-aakarni-modal-data-from-original/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.getbandkamkarAakaraniModalFromOriginalTable);
         
         this.router.get('/edit-manora-kar-aakarni-modal-data/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.editManoraKarAkarniModal);
         this.router.put('/update-manora-kar-aakarani-modal/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.updateManoraKarAkaraniData);
+        this.router.put('/update-manora-kar-aakarani-modal-from-original-table/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.updateManoraKarAkaraniDataFromOriginaltable);
         this.router.delete('/delete-manora-kar-aakarni-record/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.deleteManoraKarAkaraniRecord);
+        this.router.delete('/delete-manora-kar-aakarni-record-original/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.deleteManoraKarAkaraniRecord_original_table);
+        this.router.get('/edit-manora-kar-aakarni-modal-data-original-edit/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.editManoraKarAkarniModal_original_table);
+        this.router.get('/get-manora-kar-aakarni-modal-data-from-original/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.getManoraKarAkarniModalFromOriginalTable);
 
         this.router.post('/delete-khula-bhukhand-session-wise-clear-api', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.delete_khulabhukahnd_by_session_wise);
         this.router.post('/delete-building-kar-session-wise-clear-api', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.delete_buildingKarKarano_by_session_wise);
         this.router.post('/delete-monora-kar-session-wise-clear-api', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.delete_manoraKarAkarani_by_session_wise);
 
-
+        // manora form
         this.router.post('/save-tax-payer', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveTaxPeryers);
+        this.router.post('/save-tax-payer-insert-in-original-table', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveTaxPeryersFromOriginalTable);
+
         this.router.post('/malmatta-darkachi-yadi-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalamattaGrahakYadiList.get_malmatta_darkachi_yadi_list);
         this.router.post('/malmatta-grahak-yadi-khula-bhukhand', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalamattaGrahakYadiList.get_malmatta_grahak_yadi_khula_bhukhand);
         this.router.post('/malmatta-grahak-yadi-ghar-karni', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalamattaGrahakYadiList.get_malmatta_grahak_yadi_ghar_kar);

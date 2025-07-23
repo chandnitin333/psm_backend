@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
 import { signIn } from "../../services/admin/users.service";
-import { addNewCustomerInNodniFormInfo, countConstructiontax, countTaxPayer, countTaxationLand, getAnnuKramank, getConstructionForsarkari8, getConstructionTaxDetails, getCustomerDetailsById, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getMalmattaNotdniList, getNewDistinctUserDetails, getNewUserDetails, getNewUserSevakarDetails, getTaxPayerDetails, getTaxationLandDetails, getTaxationandMilkat, getYear, gettaxationLandDetails, insertUpdateSillakJoda, searchCustomer, softDeleteMalmattaNodniInfo, updateMalmattaNodniInfo } from "../../services/main/customer.service";
+import { addNewCustomerInNodniFormInfo, countConstructiontax, countTaxPayer, countTaxationLand, getAnnuKramank, getConstructionBynew_userid, getConstructionForsarkari8, getConstructionTaxDetails, getCustomerDetailsById, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getMalmattaNotdniList, getManoraBynew_userid, getNewDistinctUserDetails, getNewUserDetails, getNewUserSevakarDetails, getTaxPayerDetails, getTaxationBynew_userid, getTaxationLandDetails, getTaxationandMilkat, getYear, gettaxationLandDetails, insertUpdateSillakJoda, searchCustomer, softDeleteMalmattaNodniInfo, updateMalmattaNodniInfo } from "../../services/main/customer.service";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
 import { Utils } from "../../utils/util";
 import * as jwt from 'jsonwebtoken';
@@ -52,7 +52,16 @@ export class CustomerController {
             if (!customers) {
                 return _404(res, "customer details not found");
             }
-            return _200(res, "Customer details fetched successfully", { status: 200, data: customers });
+            const taxationData: any = await getTaxationBynew_userid(Number(id));
+            const constructionData: any = await getConstructionBynew_userid(Number(id));
+            const manoraData: any = await getManoraBynew_userid(Number(id));
+            const params = {
+                "new_user_info": customers,
+                "taxation_info": taxationData,
+                "construction_info": constructionData,
+                "manora_info": manoraData
+            }
+            return _200(res, "Customer details fetched successfully", { status: 200, data: params });
         } catch (error) {
             logger.error("Error fetching customer details", error);
             return _400(res, "Error fetching customer details");

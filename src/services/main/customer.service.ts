@@ -43,7 +43,7 @@ export async function getAnnuKramank(annu_details: any): Promise<any | null> {
 export async function getCustomerDetailsById(customerId: number): Promise<any | null> {
     try {
         const query = `
-            SELECT ANNU_KRAMANK, MALMATTA_NUMBER, VARD_NUMBER, PLOT_NO, KHASARA_KRAMANK, SURVEY_KRAMANK, HOMEUSER_NAME, BHOGATWARGARACHE_NAME, ADDRESS_NAGAR_SOCIETY FROM newuser
+            SELECT * FROM newuser
             WHERE NEWUSER_ID = ? AND DELETED_AT IS NULL
         `;
         const results: any = await executeQuery(query, [customerId]);
@@ -56,6 +56,69 @@ export async function getCustomerDetailsById(customerId: number): Promise<any | 
         throw error;
     }
 }
+export async function getTaxationBynew_userid(customerId: number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT t.*,(SELECT X.MILKAT_VAPAR_NAME FROM milkat_vapar X WHERE X.MILKAT_VAPAR_ID = t.MILKAT_VAPAR_ID) AS MILKAT_VAPAR_NAME,
+                (SELECT X.MILKAT_VAPAR_NAME FROM milkat_vapar X WHERE X.MILKAT_VAPAR_ID = t.MILKAT_VAPAR_ID) AS MILKAT_VAPAR_NAME1,
+                (SELECT X.PRAKAR_NAME FROM prakar X WHERE X.PRAKAR_ID IN (SELECT Y.PRAKAR_ID FROM openplot Y WHERE Y.OPENPLOT_ID = t.OPENPLOT_ID)) AS PRAKAR_NAME,
+                (SELECT X.GATGRAMPANCHAYAT_NAME FROM gatgrampanchayat X WHERE X.GATGRAMPANCHAYAT_ID = t.GATGRAMPANCHAYAT_ID) AS GATGRAMPANCHAYAT_NAME
+                 FROM taxationland t
+            WHERE t.newuser_id = ? AND t.DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [customerId]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching getTaxationBynew_userid: ${error.message}`);
+        throw error;
+    }
+}
+export async function getConstructionBynew_userid(customerId: number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT c.*,(SELECT X.MILKAT_VAPAR_NAME FROM milkat_vapar X WHERE X.MILKAT_VAPAR_ID = c.MILKAT_VAPAR_ID) AS MILKAT_VAPAR_NAME,
+            (SELECT X.DESCRIPTION_NAME FROM malmatta X WHERE X.MALMATTA_ID = c.MALMATTA_ID) AS DESCRIPTION_NAME,
+            (SELECT X.FLOOR_NAME FROM floor X WHERE X.FLOOR_ID = c.FLOOR_ID) AS FLOOR_NAME
+             FROM constructiontax c
+            LEFT JOIN floor f ON f.FLOOR_ID = c.FLOOR_ID
+            LEFT JOIN milkat_vapar mv ON mv.MILKAT_VAPAR_ID = c.MILKAT_VAPAR_ID
+            LEFT JOIN malmatta m ON m.MALMATTA_ID = c.MALMATTA_ID
+            WHERE c.newuser_id = ? AND c.DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [customerId]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching getConstructionBynew_userid: ${error.message}`);
+        throw error;
+    }
+}
+export async function getManoraBynew_userid(customerId: number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT t.*,
+            (SELECT X.MILKAT_VAPAR_NAME FROM milkat_vapar X WHERE X.MILKAT_VAPAR_ID = t.MILKAT_VAPAR_ID) AS MILKAT_VAPAR_NAME,
+            (SELECT X.DESCRIPTION_NAME FROM malmatta X WHERE X.MALMATTA_ID = t.MALMATTA_ID) AS DESCRIPTION_NAME,
+            (SELECT X.MANORAMASTER_NAME FROM manoramaster X WHERE X.MANORAMASTER_ID = t.MANORAMASTER_ID) AS MANORAMASTER_NAME
+            FROM taxpayers t
+            WHERE t.newuser_id = ? AND t.DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [customerId]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching getManoraBynew_userid: ${error.message}`);
+        throw error;
+    }
+}
+
 
 export async function getMalmattaNotdniList(page: number = 1, search: string = "", user_id:Number): Promise<any[]> {
     try {
