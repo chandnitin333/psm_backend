@@ -192,7 +192,7 @@ export  const saveNondni = async (data: any) => {
                 await executeQuery(query, deleteParams);
             }
 
-            return { status: 200, message: "This Annu Kramank Already Exists" };
+            return { status: 409, message: "This Annu Kramank Already Exists" };
         } else {
             // Corrected insert query
             let yearss = await getYearIdAndYearName()

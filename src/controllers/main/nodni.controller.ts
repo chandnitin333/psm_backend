@@ -58,7 +58,10 @@ export class Nodni {
             console.log("anu_details:", anu_details);
             if(!anu_details || anu_details.status === 200) {
                 return _201(res, anu_details.message, { status: 201, data: anu_details });
-            }else{
+            }else if(!anu_details && anu_details.status === 409) {
+                return _400(res, anu_details.message);
+            }
+            else{
                 return _400(res, anu_details.message);
             }
         } catch (error) {
