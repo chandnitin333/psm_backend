@@ -246,106 +246,122 @@ export  const saveNondni = async (data: any) => {
             ];
 
 
-            await executeQuery(insertQuery, insertParams);
-            
-            const insertedIdQuery = `SELECT LAST_INSERT_ID() AS id`;
-            const insertedIdResult = await executeQuery(insertedIdQuery,[]);
-            const insertedId = insertedIdResult[0]?.id;
-            // console.log("Inserted ID-----------------------:", insertedId);
-            let insetedCount = 0;
-            const saveBhukhand = `INSERT INTO taxationland (
-                                newuser_id, user_id, extra, taxpayersss, tax1000, vard_number, Annu_kramank,
-                                RNO, MILKAT_VAPAR_ID, MILKAT_VAPAR_ID1, VAPARACHE_PRAKAR, GATGRAMPANCHAYAT_ID, OPENPLOT_ID,
-                                AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, ANNUALVALUE, LEVYRATE,
-                                CAPITAL, TAXATION, Year_name, Year_id, reg_date, tdate, ttime, RandomNumber, Token
-                            )
-                            SELECT ?, user_id, 1, 1, 1000, vard_number, Annu_kramank,
-                                RNO, MILKAT_VAPAR_ID, MILKAT_VAPAR_ID1, VAPARACHE_PRAKAR, GATGRAMPANCHAYAT_ID, OPENPLOT_ID,
-                                AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, ANNUALVALUE, LEVYRATE,
-                                CAPITAL, TAXATION, Year_name, Year_id, reg_date, tdate, ttime, RandomNumber, Token
-                            FROM taxationland_temp
-                            WHERE TRIM(RandomNumber) = ?
-                            AND user_id = ?
-                            AND RNO = ?
-                            AND TRIM(Annu_kramank) = ?
-                            AND TRIM(vard_number) = ?`;
+           let new_user_result =  await executeQuery(insertQuery, insertParams) as { affectedRows: number };
+            if (new_user_result.affectedRows > 0) {
+               const insertedIdQuery = `SELECT LAST_INSERT_ID(NEWUSER_ID) AS id from newuser order by NEWUSER_ID desc limit 1`;
+                const insertedIdResult = await executeQuery(insertedIdQuery,[]) as { id: number }[];
+                const insertedId = insertedIdResult[0]?.id;
+                console.log("Inserted ID =======>:", insertedId);
+               let insertStatus = true;
+                
+                const checkKhulaBhukhandExist = `SELECT COUNT(*) AS count FROM taxationland_temp WHERE TRIM(RandomNumber) = ? AND user_id = ? AND RNO = ? AND TRIM(Annu_kramank) = ? AND TRIM(vard_number) = ?`;
+                const checkParams = [randomNumber, user_id, rno, txt_number, txt_vard_number];
+                const checkResult = await executeQuery(checkKhulaBhukhandExist, checkParams) as { count: number }[];
 
-            let result_one = await executeQuery(saveBhukhand, [insertedId, randomNumber, user_id, rno, txt_number, txt_vard_number]) as { affectedRows: number };
-            console.log("result_one",result_one);
-            if (result_one.affectedRows > 0) {
-               insetedCount += 1; 
-            } 
+                if (checkResult.length > 0 && checkResult[0].count > 0) {
+                    const saveBhukhand = `INSERT INTO taxationland (
+                                    newuser_id, user_id, extra, taxpayersss, tax1000, vard_number, Annu_kramank,
+                                    RNO, MILKAT_VAPAR_ID, MILKAT_VAPAR_ID1, VAPARACHE_PRAKAR, GATGRAMPANCHAYAT_ID, OPENPLOT_ID,
+                                    AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, ANNUALVALUE, LEVYRATE,
+                                    CAPITAL, TAXATION, Year_name, Year_id, reg_date, tdate, ttime, RandomNumber, Token
+                                )
+                                SELECT ?, user_id, 1, 1, 1000, vard_number, Annu_kramank,
+                                    RNO, MILKAT_VAPAR_ID, MILKAT_VAPAR_ID1, VAPARACHE_PRAKAR, GATGRAMPANCHAYAT_ID, OPENPLOT_ID,
+                                    AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, ANNUALVALUE, LEVYRATE,
+                                    CAPITAL, TAXATION, Year_name, Year_id, reg_date, tdate, ttime, RandomNumber, Token
+                                FROM taxationland_temp
+                                WHERE TRIM(RandomNumber) = ?
+                                AND user_id = ?
+                                AND RNO = ?
+                                AND TRIM(Annu_kramank) = ?
+                                AND TRIM(vard_number) = ?`;
 
-            const buildingkar = `INSERT INTO constructiontax (
-                        newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, FLOOR_ID,
-                        AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, LIFESPAN, CONSTRUCTING,
-                        DEPRECIATION, WEIGHTTAGE, ANNUALCOST, LEVYRATE, ONE, TWO, RNO, cons1000,
-                        annu_kramank, vard_number, Year_id, Year_name, reg_date, tdate, ttime,
-                        RandomNumber, Token)
-                    SELECT ?, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, FLOOR_ID,
-                        AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, LIFESPAN, CONSTRUCTING,
-                        DEPRECIATION, WEIGHTTAGE, ANNUALCOST, LEVYRATE, ONE, TWO, RNO, cons1000,
-                        annu_kramank, vard_number, Year_id, Year_name, reg_date, tdate, ttime,
-                        RandomNumber, Token
-                    FROM constructiontax_temp
-                    WHERE TRIM(RandomNumber) = ?
-                    AND user_id = ?
-                    AND RNO = ?
-                    AND TRIM(annu_kramank) = ?
-                    AND TRIM(vard_number) = ?`;
-            let result_two = await executeQuery(buildingkar, [insertedId, randomNumber, user_id, rno, txt_number, txt_vard_number]) as { affectedRows: number };
-            console.log("result_two",result_two);
-            if (result_two.affectedRows > 0) {
-               insetedCount += 1; 
-            }
-            const taxpayers = `INSERT INTO taxpayers (
-                        newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR,
-                        MANORAMASTER_ID, AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1,
-                        CAPITAL, TAXATION, RNO, taxp1000, vard_number, annu_kramank, Year_id,
-                        Year_name, reg_date, tdate, ttime, RandomNumber, Token)
-                    SELECT ?, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR,
-                        MANORAMASTER_ID, AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1,
-                        CAPITAL, TAXATION, RNO, taxp1000, vard_number, annu_kramank, Year_id,
-                        Year_name, reg_date, tdate, ttime, RandomNumber, Token
-                    FROM taxpayers_temp
-                    WHERE TRIM(RandomNumber) = ?
-                    AND user_id = ?
-                    AND RNO = ?
-                    AND TRIM(annu_kramank) = ?
-                    AND TRIM(vard_number) = ?`;
-            let result_three = await executeQuery(taxpayers, [insertedId, randomNumber, user_id, rno, txt_number, txt_vard_number]) as { affectedRows: number };
-            console.log("result_three",result_three);
-            
-            if (result_three.affectedRows > 0) {
-               insetedCount += 1; 
-            }
-            if(insetedCount === 3) {
-                const deleteFromTempTables = [
-                    `DELETE FROM taxationland_temp WHERE TRIM(RandomNumber) = ? AND user_id = ? AND RNO = ? AND TRIM(Annu_kramank) = ? AND TRIM(vard_number) = ?`,
-                    `DELETE FROM constructiontax_temp WHERE TRIM(RandomNumber) = ? AND user_id = ? AND RNO = ? AND TRIM(annu_kramank) = ? AND TRIM(vard_number) = ?`,
-                    `DELETE FROM taxpayers_temp WHERE TRIM(RandomNumber) = ? AND user_id = ? AND RNO = ?  AND TRIM(annu_kramank) = ? AND TRIM(vard_number) = ?`
-                ];
-
-                for (const query of deleteFromTempTables) {
-                    await executeQuery(query, [randomNumber, user_id, rno, txt_number, txt_vard_number]);
+                const first  = await executeQuery(saveBhukhand, [insertedId, randomNumber, user_id, rno, txt_number, txt_vard_number]) as { affectedRows: number };
+                if( first.affectedRows <= 0) {
+                    insertStatus = false;
                 }
-                return { status: 200, message: "Data Inserted Successfully" };
-            }else{
-                console.log("Data not inserted in all tables, deleting inserted data from newuser table",insertedId);
-                const deleteQuery = `DELETE FROM newuser WHERE NEWUSER_ID = ?`;
-                await executeQuery(deleteQuery, [insertedId]);
-                const deleteFromTempTables = [
-                    `DELETE FROM taxationland WHERE newuser_id = ?`,
-                    `DELETE FROM constructiontax WHERE newuser_id = ?`,
-                    `DELETE FROM taxpayers WHERE newuser_id = ?`
-                ];
-
-                for (const query of deleteFromTempTables) {
-                    await executeQuery(query, [insertedId]);
+                const del1 = `DELETE FROM taxationland_temp WHERE TRIM(RandomNumber) = ? AND user_id = ? AND RNO = ? AND TRIM(Annu_kramank) = ? AND TRIM(vard_number) = ?`;
+                await executeQuery(del1, [randomNumber, user_id, rno, txt_number, txt_vard_number]);
                 }
                 
+                const checkBuildingexist = `SELECT COUNT(*) AS count FROM constructiontax_temp WHERE TRIM(RandomNumber) = ? AND user_id = ? AND RNO = ? AND TRIM(annu_kramank) = ? AND TRIM(vard_number) = ?`;
+                const checkBuildingParams = [randomNumber, user_id, rno, txt_number, txt_vard_number];
+                const checkBuildingResult = await executeQuery(checkBuildingexist, checkBuildingParams) as any[];
+                if (checkBuildingResult.length > 0 && checkBuildingResult[0].count > 0) {
+                    const buildingkar = `INSERT INTO constructiontax (
+                            newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, FLOOR_ID,
+                            AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, LIFESPAN, CONSTRUCTING,
+                            DEPRECIATION, WEIGHTTAGE, ANNUALCOST, LEVYRATE, ONE, TWO, RNO, cons1000,
+                            annu_kramank, vard_number, Year_id, Year_name, reg_date, tdate, ttime,
+                            RandomNumber, Token)
+                        SELECT ?, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, FLOOR_ID,
+                            AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, LIFESPAN, CONSTRUCTING,
+                            DEPRECIATION, WEIGHTTAGE, ANNUALCOST, LEVYRATE, ONE, TWO, RNO, cons1000,
+                            annu_kramank, vard_number, Year_id, Year_name, reg_date, tdate, ttime,
+                            RandomNumber, Token
+                        FROM constructiontax_temp
+                        WHERE TRIM(RandomNumber) = ?
+                        AND user_id = ?
+                        AND RNO = ?
+                        AND TRIM(annu_kramank) = ?
+                        AND TRIM(vard_number) = ?`;
+                    const decond = await executeQuery(buildingkar, [insertedId, randomNumber, user_id, rno, txt_number, txt_vard_number]) as { affectedRows: number };
+                    if(decond.affectedRows <= 0) {
+                        insertStatus = false;
+                    }
+                    const del2 = `DELETE FROM constructiontax_temp WHERE TRIM(RandomNumber) = ? AND user_id = ? AND RNO = ? AND TRIM(annu_kramank) = ? AND TRIM(vard_number) = ?`;
+                    await executeQuery(del2, [randomNumber, user_id, rno, txt_number, txt_vard_number]);
+                }
+                
+                const checkTaxPyersExist = `SELECT COUNT(*) AS count FROM taxpayers_temp WHERE TRIM(RandomNumber) = ? AND user_id = ? AND RNO = ? AND TRIM(annu_kramank) = ? AND TRIM(vard_number) = ?`;
+                const checkTaxPayersParams = [randomNumber, user_id, rno, txt_number, txt_vard_number];
+                const checkTaxPayersResult = await executeQuery(checkTaxPyersExist, checkTaxPayersParams) as any[];
+                if( checkTaxPayersResult.length > 0 && checkTaxPayersResult[0].count > 0) {
+                    const taxpayers = `INSERT INTO taxpayers (
+                            newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR,
+                            MANORAMASTER_ID, AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1,
+                            CAPITAL, TAXATION, RNO, taxp1000, vard_number, annu_kramank, Year_id,
+                            Year_name, reg_date, tdate, ttime, RandomNumber, Token)
+                        SELECT ?, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR,
+                            MANORAMASTER_ID, AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1,
+                            CAPITAL, TAXATION, RNO, taxp1000, vard_number, annu_kramank, Year_id,
+                            Year_name, reg_date, tdate, ttime, RandomNumber, Token
+                        FROM taxpayers_temp
+                        WHERE TRIM(RandomNumber) = ?
+                        AND user_id = ?
+                        AND RNO = ?
+                        AND TRIM(annu_kramank) = ?
+                        AND TRIM(vard_number) = ?`;
+                   const third = await executeQuery(taxpayers, [insertedId, randomNumber, user_id, rno, txt_number, txt_vard_number]) as { affectedRows: number };
+                   if(third.affectedRows <= 0) {
+                        insertStatus = false;
+                    }
+                   const del3 = `DELETE FROM taxpayers_temp WHERE TRIM(RandomNumber) = ? AND user_id = ? AND RNO = ? AND TRIM(annu_kramank) = ? AND TRIM(vard_number) = ?`;
+                    await executeQuery(del3, [randomNumber, user_id, rno, txt_number, txt_vard_number]);
+                }
+                
+                if(insertStatus) {
+                    return { status: 200, message: "Nodni Form Inserted Successfully" };
+                }else{
+                    console.log("Data not inserted in all tables, deleting inserted data from newuser table",insertedId);
+                    const deleteQuery = `DELETE FROM newuser WHERE NEWUSER_ID = ?`;
+                    await executeQuery(deleteQuery, [insertedId]);
+                    const deleteFromTempTables = [
+                        `DELETE FROM taxationland WHERE newuser_id = ?`,
+                        `DELETE FROM constructiontax WHERE newuser_id = ?`,
+                        `DELETE FROM taxpayers WHERE newuser_id = ?`
+                    ];
+
+                    for (const query of deleteFromTempTables) {
+                        await executeQuery(query, [insertedId]);
+                    }
+                    
+                    return { status: 400, message: "Data Insertion Failed" };
+                }
+            }else{
                 return { status: 400, message: "Data Insertion Failed" };
             }
+            
 
             // console.log("test",data)
             // let outParam = 0; // Declare outParam to store the returned value.
