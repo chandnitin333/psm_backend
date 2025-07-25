@@ -19,6 +19,7 @@ export class taxGenerationController {
             let from_year: string = req.body.from_year ? req.body.from_year : "";
             let to_year: string = req.body.to_year ? req.body.to_year : "";
             let user_id: number = Number(decoded_user['userId']);
+            // let user_id = 1009; // For testing purposes, replace with actual user ID from decoded token
 
             const taxData: any = await getTaxGenerationData(page_number,ward_no,from_year,to_year,user_id);
             return _200(res, "Tax generation data fetched successfully", taxData);

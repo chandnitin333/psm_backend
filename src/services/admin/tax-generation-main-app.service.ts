@@ -44,10 +44,11 @@ export async function getTaxGenerationData(page:number,ward_no:string,from_year:
         }
         let totalCount = await getRecordCount(sql, params);
         sql += ` ORDER BY A.NEWUSERSAVEKAR_ID DESC LIMIT ${limit} OFFSET ${offset}`;
-        console.log("getTaxGenerationData SQL Query: ", sql);
+        // console.log("getTaxGenerationData SQL Query: ", totalCount);
+        //  return Object.keys(result).length;
         return executeQuery(sql, params).then(result => {    
             (result) ? result : null;
-            return (result) ? { 'data': result, 'total_count': totalCount } : null;
+            return (result) ? { 'data': result, 'total_count': totalCount.totalCount, 'sumCalculation':totalCount } : null;
         }).catch(error => {
             console.error("getTaxGenerationData fetch data error: ", error);
             return null;
@@ -61,7 +62,36 @@ export async function getTaxGenerationData(page:number,ward_no:string,from_year:
 let getRecordCount = async (query: string, param: any) => {
     try {
         const result = await executeQuery(query, param);
-        return Object.keys(result).length;
+        let sum = (result as any[]).reduce((acc: any, row: any) => {
+            return {
+                FGFHH: acc.FGFHH + row.FGFHH,
+                BHUMI_KAR: acc.BHUMI_KAR + row.BHUMI_KAR,
+                DIVA_BATTI_KAR: acc.DIVA_BATTI_KAR + row.DIVA_BATTI_KAR,
+                AAROGYA_RAKSHAN_KAR: acc.AAROGYA_RAKSHAN_KAR + row.AAROGYA_RAKSHAN_KAR,
+                SAFAI_KAR: acc.SAFAI_KAR + row.SAFAI_KAR,
+                SAMANYA_PANI_KAR: acc.SAMANYA_PANI_KAR + row.SAMANYA_PANI_KAR,
+                VISHESH_PANI_KAR: acc.VISHESH_PANI_KAR + row.VISHESH_PANI_KAR,
+                TOTAL: acc.TOTAL + row.TOTAL,
+                EMARTICHE_KARAAKARNI: acc.EMARTICHE_KARAAKARNI + row.EMARTICHE_KARAAKARNI,
+                KHULA_BHUKAND: acc.KHULA_BHUKAND + row.KHULA_BHUKAND,
+            };
+        }, {
+            FGFHH: 0,
+            BHUMI_KAR: 0,
+            DIVA_BATTI_KAR: 0,
+            AAROGYA_RAKSHAN_KAR: 0,
+            SAFAI_KAR: 0,
+            SAMANYA_PANI_KAR: 0,
+            VISHESH_PANI_KAR: 0,
+            TOTAL: 0,
+            EMARTICHE_KARAAKARNI: 0,
+            KHULA_BHUKAND: 0,
+        });
+
+        // console.log("Sum of fields: ", sum);
+        const totalCount = Object.keys(result).length;
+        sum.totalCount = totalCount;
+        return sum;
     } catch (err) {
         logger.error('Error fetching getRecordCount', err);
         throw err;
