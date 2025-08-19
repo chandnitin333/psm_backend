@@ -144,8 +144,8 @@ static saveBandhKamFrmFromOriginalTable = async (req: Request, res: Response) =>
             const anu_details: any = await saveTaxPayers(req.body,'taxpayers_temp');
             return _201(res, "Tax Payers successfully added", { status: 201, data: anu_details });
         } catch (error) {
-            logger.error("Error saveTaxPeryers ::", error);
-            return _400(res, "Error saveTaxPeryers");
+            logger.error("Error saveTaxPayers ::", error);
+            return _400(res, "Error saveTaxPayers");
         }
     }
     static saveTaxPeryersFromOriginalTable = async (req: Request, res: Response) => {

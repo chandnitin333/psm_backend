@@ -883,7 +883,7 @@ export const signIn = async (
 
       query +=
         "  AND en.DISTRICT_ID= ? AND en.TALUKA_ID= ? AND en.PANCHAYAT_ID= ? AND en.USERNAME= ? AND en.PWD= ?";
-      query += "  AND en.DISTRICT_ID= ?";
+      // query += "  AND en.DISTRICT_ID= ?";
       params = [district_id, taluka_id, panchayat_id, username, password];
 
       const result = await executeQuery(query, params);

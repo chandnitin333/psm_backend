@@ -14,6 +14,7 @@ import { MalamattaGrahakYadiList } from "../controllers/main/malmatta-grahak-yad
 import { Namuna8Controller } from "../controllers/main/namuna-8.controller";
 import { Nodni } from "../controllers/main/nodni.controller";
 import { taxGenerationController } from "../controllers/main/tax-generation.controller";
+import { vasuliController } from "../controllers/main/vasuli.controller";
 import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
 
 export class psmRoutes {
@@ -147,6 +148,12 @@ export class psmRoutes {
         this.router.post('/get-namuna-8-vard-new', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Namuna8Controller.get_namuna_8_vard_new);
 
         this.router.post('/get-tax-generation', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, taxGenerationController.getTaxGeneration);
+
+        this.router.post('/search-customer-vasuli', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, vasuliController.searchVasuliCustomer);
+        this.router.post('/save-customer-vasuli', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, vasuliController.savecustonerVasuli);
+        this.router.get('/get-customer-vasuli-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, vasuliController.getCustomerVasuliById);
+        this.router.put('/update-customer-vasuli-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, vasuliController.getCustomerVasuliUpdateById);
+        this.router.delete('/delete-customer-vasuli-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, vasuliController.getCustomerVasuliDeleteById);
 
     }
 
