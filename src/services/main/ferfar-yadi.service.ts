@@ -397,7 +397,6 @@ export async function getPDFFerfarYadi(page_number,ferfar_id, user_id): Promise<
 }
 
 export async function getCustomerByAnuId_wardNo(details: any): Promise<any | null> {
-    
     try {
         const query = `
            SELECT * FROM newuser where VARD_NUMBER = ? AND ANNU_KRAMANK = ? AND user_id = ? AND DELETED_AT IS NULL`;
