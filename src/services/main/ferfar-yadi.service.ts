@@ -14,7 +14,7 @@ export async function getFerFarYadiDetailById(ferfar_id: number): Promise<any | 
         `;
         const results: any = await executeQuery(query, [ferfar_id]);
         if (results.length > 0) {
-            return results[0] as any;
+            return results as any;
         }
         return null;
     } catch (error) {
@@ -220,28 +220,28 @@ export async function searchFerFarYadi(user_id: number, data: any, page:number):
         const offset = (page - 1) * limit;
         let sql = `
              SELECT DISTINCT
-        (SELECT a.FERFARNAMUNAYADI_NAME FROM ferfarnamunayadi a WHERE a.FERFARNAMUNAYADI_ID=A.FERFARNAMUNAYADI_ID) AS FERFARNAMUNAYADI_NAME,
-        (SELECT b.PANCHAYAT_NAME FROM panchayat b WHERE b.PANCHAYAT_ID=A.PANCHAYAT_ID) AS PANCHAYAT_NAME,
-        (SELECT c.YEAR_NAME FROM year c WHERE c.YEAR_ID=A.YEAR_ID) AS YEAR_NAME,
-        (SELECT d.YEAR_NAME FROM year d WHERE d.YEAR_ID=A.YEAR1_ID) AS YEAR_NAME2,
-        (SELECT e.ANNU_KRAMANK FROM ferfar e WHERE e.FERFAR_ID=A.FERFAR_ID) AS ANNU_KRAMANK,
-        (SELECT f.MALMATTA_NUMBER FROM ferfar f WHERE f.FERFAR_ID=A.FERFAR_ID) AS MALMATTA_NUMBER,
-        (SELECT g.VARD_NUMBER FROM ferfar g WHERE g.FERFAR_ID=A.FERFAR_ID) AS VARD_NUMBER,
-        (SELECT h.PLOT_NO FROM ferfar h WHERE h.FERFAR_ID=A.FERFAR_ID) AS PLOT_NO,
-        (SELECT i.KHASARA_KRAMANK FROM ferfar i WHERE i.FERFAR_ID=A.FERFAR_ID) AS KHASARA_KRAMANK,
-        (SELECT j.SURVEY_KRAMANK FROM ferfar j WHERE j.FERFAR_ID=A.FERFAR_ID) AS SURVEY_KRAMANK,
-        (SELECT k.MASIKSABHA FROM ferfar k WHERE k.FERFAR_ID=A.FERFAR_ID) AS MASIKSABHA,
-        (SELECT l.THARAV FROM ferfar l WHERE l.FERFAR_ID=A.FERFAR_ID) AS THARAV,
-        (SELECT m.DATE FROM ferfar m WHERE m.FERFAR_ID=A.FERFAR_ID) AS DATE,
-        (SELECT o.JUNEKHATEDAR_NAME FROM ferfar o WHERE o.FERFAR_ID=A.FERFAR_ID) AS JUNEKHATEDAR_NAME,
-        (SELECT p.NAVINKHATEDAR_NAME FROM ferfar p WHERE p.FERFAR_ID=A.FERFAR_ID) AS NAVINKHATEDAR_NAME,
-        (SELECT q.SACHIV FROM ferfar q WHERE q.FERFAR_ID=A.FERFAR_ID) AS SACHIV,
-        (SELECT r.SARPANCH FROM ferfar r WHERE r.FERFAR_ID=A.FERFAR_ID) AS SARPANCH,
-        (SELECT s.UPSARPANCH FROM ferfar s WHERE s.FERFAR_ID=A.FERFAR_ID) AS UPSARPANCH,
-        (SELECT t.TIP FROM ferfar t WHERE t.FERFAR_ID=A.FERFAR_ID) AS TIP,
-        A.*
-      FROM ferfar A
-      WHERE A.DELETED_AT IS NULL AND A.USER_ID = ?
+                (SELECT a.FERFARNAMUNAYADI_NAME FROM ferfarnamunayadi a WHERE a.FERFARNAMUNAYADI_ID=A.FERFARNAMUNAYADI_ID) AS FERFARNAMUNAYADI_NAME,
+                (SELECT b.PANCHAYAT_NAME FROM panchayat b WHERE b.PANCHAYAT_ID=A.PANCHAYAT_ID) AS PANCHAYAT_NAME,
+                (SELECT c.YEAR_NAME FROM year c WHERE c.YEAR_ID=A.YEAR_ID) AS YEAR_NAME,
+                (SELECT d.YEAR_NAME FROM year d WHERE d.YEAR_ID=A.YEAR1_ID) AS YEAR_NAME2,
+                (SELECT e.ANNU_KRAMANK FROM ferfar e WHERE e.FERFAR_ID=A.FERFAR_ID) AS ANNU_KRAMANK,
+                (SELECT f.MALMATTA_NUMBER FROM ferfar f WHERE f.FERFAR_ID=A.FERFAR_ID) AS MALMATTA_NUMBER,
+                (SELECT g.VARD_NUMBER FROM ferfar g WHERE g.FERFAR_ID=A.FERFAR_ID) AS VARD_NUMBER,
+                (SELECT h.PLOT_NO FROM ferfar h WHERE h.FERFAR_ID=A.FERFAR_ID) AS PLOT_NO,
+                (SELECT i.KHASARA_KRAMANK FROM ferfar i WHERE i.FERFAR_ID=A.FERFAR_ID) AS KHASARA_KRAMANK,
+                (SELECT j.SURVEY_KRAMANK FROM ferfar j WHERE j.FERFAR_ID=A.FERFAR_ID) AS SURVEY_KRAMANK,
+                (SELECT k.MASIKSABHA FROM ferfar k WHERE k.FERFAR_ID=A.FERFAR_ID) AS MASIKSABHA,
+                (SELECT l.THARAV FROM ferfar l WHERE l.FERFAR_ID=A.FERFAR_ID) AS THARAV,
+                (SELECT m.DATE FROM ferfar m WHERE m.FERFAR_ID=A.FERFAR_ID) AS DATE,
+                (SELECT o.JUNEKHATEDAR_NAME FROM ferfar o WHERE o.FERFAR_ID=A.FERFAR_ID) AS JUNEKHATEDAR_NAME,
+                (SELECT p.NAVINKHATEDAR_NAME FROM ferfar p WHERE p.FERFAR_ID=A.FERFAR_ID) AS NAVINKHATEDAR_NAME,
+                (SELECT q.SACHIV FROM ferfar q WHERE q.FERFAR_ID=A.FERFAR_ID) AS SACHIV,
+                (SELECT r.SARPANCH FROM ferfar r WHERE r.FERFAR_ID=A.FERFAR_ID) AS SARPANCH,
+                (SELECT s.UPSARPANCH FROM ferfar s WHERE s.FERFAR_ID=A.FERFAR_ID) AS UPSARPANCH,
+                (SELECT t.TIP FROM ferfar t WHERE t.FERFAR_ID=A.FERFAR_ID) AS TIP,
+                A.*
+            FROM ferfar A
+            WHERE A.DELETED_AT IS NULL AND A.USER_ID = ?
         `;
         const params: (number | string)[] = [user_id];
 
@@ -263,31 +263,31 @@ export async function searchFerFarYadi(user_id: number, data: any, page:number):
         }
         if (data.txt_vard_number) {
             sql += ' AND A.VARD_NUMBER LIKE ?';
-            params.push(`%${data.txt_vard_number}%`);
+            params.push(`%${data.txt_vard_number.toLowerCase()}%`);
         }
         if (data.txt_plot_number) {
-            sql += ' AND A.PLOT_NO LIKE ?';
-            params.push(`%${data.txt_plot_number}%`);
+            sql += ' AND LOWER(A.PLOT_NO) LIKE ?';
+            params.push(`%${data.txt_plot_number.toLowerCase()}%`);
         }
         if (data.txt_khasara_number) {
-            sql += ' AND A.KHASARA_KRAMANK LIKE ?';
-            params.push(`%${data.txt_khasara_number}%`);
+            sql += ' AND LOWER(A.KHASARA_KRAMANK) LIKE ?';
+            params.push(`%${data.txt_khasara_number.toLowerCase()}%`);
         }
         if (data.txt_survey_number) {
-            sql += ' AND A.SURVEY_KRAMANK LIKE ?';
-            params.push(`%${data.txt_survey_number}%`);
+            sql += ' AND LOWER(A.SURVEY_KRAMANK) LIKE ?';
+            params.push(`%${data.txt_survey_number.toLowerCase()}%`);
         }
         if (data.txt_khatedarache_name) {
-            sql += ' AND A.JUNEKHATEDAR_NAME LIKE ?';
-            params.push(`%${data.txt_khatedarache_name}%`);
+            sql += ' AND LOWER(A.JUNEKHATEDAR_NAME) LIKE ?';
+            params.push(`%${data.txt_khatedarache_name.toLowerCase()}%`);
         }
         if (data.txt_bhogatwarache_name) {
-            sql += ' AND A.NAVINKHATEDAR_NAME LIKE ?';
-            params.push(`%${data.txt_bhogatwarache_name}%`);
+            sql += ' AND LOWER(A.NAVINKHATEDAR_NAME) LIKE ?';
+            params.push(`%${data.txt_bhogatwarache_name.toLowerCase()}%`);
         }
         let totalCount = await getMalmattaNotdniRecordCount(sql, params);
         sql += ` ORDER BY A.FERFAR_ID DESC LIMIT ${limit} OFFSET ${offset}`;
-        console.log("sql", sql);
+        console.log("sql", sql, params);
         return executeQuery(sql, params).then(result => {    
             (result) ? result : null;
             return (result) ? { 'data': result, 'total_count': totalCount } : null;
@@ -337,7 +337,7 @@ export async function getPanchayatIdById(panchayat_id: number): Promise<any | nu
         `;
         const results: any[] = await executeQuery(query, [panchayat_id]);
         if (results.length > 0) {
-            return results[0];
+            return results;
         }
         return null;
     } catch (error) {
@@ -392,6 +392,23 @@ export async function getPDFFerfarYadi(page_number,ferfar_id, user_id): Promise<
         });
     } catch (error) {
         logger.error(`Error fetching Ferfar Yadi PDF: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getCustomerByAnuId_wardNo(details: any): Promise<any | null> {
+    
+    try {
+        const query = `
+           SELECT * FROM newuser where VARD_NUMBER = ? AND ANNU_KRAMANK = ? AND user_id = ? AND DELETED_AT IS NULL`;
+        details = Object.values(details);
+        const results: any = await executeQuery(query, [...details]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return [];
+    } catch (error) {
+        logger.error(`Error fetching getCustomerByAnuId_wardNo: ${error.message}`);
         throw error;
     }
 }

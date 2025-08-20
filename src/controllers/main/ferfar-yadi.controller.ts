@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
 import { logger } from "../../logger/Logger";
-import { addNewFerfarYadiFormInfo, createUploadFerFarPDFData, geFerFarYadiList, getAnnuKramank, getFerFarYadiDetailById, getFerfarNamunaYadiDDL, getPDFFerfarYadi, getPanchayatIdById, getYearList, searchFerFarYadi, softDeleteFerfarYadi, softDeleteFerfarYadiPDF, updateFerfarYadi } from "../../services/main/ferfar-yadi.service";
+import { addNewFerfarYadiFormInfo, createUploadFerFarPDFData, geFerFarYadiList, getAnnuKramank, getCustomerByAnuId_wardNo, getFerFarYadiDetailById, getFerfarNamunaYadiDDL, getPDFFerfarYadi, getPanchayatIdById, getYearList, searchFerFarYadi, softDeleteFerfarYadi, softDeleteFerfarYadiPDF, updateFerfarYadi } from "../../services/main/ferfar-yadi.service";
 import { _200, _201, _400 } from "../../utils/ApiResponse";
 import { upload } from "../../config/Multer";
 
@@ -36,6 +36,9 @@ export class FerFarYadi {
             const authHeader = req.headers.authorization;
             const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
             const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+            if (req.body.date) {
+                req.body.date = new Date(req.body.date).toLocaleDateString('en-GB');
+            }
             const member: any = await addNewFerfarYadiFormInfo(req.body, Number(decoded_user['userId']));
             return _201(res, "Successfully added new ferfar yadi in malmatta ferfar form", { status: 201, data: member });
         } catch (error) {
@@ -97,6 +100,9 @@ export class FerFarYadi {
             const authHeader = req.headers.authorization;
             const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
             const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+            if (req.body.date) {
+                req.body.date = new Date(req.body.date).toLocaleDateString('en-GB');
+            }
             const updatedData: any = await updateFerfarYadi(ferfar_id, req.body, Number(decoded_user['userId']));
             return _200(res, "Ferfar Yadi updated successfully");
         } catch (error) {
@@ -219,6 +225,15 @@ export class FerFarYadi {
             //return _400(res, "Error while uploading file");
         }
     }
-
+    static async getcustomerByAnuId_wardNo(req: Request, res: Response) {
+       
+        try {
+            const details: any = await getCustomerByAnuId_wardNo(req.body);
+            return _200(res, "Data fetch successfully", { status: 200, data: details });
+        } catch (error) {
+            logger.error("Error fetching getcustomerByAnuId_wardNo", error);
+            return _400(res, "Error fetching getcustomerByAnuId_wardNo");
+        }
+    }
 }
 

@@ -4,7 +4,7 @@ import { _200, _201, _400 } from "../../utils/ApiResponse";
 
 import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
-import { deleteCustomerVasuli, getVasuliCustomerById, saveCustomerVasuli, searchCustomerVasuli, updateVasuliCustomerById } from "../../services/main/vasuli.service";
+import { deleteCustomerVasuli, getChaluKarData, getMagilKarData, getVasuliCustomerById, saveCustomerVasuli, searchCustomerVasuli, updateVasuliCustomerById } from "../../services/main/vasuli.service";
 
 
 export class vasuliController {
@@ -74,6 +74,28 @@ export class vasuliController {
         } catch (error) {
             logger.error("Error fetching getCustomerVasuliById", error);
             return _400(res, "Error fetching getCustomerVasuliById");
+        }
+    }
+
+    static async getChaluKArData(req: Request, res: Response) {
+       
+        try {
+            const details: any = await getChaluKarData(req.body);
+            return _200(res, "Data fetch successfully", { status: 200, data: details });
+        } catch (error) {
+            logger.error("Error fetching getChaluKArData", error);
+            return _400(res, "Error fetching getChaluKArData");
+        }
+    }
+
+    static async getMagilKarData(req: Request, res: Response) {
+       
+        try {
+            const details: any = await getMagilKarData(req.body);
+            return _200(res, "Data fetch successfully", { status: 200, data: details });
+        } catch (error) {
+            logger.error("Error fetching getMagilKarData", error);
+            return _400(res, "Error fetching getMagilKarData");
         }
     }
 }

@@ -78,6 +78,7 @@ export class psmRoutes {
         this.router.get('/ferfar-panchayat-list-ddl', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.getPanchayatListOnPanchayatId);
         this.router.put('/delete-ferfar-yadi-pdf-by-id/:pdf_id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.deleteFerfarYadiPDF);
         this.router.post('/add-ferfar-yadi-pdf', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.addUploadPDFFerfarData);
+        this.router.post('/get-customer-by-annu-id-ward-no', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.getcustomerByAnuId_wardNo);
 
 
         this.router.post('/get-open-construction-tax-assessment', GlobalMiddleware.checkError, Nodni.getOpenConstructionTaxAssessment);
@@ -154,6 +155,8 @@ export class psmRoutes {
         this.router.get('/get-customer-vasuli-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, vasuliController.getCustomerVasuliById);
         this.router.put('/update-customer-vasuli-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, vasuliController.getCustomerVasuliUpdateById);
         this.router.delete('/delete-customer-vasuli-by-id/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, vasuliController.getCustomerVasuliDeleteById);
+        this.router.post('/get-chalu-kar-data', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, vasuliController.getChaluKArData);
+        this.router.post('/get-magil-kar-data', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, vasuliController.getMagilKarData);
 
     }
 

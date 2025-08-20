@@ -371,3 +371,77 @@ export async function deleteCustomerVasuli(id: number): Promise<any> {
         throw error;
     }
 }
+export async function getChaluKarData(details: any): Promise<any | null> {
+    
+    try {
+        const query = `
+           SELECT * FROM newusersavekar where RNO = ? AND vard_number = ? AND NEWUSER_ID = ? AND YEAR_ID = ? AND USER_ID = ? AND DELETED_AT IS NULL`;
+        details = Object.values(details);
+        const results: any = await executeQuery(query, [...details]);
+        let response = {
+                BHUMI_KAR : 0,
+                DIVA_BATTI_KAR : 0,
+                AAROGYA_RAKSHAN_KAR : 0,
+                SAFAI_KAR : 0,
+                SAMANYA_PANI_KAR : 0,
+                VISHESH_PANI_KAR : 0,
+                ETAR_FEES : 0,
+                NOTICE_FEES : 0,
+                TOTAL : 0,
+            }
+        if (results.length > 0) {            
+            results.forEach(element => { // Assuming 'results' is the array to iterate over
+                response.BHUMI_KAR += Number(element.BHUMI_KAR);
+                response.DIVA_BATTI_KAR += Number(element.DIVA_BATTI_KAR);
+                response.AAROGYA_RAKSHAN_KAR += Number(element.AAROGYA_RAKSHAN_KAR);
+                response.SAFAI_KAR += Number(element.SAFAI_KAR);
+                response.SAMANYA_PANI_KAR += Number(element.SAMANYA_PANI_KAR);
+                response.VISHESH_PANI_KAR += Number(element.VISHESH_PANI_KAR);
+                response.ETAR_FEES += Number(element.ETAR_FEES);
+                response.NOTICE_FEES += Number(element.NOTICE_FEES);
+                response.TOTAL += Number(element.TOTAL);
+            });
+        }
+        return [response] as any;
+    } catch (error) {
+        logger.error(`Error fetching getChaluKarData: ${error.message}`);
+        throw error;
+    }
+}
+export async function getMagilKarData(details: any): Promise<any | null> {
+    
+    try {
+        const query = `
+           SELECT * FROM newusersavekar where RNO = ? AND vard_number = ? AND NEWUSER_ID = ? AND YEAR_ID < ? AND USER_ID = ? AND DELETED_AT IS NULL`;
+        details = Object.values(details);
+        const results: any = await executeQuery(query, [...details]);
+        let response = {
+                BHUMI_KAR : 0,
+                DIVA_BATTI_KAR : 0,
+                AAROGYA_RAKSHAN_KAR : 0,
+                SAFAI_KAR : 0,
+                SAMANYA_PANI_KAR : 0,
+                VISHESH_PANI_KAR : 0,
+                ETAR_FEES : 0,
+                NOTICE_FEES : 0,
+                TOTAL : 0,
+            }
+        if (results.length > 0) {            
+            results.forEach(element => { // Assuming 'results' is the array to iterate over
+                response.BHUMI_KAR += Number(element.BHUMI_KAR);
+                response.DIVA_BATTI_KAR += Number(element.DIVA_BATTI_KAR);
+                response.AAROGYA_RAKSHAN_KAR += Number(element.AAROGYA_RAKSHAN_KAR);
+                response.SAFAI_KAR += Number(element.SAFAI_KAR);
+                response.SAMANYA_PANI_KAR += Number(element.SAMANYA_PANI_KAR);
+                response.VISHESH_PANI_KAR += Number(element.VISHESH_PANI_KAR);
+                response.ETAR_FEES += Number(element.ETAR_FEES);
+                response.NOTICE_FEES += Number(element.NOTICE_FEES);
+                response.TOTAL += Number(element.TOTAL);
+            });
+        }
+        return [response] as any;
+    } catch (error) {
+        logger.error(`Error fetching getMagilKarData: ${error.message}`);
+        throw error;
+    }
+}
