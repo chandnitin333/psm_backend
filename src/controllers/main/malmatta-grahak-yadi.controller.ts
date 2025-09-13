@@ -108,15 +108,15 @@ export class MalamattaGrahakYadiList {
             }
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const yearRS10 = await getYearByYearId(year);
-            const taxlandDataRs3 = await getUserDataForGharKar(Number(decoded_user['userId']), ward_number, start, end);
+            const newuserDataRs3 = await getUserDataForGharKar(Number(decoded_user['userId']), ward_number, start, end);
             const updatedRs3: any[] = [];
-            if (taxlandDataRs3) {
-                for (const item of taxlandDataRs3) {
+            if (newuserDataRs3) {
+                for (const item of newuserDataRs3) {
                     // const newUserDataRs3 = await getUserDataForRs3(Number(decoded_user['userId']),item.NEWUSER_ID)
                     const taxationLandRS4 = await gettaxationLandDetails(Number(decoded_user['userId']), item.NEWUSER_ID) || [];
                     const constructionTaxRS5 = await getConstructionTaxDetails(Number(decoded_user['userId']), item.NEWUSER_ID) || [];
-                    const taxPayerRS8 = await getTaxPayerDetails(Number(decoded_user['userId']), item.NEWUSER_ID) || [];
-                    updatedRs3.push({ ...item,taxationLandRS4,constructionTaxRS5,taxPayerRS8 });
+                    const taxPayerRS6 = await getTaxPayerDetails(Number(decoded_user['userId']), item.NEWUSER_ID) || [];
+                    updatedRs3.push({ ...item,taxationLandRS4,constructionTaxRS5,taxPayerRS6 });
                 }
             }
             const all_data = {

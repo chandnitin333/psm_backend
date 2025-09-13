@@ -377,11 +377,15 @@ export async function getPDFFerfarYadi(page_number,ferfar_id, user_id): Promise<
         let limit: number = PAGINATION.LIMIT;
         const offset = (page_number - 1) * limit;
         let query = `
-            SELECT * FROM uploadpdf WHERE FERFAR_ID = ? AND user_id = ? AND DELETED_AT IS NULL
+            SELECT d.DISTRICT_NAME, t.TALUKA_NAME, p.PANCHAYAT_NAME,  up.* FROM uploadpdf up 
+            left join district d on d.DISTRICT_ID  = up.DISTRICT_ID 
+            left join taluka t on t.TALUKA_ID  = up.TALUKA_ID 
+            left join panchayat p on p.PANCHAYAT_ID =up.PANCHAYAT_ID 
+            WHERE up.FERFAR_ID = ? AND up.user_id = ? AND up.DELETED_AT IS null
         `;
         let params: (number | string)[] = [ferfar_id, user_id, limit, offset];
         let totalCount = await getMalmattaNotdniRecordCount(query, params);
-        query += ` ORDER BY FERFAR_ID DESC LIMIT ${limit} OFFSET ${offset}`;
+        query += ` ORDER BY up.UPLOADPDF_ID DESC LIMIT ${limit} OFFSET ${offset}`;
         const results: any[] = await executeQuery(query, params);
         return executeQuery(query, params).then(result => {    
             (result) ? result : null;
