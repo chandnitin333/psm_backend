@@ -38,7 +38,6 @@ export class UploadFile {
         }
     }
 
-
     static async updateUploadDataInfo(req: Request, res: Response) {
         try {
 
