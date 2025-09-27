@@ -29,7 +29,8 @@ export class UploadFile {
                 r_path: req?.body?.fileDestination + '/' + req?.body?.newFileName,
 
             };
-
+            console.log("uploadData===",uploadData)
+             logger.info("uploadData=====", uploadData);
             await createUploadFile(uploadData);
             return _201(res, "Upload File created successfully");
         } catch (error) {
