@@ -29,6 +29,7 @@ export class UploadFile {
                 r_path: req?.body?.fileDestination + '/' + req?.body?.newFileName,
 
             };
+            logger.info(`uploadData=====${JSON.stringify(uploadData)}`);
             console.log("uploadData===",uploadData)
              logger.info("uploadData=====", uploadData);
             await createUploadFile(uploadData);
