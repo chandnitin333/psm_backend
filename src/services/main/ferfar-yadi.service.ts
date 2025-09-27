@@ -5,23 +5,48 @@ import { Utils } from "../../utils/util";
 
 
 
-
-
 export async function getFerFarYadiDetailById(ferfar_id: number): Promise<any | null> {
     try {
-        const query = `
-            select * from ferfar where FERFAR_ID = ? AND DELETED_AT IS NULL
-        `;
-        const results: any = await executeQuery(query, [ferfar_id]);
-        if (results.length > 0) {
-            return results as any;
+        // Validate input
+        if (ferfar_id === undefined || ferfar_id === null || isNaN(ferfar_id)) {
+            throw new Error(`Invalid FERFAR_ID: ${ferfar_id}`);
         }
+
+        const query = `
+            SELECT * FROM ferfar
+            WHERE FERFAR_ID = ? AND DELETED_AT IS NULL
+        `;
+
+        const results: any = await executeQuery(query, [ferfar_id]);
+
+        if (results.length > 0) {
+            // Return first row if you expect a single record
+            return results[0];
+        }
+
         return null;
-    } catch (error) {
+    } catch (error: any) {
         logger.error(`Error fetching ferfar details by ferfar id: ${error.message}`);
         throw error;
     }
 }
+
+
+// export async function getFerFarYadiDetailById(ferfar_id: number): Promise<any | null> {
+//     try {
+//         const query = `
+//             select * from ferfar where FERFAR_ID = ? AND DELETED_AT IS NULL
+//         `;
+//         const results: any = await executeQuery(query, [ferfar_id]);
+//         if (results.length > 0) {
+//             return results as any;
+//         }
+//         return null;
+//     } catch (error) {
+//         logger.error(`Error fetching ferfar details by ferfar id: ${error.message}`);
+//         throw error;
+//     }
+// }
 
 export async function geFerFarYadiList(page: number = 1, search: string = "", user_id:Number): Promise<any[]> {
     try {
