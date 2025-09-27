@@ -65,6 +65,7 @@ export class psmRoutes {
         this.router.post('/get-malmatta-nodni-list-info', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.getMalmattaNodniInfoList);
         this.router.post('/insert-update-sillak-joda', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.createUpdateSillakJoda);
         this.router.post('/verify-user-for-permission', GlobalMiddleware.checkError, CustomerController.verifyUser);
+        this.router.post('/update-customer-image', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.addUploadCustomerimage);
 
         this.router.post('/add-new-ferfar-yadi', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.createNewFerfarYadiInfo);
         this.router.post('/search-ferfar-yadi', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, FerFarYadi.searchFerfarYadi);
@@ -147,6 +148,7 @@ export class psmRoutes {
         this.router.post('/malmatta-grahak-yadi-ghar-karni', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MalamattaGrahakYadiList.get_malmatta_grahak_yadi_ghar_kar);
         this.router.post('/get-namuna-8-anukramnika', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Namuna8Controller.get_namuna_8_anukramnika);
         this.router.post('/get-namuna-8-vard-new', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Namuna8Controller.get_namuna_8_vard_new);
+        this.router.post('/get-namuna-8-1-single-vard', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Namuna8Controller.get_namuna_8_1_single_vard);
 
         this.router.post('/get-tax-generation', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, taxGenerationController.getTaxGeneration);
 

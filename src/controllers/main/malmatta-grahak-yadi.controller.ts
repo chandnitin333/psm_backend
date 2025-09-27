@@ -14,6 +14,7 @@ export class MalamattaGrahakYadiList {
             const year = req.body.year;
             const start= req.body.start;
             const end = req.body.end;
+            const new_user_id = null;
             const authHeader = req.headers.authorization;
             const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
             const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
@@ -26,7 +27,7 @@ export class MalamattaGrahakYadiList {
             }
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const yearRS10 = await getYearByYearId(year);
-            const rs3Data = await getRecordBasedOnStartandEnd(Number(decoded_user['userId']), ward_number, start, end);
+            const rs3Data = await getRecordBasedOnStartandEnd(Number(decoded_user['userId']), ward_number, start, end, new_user_id);
             const updatedRs3: any[] = [];
             if (rs3Data) {
                 for (const item of rs3Data) {

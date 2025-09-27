@@ -664,18 +664,28 @@ export async function getYearByYearId(year:number): Promise<any | null> {
     }
 }
 
-export async function getRecordBasedOnStartandEnd(user_id: number, ward_number: number, start: number, end: number): Promise<any | null> {
+export async function getRecordBasedOnStartandEnd(user_id: number, ward_number: number, start: number, end: number, new_user_id:any): Promise<any | null> {
     try {
-        const query = `
-           SELECT * 
-            FROM newuser 
-            WHERE user_id = ? 
-            AND VARD_NUMBER = ? 
-            AND ANNU_KRAMANK BETWEEN ? AND ? 
-            AND DELETED_AT IS NULL
-            ORDER BY ANNU_KRAMANK ASC
-        `;
-        const results: any = await executeQuery(query, [user_id, ward_number, start, end]);
+        let results: any = [];
+        if(new_user_id != null && new_user_id != undefined && new_user_id != ''){
+            const query = `
+            SELECT * 
+                FROM newuser 
+                WHERE NEWUSER_ID = ? 
+            `;
+            results = await executeQuery(query, [new_user_id]);
+        } else{
+            const query = `
+            SELECT * 
+                FROM newuser 
+                WHERE user_id = ? 
+                AND VARD_NUMBER = ? 
+                AND ANNU_KRAMANK BETWEEN ? AND ? 
+                AND DELETED_AT IS NULL
+                ORDER BY ANNU_KRAMANK ASC
+            `;
+            results = await executeQuery(query, [user_id, ward_number, start, end]);
+        }
         if (results.length > 0) {
             return results as any;
         }
@@ -856,6 +866,72 @@ export async function searchCustomer(user_id: number, data: any, page:number): P
         });
     } catch (error) {
         logger.error(`Error searching customer: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getConstructionTaxDetailsForNamuna8(user_id: number, new_user_id: number): Promise<any | null> {
+    try {
+        const query = `
+                SELECT A.*, 
+                    M.MILKAT_VAPAR_NAME, 
+                    MAL.DESCRIPTION_NAME, 
+                    F.FLOOR_NAME 
+                FROM constructiontax A
+                LEFT JOIN milkat_vapar M ON M.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID
+                LEFT JOIN malmatta MAL ON MAL.MALMATTA_ID = A.MALMATTA_ID
+                LEFT JOIN floor F ON F.FLOOR_ID = A.FLOOR_ID
+                WHERE A.newuser_id = ? AND A.user_id = ? AND A.DELETED_AT IS NULL
+                ORDER BY A.CONSTRUCTIONTAX_ID ASC 
+                LIMIT 5;
+
+        `;
+        const results: any = await executeQuery(query, [new_user_id,user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching construction tax details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getTaxPayerDetailsForNamuna8(user_id: number, new_user_id: number): Promise<any | null> {
+    try {
+        // console.log("user_id-->", user_id, "new_user_id-->", new_user_id);
+        const query = `
+            SELECT A.*, 
+                M.MILKAT_VAPAR_NAME, 
+                MAL.DESCRIPTION_NAME, 
+                MANO.MANORAMASTER_NAME  
+            FROM taxpayers A
+            LEFT JOIN milkat_vapar M ON M.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID
+            LEFT JOIN malmatta MAL ON MAL.MALMATTA_ID = A.MALMATTA_ID
+            LEFT JOIN manoramaster MANO ON MANO.MANORAMASTER_ID = A.MANORAMASTER_ID
+            WHERE A.newuser_id = ? 
+            AND A.user_id = ? AND A.DELETED_AT IS NULL
+            ORDER BY A.TAXPAYERS_ID ASC 
+            LIMIT 3
+        `;
+        const results: any = await executeQuery(query, [new_user_id, user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching tax payer details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function updateCustomerImagePath(imaggeData: any): Promise<void> {
+    try {
+        const query = `UPDATE newuser SET r_path = ? WHERE NEWUSER_ID = ? AND user_id = ?`;
+        await executeQuery(query, [imaggeData.r_path, imaggeData.new_user_id, imaggeData.user_id]);
+        logger.info("Customer image successfully updated");
+    } catch (error) {
+        logger.error(`Error updating the customer image: ${error.message}`);
         throw error;
     }
 }

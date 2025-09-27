@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
 import { signIn } from "../../services/admin/users.service";
-import { addNewCustomerInNodniFormInfo, countConstructiontax, countTaxPayer, countTaxationLand, getAnnuKramank, getConstructionBynew_userid, getConstructionForsarkari8, getConstructionTaxDetails, getCustomerDetailsById, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getMalmattaNotdniList, getManoraBynew_userid, getNewDistinctUserDetails, getNewUserDetails, getNewUserSevakarDetails, getTaxPayerDetails, getTaxationBynew_userid, getTaxationLandDetails, getTaxationandMilkat, getYear, gettaxationLandDetails, insertUpdateSillakJoda, searchCustomer, softDeleteMalmattaNodniInfo, updateMalmattaNodniInfo } from "../../services/main/customer.service";
+import { addNewCustomerInNodniFormInfo, countConstructiontax, countTaxPayer, countTaxationLand, getAnnuKramank, getConstructionBynew_userid, getConstructionForsarkari8, getConstructionTaxDetails, getCustomerDetailsById, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getMalmattaNotdniList, getManoraBynew_userid, getNewDistinctUserDetails, getNewUserDetails, getNewUserSevakarDetails, getTaxPayerDetails, getTaxationBynew_userid, getTaxationLandDetails, getTaxationandMilkat, getYear, gettaxationLandDetails, insertUpdateSillakJoda, searchCustomer, softDeleteMalmattaNodniInfo, updateCustomerImagePath, updateMalmattaNodniInfo } from "../../services/main/customer.service";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
 import { Utils } from "../../utils/util";
 import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
+import { upload } from "../../config/Multer";
 // import { getEnvironmentVariable } from "../environments/env";
 
 
@@ -382,6 +383,41 @@ export class CustomerController {
         } catch (error) {
             console.error('Error in search:', error);
             return _400(res, error.message);
+        }
+    }
+
+    static async addUploadCustomerimage(req: Request, res: Response, next) {
+        try {
+            await new Promise<void>((resolve, reject) => {
+                upload.single('customer_image')(req, res, (err: any) => {
+                    if (err) {
+                        logger.error(err);
+                        reject(_400(res, err?.message || "Image is required"));
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+
+
+
+            if (!req?.files) {
+                return _400(res, "Image is required");
+            }
+            // console.log("ferfarDetail===", ferfarDetail.NEWUSER_ID);
+            const uploadData = {
+                user_id: Number(req?.body?.user_id),
+                new_user_id: Number(req?.body?.new_user_id),
+                r_path: req?.body?.fileDestination + '/' + req?.body?.newFileName,
+
+            };
+            console.log("uploadData===", uploadData);
+            await updateCustomerImagePath(uploadData);
+            return _201(res, "Customer Image updated successfully");
+        } catch (error) {
+            logger.error("addUploadData Error:: ", error?.message);
+            next(error);
+            //return _400(res, "Error while uploading file");
         }
     }
 }
