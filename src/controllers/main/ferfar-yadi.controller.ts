@@ -200,7 +200,7 @@ export class FerFarYadi {
                 });
             });
 
-
+            console.log("req?.body=====",req?.body);
 
             if (!req?.files) {
                 return _400(res, "File is required");
