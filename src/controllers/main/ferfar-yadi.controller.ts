@@ -218,6 +218,7 @@ export class FerFarYadi {
 
             };
             // console.log("uploadData===", uploadData);
+            logger.info(`uploadData=====${JSON.stringify(uploadData)}`);
             await createUploadFerFarPDFData(uploadData);
             return _201(res, "Upload Data created successfully");
         } catch (error) {
