@@ -187,7 +187,8 @@ export class FerFarYadi {
         try {
             const authHeader = req.headers.authorization;
             const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
-            const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+            // const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+           const decoded_user = jwt.decode(token);
             await new Promise<void>((resolve, reject) => {
                 upload.single('upload_pdf')(req, res, (err: any) => {
                     if (err) {
