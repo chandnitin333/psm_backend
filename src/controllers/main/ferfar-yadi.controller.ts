@@ -185,6 +185,7 @@ export class FerFarYadi {
 
    static async addUploadPDFFerfarData(req: Request, res: Response, next) {
         try {
+            logger.info(`uploadData=====${req.body}`);
             const authHeader = req.headers.authorization;
             const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
             // const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
