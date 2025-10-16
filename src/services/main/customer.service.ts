@@ -418,6 +418,7 @@ export async function getYear(): Promise<any | null> {
 
 export async function getNewUserSevakarDetails(sevakar:any): Promise<any | null> {
     try {
+        console.log("sevakar-->", sevakar);
         // const sevakarParam = {
         //     'user_id': Number(decoded_user['userId']),
         //     "previousYear_id": Number(years_response[0].Year_id) - 1,
@@ -649,9 +650,9 @@ export async function getConstructionForsarkari8(new_user_id: number, user_id: n
 export async function getYearByYearId(year:number): Promise<any | null> {
     try {
         const query = `
-           SELECT Year_id, Year_name AS year 
+           SELECT YEAR_ID, YEAR_NAME AS year 
             FROM year 
-            WHERE Year_id = ? AND DELETED_AT IS NULL
+            WHERE YEAR_ID = ? AND DELETED_AT IS NULL
         `;
         const results: any = await executeQuery(query,[year]);
         if (results.length > 0) {
@@ -935,3 +936,553 @@ export async function updateCustomerImagePath(imaggeData: any): Promise<void> {
         throw error;
     }
 }
+
+export async function fetchCurrentYear():Promise<any | null>{
+    try {
+        // const query = `
+        //    SELECT YEAR(NOW()) AS yyy
+        // `;
+        const query = `SELECT YEAR_ID, YEAR_NAME AS yyy 
+                FROM year  
+                WHERE YEAR_NAME = YEAR(CURDATE())`;
+        const results: any = await executeQuery(query,[]);
+        if (results.length > 0) {
+           let returnData = {
+                'yearId': results[0].YEAR_ID,
+                'currentYear': results[0].yyy,
+                'prevuiousYear': results[0].yyy - 1,
+                'nextYear': results[0].yyy + 1,
+                'year_4': results[0].yyy + 4,
+                'year_3': results[0].yyy + 3,
+                'yearId_negative_1': (results[0].YEAR_ID) - 1
+
+            }
+            return returnData as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching year details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function  fetchBhumu_bhumiCount(user_id, ward_no, previousYear, year_4):Promise<any | null>{
+    try{
+        const query = `SELECT 
+                    IFNULL(SUM(manoraaddition), 0) AS bhumi,
+                    COUNT(BHUMIKAR) AS bhumicount
+                FROM newuser
+                WHERE vanijya <> 'औद्योगिक'
+                AND vanijya <> 'मनोरा'
+                AND user_id = ?
+                AND VARD_NUMBER = ?
+                AND YEARS >= ?
+                AND YEARS < ?`;
+         const results: any = await executeQuery(query,[user_id, ward_no, previousYear, year_4]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return [];
+    }catch(error){
+        logger.error(`Error fetching count details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function fetchViz_VizCount(user_id, ward_no, previousYear, year_4):Promise<any | null>{
+    try{
+        const query = `SELECT 
+                    IFNULL(SUM(VIZ_DIVVABATTIKAR), 0) AS VIZ,
+                    COUNT(CHECK1) AS VIZcount
+                FROM newuser
+                WHERE user_id = ?
+                AND CHECK1 = 'on'
+                AND VARD_NUMBER = ?
+                AND YEARS >= ?
+                AND YEARS < ?`;
+         const results: any = await executeQuery(query,[user_id, ward_no, previousYear, year_4]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return [];
+    }catch(error){
+        logger.error(`Error fetching count details: ${error.message}`);
+        throw error;
+    }
+}
+export async function fetchAarogya_aarogyaCount(user_id, ward_no, previousYear, year_4):Promise<any | null>{
+    try{
+        const query = ` SELECT 
+                IFNULL(SUM(AAROGYA_RAKSHAN_KAR), 0) AS aarogya,
+                COUNT(CHECK2) AS aarogyacount
+            FROM newuser
+            WHERE user_id = ?
+            AND CHECK2 = 'on'
+            AND VARD_NUMBER = ?
+            AND YEARS >= ?
+            AND YEARS < ?`;
+         const results: any = await executeQuery(query,[user_id, ward_no, previousYear, year_4]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return [];
+    }catch(error){
+        logger.error(`Error fetching count details: ${error.message}`);
+        throw error;
+    }
+}
+export async function fetchSafai_SafaiCount(user_id, ward_no, previousYear, year_4):Promise<any | null>{
+    try{
+        const query = ` SELECT 
+                    IFNULL(SUM(SAFAI_KAR), 0) AS safai,
+                    COUNT(CHECK3) AS safaicount
+                FROM newuser
+                WHERE user_id = ?
+                AND CHECK3 = 'on'
+                AND VARD_NUMBER = ?
+                AND YEARS >= ?
+                AND YEARS < ?`;
+         const results: any = await executeQuery(query,[user_id, ward_no, previousYear, year_4]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return [];
+    }catch(error){
+        logger.error(`Error fetching count details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function fetchSamanya_Pani_kar_count(user_id, ward_no, previousYear, year_4):Promise<any | null>{
+    try{
+        const query = ` SELECT 
+                    IFNULL(SUM(SAMANYA_PANI_KAR), 0) AS pani,
+                    COUNT(CHECK4) AS panicount
+                FROM newuser
+                WHERE user_id = ?
+                AND CHECK4 = 'on'
+                AND VARD_NUMBER = ?
+                AND YEARS >= ?
+                AND YEARS < ?`;
+         const results: any = await executeQuery(query,[user_id, ward_no, previousYear, year_4]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return [];
+    }catch(error){
+        logger.error(`Error fetching count details: ${error.message}`);
+        throw error;
+    }
+}
+export async function fetchViseshPaniKar_Count(user_id, ward_no, previousYear, year_4):Promise<any | null>{
+    try{
+        const query = ` SELECT 
+                    IFNULL(SUM(VISHESH_PANI_KAR), 0) AS vishesh,
+                    COUNT(CHECK5) AS visheshcount
+                FROM newuser
+                WHERE user_id = ?
+                AND CHECK5 = 'on'
+                AND VARD_NUMBER = ?
+                AND YEARS >= ?
+                AND YEARS < ?`;
+         const results: any = await executeQuery(query,[user_id, ward_no, previousYear, year_4]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return [];
+    }catch(error){
+        logger.error(`Error fetching count details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function fetchVanijya_Count(user_id, ward_no, previousYear, year_4):Promise<any | null>{
+    try{
+        const query = ` SELECT 
+                    IFNULL(SUM(BHUMIKAR), 0) AS vani,
+                    COUNT(vanijya) AS vanicount
+                FROM newuser
+                WHERE 
+                vanijya='औद्योगिक'
+                AND user_id = ?
+                AND VARD_NUMBER = ?
+                AND YEARS >= ?
+                AND YEARS < ?`;
+         const results: any = await executeQuery(query,[user_id, ward_no, previousYear, year_4]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return [];
+    }catch(error){
+        logger.error(`Error fetching count details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function fetchManora_Count(user_id, ward_no, previousYear, year_4):Promise<any | null>{
+    try{
+        const query = ` SELECT 
+                    IFNULL(SUM(BHUMIKAR), 0) AS mano,
+                    COUNT(vanijya) AS manocount
+                FROM newuser
+                WHERE 
+                vanijya='मनोरा'
+                AND user_id = ?
+                AND VARD_NUMBER = ?
+                AND YEARS >= ?
+                AND YEARS < ?`;
+         const results: any = await executeQuery(query,[user_id, ward_no, previousYear, year_4]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return [];
+    }catch(error){
+        logger.error(`Error fetching count details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getTotalNewUserSevakar(year_id, new_user_id, user_id): Promise<Number> {
+    try {
+        const query = `
+                    SELECT IFNULL(SUM(TOTAL), 0) AS tot
+                    FROM newusersavekar
+                    WHERE YEAR_ID = ?
+                    AND NEWUSER_ID = ?
+                    AND USER_ID = ? AND DELETED_AT IS NULL;
+
+        `;
+        const results: any = await executeQuery(query, [user_id, year_id, new_user_id]);
+        if (results.length > 0) {
+            return results[0].tot as Number;
+        }
+        return 0;
+    } catch (error) {
+        logger.error(`Error fetching new user sevakar details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getDataByUserIdAndVardNumber(user_id:number, vard_number:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT *
+            FROM newuser
+            WHERE user_id = ?
+            AND VARD_NUMBER = ?
+            AND DELETED_AT IS NULL LIMIT 1
+        `;
+        const results: any = await executeQuery(query, [user_id, vard_number]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
+
+export async function getAarogyaRakshanKar(user_id:number, vard_number:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT COUNT(AAROGYA_RAKSHAN_KAR) AS aarogya 
+            FROM newuser 
+            WHERE user_id = ? 
+                AND VARD_NUMBER = ? 
+                AND AAROGYA_RAKSHAN_KAR <> 0
+        `;
+        const results: any = await executeQuery(query, [user_id, vard_number]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getSafaeKar(user_id:number, vard_number:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT COUNT(SAFAI_KAR) AS SAFAI_KAR
+            FROM newuser
+            WHERE user_id = ?
+                AND VARD_NUMBER = ?
+                AND SAFAI_KAR <> 0
+        `;
+        const results: any = await executeQuery(query, [user_id, vard_number]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getBhumikar_bhumiCountandOther(user_id:number, vard_number:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT 
+                IFNULL(SUM(a.manoraaddition), 0) AS bhumikar,
+                COUNT(a.BHUMIKAR) AS bhumicount,
+                IFNULL(SUM(a.VIZ_DIVVABATTIKAR), 0) AS VIZ,
+                (SELECT COUNT(b.CHECK1) 
+                FROM newuser b 
+                WHERE b.user_id = a.user_id 
+                AND b.VARD_NUMBER = a.VARD_NUMBER 
+                AND b.CHECK1 = 'on') AS VIZcount,
+                IFNULL(SUM(a.AAROGYA_RAKSHAN_KAR), 0) AS aarogya,
+                (SELECT COUNT(c.CHECK2) 
+                FROM newuser c 
+                WHERE c.user_id = a.user_id 
+                AND c.VARD_NUMBER = a.VARD_NUMBER 
+                AND c.CHECK2 = 'on') AS aarogyacount,
+                IFNULL(SUM(a.SAFAI_KAR), 0) AS safai,
+                (SELECT COUNT(d.CHECK3) 
+                FROM newuser d 
+                WHERE d.user_id = a.user_id 
+                AND d.VARD_NUMBER = a.VARD_NUMBER 
+                AND d.CHECK3 = 'on') AS safaicount,
+                IFNULL(SUM(a.SAMANYA_PANI_KAR), 0) AS pani,
+                (SELECT COUNT(e.CHECK4) 
+                FROM newuser e 
+                WHERE e.user_id = a.user_id 
+                AND e.VARD_NUMBER = a.VARD_NUMBER 
+                AND e.CHECK4 = 'on') AS panicount,
+                IFNULL(SUM(a.VISHESH_PANI_KAR), 0) AS vishesh,
+                (SELECT COUNT(f.CHECK5) 
+                FROM newuser f 
+                WHERE f.user_id = a.user_id 
+                AND f.VARD_NUMBER = a.VARD_NUMBER 
+                AND f.CHECK5 = 'on') AS visheshcount
+            FROM newuser a
+            WHERE a.vanijya NOT IN ('औद्योगिक', 'मनोरा')
+            AND a.user_id = ?
+            AND a.VARD_NUMBER = ?
+            GROUP BY a.VARD_NUMBER, a.user_id
+        `;
+        const results: any = await executeQuery(query, [user_id, vard_number]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+
+}
+
+export async function getBhumi_deva_from_newsevakar(user_id:number, vard_number:number, year_id:number): Promise<any | null> {
+    try {
+        const query = `
+           SELECT 
+                IFNULL(SUM(a.BHUMI_KAR), 0) AS bhumi,
+                IFNULL(SUM(a.DIVA_BATTI_KAR), 0) AS diva,
+                IFNULL(SUM(a.AAROGYA_RAKSHAN_KAR), 0) AS aarogya,
+                IFNULL(SUM(a.SAFAI_KAR), 0) AS safai,
+                IFNULL(SUM(a.SAMANYA_PANI_KAR), 0) AS samanya,
+                IFNULL(SUM(a.VISHESH_PANI_KAR), 0) AS vishesh,
+                IFNULL(SUM(a.ETAR_FEES), 0) AS etar,
+                IFNULL(SUM(a.NOTICE_FEES), 0) AS notice,
+                IFNULL(SUM(a.TOTAL), 0) AS total
+            FROM newusersavekar a
+            JOIN newuser b ON a.NEWUSER_ID = b.NEWUSER_ID
+            WHERE b.vanijya NOT IN ('औद्योगिक', 'मनोरा')
+            AND b.VARD_NUMBER = ?
+            AND a.USER_ID = ?
+            AND a.YEAR_ID < ?
+        `;
+        const results: any = await executeQuery(query,[vard_number, user_id, year_id]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching year details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getAudhogikData(user_id:number, vard_number:number, vanijya:string): Promise<any | null> {
+    try {
+        const query = `
+           SELECT 
+                IFNULL(SUM(a.BHUMIKAR), 0) AS manoraaddition,
+                COUNT(a.NEWUSER_ID) AS ws,
+                IFNULL(SUM(a.VIZ_DIVVABATTIKAR), 0) AS VIZ1,
+
+                (SELECT COUNT(b.CHECK1)
+                FROM newuser b
+                WHERE b.user_id = a.user_id 
+                AND b.VARD_NUMBER = a.VARD_NUMBER
+                AND b.CHECK1 = 'on') AS VIZcount1,
+
+                IFNULL(SUM(a.AAROGYA_RAKSHAN_KAR), 0) AS aarogya1,
+
+                (SELECT COUNT(c.CHECK2)
+                FROM newuser c
+                WHERE c.user_id = a.user_id 
+                AND c.VARD_NUMBER = a.VARD_NUMBER
+                AND c.CHECK2 = 'on') AS aarogyacount1,
+
+                IFNULL(SUM(a.SAFAI_KAR), 0) AS safai1,
+
+                (SELECT COUNT(d.CHECK3)
+                FROM newuser d
+                WHERE d.user_id = a.user_id 
+                AND d.VARD_NUMBER = a.VARD_NUMBER
+                AND d.CHECK3 = 'on') AS safaicount1,
+
+                IFNULL(SUM(a.SAMANYA_PANI_KAR), 0) AS pani1,
+
+                (SELECT COUNT(e.CHECK4)
+                FROM newuser e
+                WHERE e.user_id = a.user_id 
+                AND e.VARD_NUMBER = a.VARD_NUMBER
+                AND e.CHECK4 = 'on') AS panicount1,
+
+                IFNULL(SUM(a.VISHESH_PANI_KAR), 0) AS vishesh1,
+
+                (SELECT COUNT(f.CHECK5)
+                FROM newuser f
+                WHERE f.user_id = a.user_id 
+                AND f.VARD_NUMBER = a.VARD_NUMBER
+                AND f.CHECK5 = 'on') AS visheshcount1,
+
+                IFNULL(SUM(a.VIZ_DIVVABATTIKAR), 0) AS VIZ_DIVVABATTIKAR,
+                IFNULL(SUM(a.AAROGYA_RAKSHAN_KAR), 0) AS AAROGYA_RAKSHAN_KAR,
+                IFNULL(SUM(a.SAFAI_KAR), 0) AS SAFAI_KAR,
+                IFNULL(SUM(a.SAMANYA_PANI_KAR), 0) AS SAMANYA_PANI_KAR,
+                IFNULL(SUM(a.VISHESH_PANI_KAR), 0) AS VISHESH_PANI_KAR,
+                IFNULL(SUM(a.EKUN), 0) AS EKUN
+
+            FROM newuser a
+            WHERE a.vanijya = ?
+            AND a.user_id = ?
+            AND a.VARD_NUMBER = ?
+            GROUP BY a.VARD_NUMBER, a.user_id
+        `;
+        const results: any = await executeQuery(query,[vard_number, user_id, vanijya]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching year details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getAudhogik_from_newsevakar(user_id:number, vard_number:number, year_id:number, vanikya:string): Promise<any | null> {
+    try{
+        const query = `
+          SELECT 
+                IFNULL(SUM(a.BHUMI_KAR), 0) AS bhumi_kar,
+                IFNULL(SUM(a.DIVA_BATTI_KAR), 0) AS diva_batti_kar,
+                IFNULL(SUM(a.AAROGYA_RAKSHAN_KAR), 0) AS aarogya_rakshan_kar,
+                IFNULL(SUM(a.SAFAI_KAR), 0) AS safai_kar,
+                IFNULL(SUM(a.SAMANYA_PANI_KAR), 0) AS samanya_pani_kar,
+                IFNULL(SUM(a.VISHESH_PANI_KAR), 0) AS vishesh_pani_kar,
+                IFNULL(SUM(a.ETAR_FEES), 0) AS etar_fees,
+                IFNULL(SUM(a.NOTICE_FEES), 0) AS notice_fees,
+                IFNULL(SUM(a.TOTAL), 0) AS total
+            FROM newusersavekar a
+            JOIN newuser b ON a.NEWUSER_ID = b.NEWUSER_ID
+            WHERE b.vanijya = ?
+            AND b.VARD_NUMBER = ?
+            AND a.USER_ID = ?
+            AND a.YEAR_ID < ?
+        `;
+        const results: any = await executeQuery(query,[vard_number, user_id, year_id, vanikya]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    }catch(error){
+        logger.error(`Error fetching year details: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function searchMagnicheBillData(user_id: number, data: any, page:number): Promise<any | null> {
+    try {
+        let limit: number = PAGINATION.LIMIT;
+        const offset = (page - 1) * limit;
+        let sql = `
+             SELECT
+                N.ANNU_KRAMANK as N_ANNU_KRAMANK,
+                N.MALMATTA_NUMBER as N_MALMATTA_NUMBER,
+                N.VARD_NUMBER as N_VARD_NUMBER,
+                N.HOMEUSER_NAME as N_HOMEUSER_NAME,
+                A.*
+            FROM newuser A
+            INNER JOIN newuser N ON N.NEWUSER_ID = A.NEWUSER_ID
+            WHERE 
+                A.NEWUSER_ID NOT IN (
+                    SELECT DISTINCT B.NEWUSER_ID
+                    FROM vasuli B
+                    WHERE B.user_id = ?
+                )
+                AND A.user_id = ?
+                AND A.DELETED_AT IS NULL
+        `;
+        const params: (number | string)[] = [user_id, user_id];
+
+            if (data.from_year) {
+                sql += ' AND A.YEARS_ID LIKE ?';
+                params.push(`%${data.from_year}%`);
+            }
+            if (data.to_year) {
+                sql += ' AND A.YEARS_ID LIKE ?';
+                params.push(`%${data.to_year}%`);
+            }
+            if (data.from_anu_kramank) {
+                sql += ' AND A.ANNU_KRAMANK LIKE ?';
+                params.push(`%${data.from_anu_kramank}%`);
+            }
+            if (data.to_anu_kramank) {
+                sql += ' AND a.PLOT_NO LIKE ?';
+                params.push(`%${data.to_anu_kramank}%`);
+            }
+            if (data.vard_number) {
+                sql += ' AND A.VARD_NUMBER LIKE ?';
+                params.push(`%${data.vard_number}%`);
+            }
+            // if (data.start_date) {
+            //     sql += ' AND a.SURVEY_KRAMANK LIKE ?';
+            //     params.push(`%${data.start_date}%`);
+            // }
+            // if (data.end_date) {
+            //     sql += ' AND a.HOMEUSER_NAME LIKE ?';
+            //     params.push(`%${data.end_date}%`);
+            // }
+            // if (data.bharna) {
+            //     sql += ' AND a.BHOGATWARGARACHE_NAME LIKE ?';
+            //     params.push(`%${data.bharna}%`);
+            // }
+        let totalCount = await getMalmattaNotdniRecordCount(sql, params);
+        sql += ` ORDER BY A.VARD_NUMBER, A.ANNU_KRAMANK ASC LIMIT ${limit} OFFSET ${offset}`;
+        const results: any = await executeQuery(sql, params);
+        // if (results.length > 0) {
+        //     return results as any;
+        // }
+        // return [];
+        return executeQuery(sql, params).then(result => {    
+            (result) ? result : null;
+            return (result) ? { 'data': result, 'total_count': totalCount } : null;
+        }).catch(error => {
+            console.error("magniche bill fetch data error: ", error);
+            return [];
+        });
+    } catch (error) {
+        logger.error(`Error searching magniche bill: ${error.message}`);
+        throw error;
+    }
+}
+
