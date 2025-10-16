@@ -18,6 +18,7 @@ import { vasuliController } from "../controllers/main/vasuli.controller";
 import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
 import { Namuna9Controller } from "../controllers/main/namuna-9.controller";
 import { MagnicheBillController } from "../controllers/main/magniche-bill.controller";
+import { ImlakarController } from "../controllers/main/imlakar.controller";
 
 export class psmRoutes {
     public router: Router;
@@ -165,6 +166,10 @@ export class psmRoutes {
 
         this.router.post('/search-magniche-bill', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MagnicheBillController.searchMagnicheBill);
         this.router.post('/magniche-bill-129-1', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MagnicheBillController.getMagnicheBill_129_1_details);
+        this.router.post('/magniche-bill-129-2', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, MagnicheBillController.getMagnicheBill_129_2_details);
+
+        this.router.post('/get-imlakar-new', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, ImlakarController.get_imlakar_new);
+        this.router.post('/get-imlakar-anukramnika', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, ImlakarController.get_imlakar_anukramnika);
         
         
 

@@ -764,6 +764,52 @@ export async function getUserDataForGharKar(user_id: number, ward_number: number
     }
 }
 
+export async function getImlakarNew(user_id: number, ward_number: number, start: number, end: number): Promise<any | null> {
+    try {
+        const query = `
+           SELECT *
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR = 'इमलाकर'
+            AND VARD_NUMBER = ?
+            AND ANNU_KRAMANK BETWEEN ? AND ?
+            AND DELETED_AT IS NULL
+            ORDER BY ANNU_KRAMANK ASC
+        `;
+        const results: any = await executeQuery(query, [user_id, ward_number,start,end]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+export async function getImlakarAnukramnika(user_id: number, ward_number: number): Promise<any | null> {
+    try {
+        const query = `
+           SELECT *
+            FROM newuser
+            WHERE 
+                MILKAR_PRAKAR = 'इमलाकर'
+                AND USER_ID = ?
+                AND VARD_NUMBER = ?
+                AND DELETED_AT IS NULL
+            ORDER BY ANNU_KRAMANK ASC;
+
+        `;
+        const results: any = await executeQuery(query, [user_id,ward_number]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
 export async function getUserDataForAdhikrutGharkul(user_id: number, ward_number: number, start: number, end: number): Promise<any | null> {
     try {
         const query = `
