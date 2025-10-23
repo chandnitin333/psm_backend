@@ -56,7 +56,7 @@ export class AuthController {
 
 
                 const token = Jwt.sign(params, getEnvironmentVariable().jwt_secret, {
-                    expiresIn: "120d",
+                    expiresIn: "30m",
                 });
                 response['data'] = {
                     counts: result?.userCounts ?? 0,
