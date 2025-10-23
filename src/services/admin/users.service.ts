@@ -938,3 +938,205 @@ export const getMemberList = async (panchayat_id) => {
     throw err;
   }
 };
+
+export async function getChaluKhatedarCount(user_id:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT count(ANNU_KRAMANK) as ANNU_KRAMANK
+            FROM newuser
+            WHERE user_id = ?
+            AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getAdhikrutCount(user_id:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT count(MILKAR_PRAKAR) as MILKAR_PRAKAR
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR='अधिकृत'
+            AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+export async function getIndiraAwasCount(user_id:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT count(MILKAR_PRAKAR) as MILKAR_PRAKAR
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR='घरकुल'
+            AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+export async function getImlakarCount(user_id:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT count(MILKAR_PRAKAR) as MILKAR_PRAKAR
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR='इमलाकर'
+            AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
+
+export async function getGharKarCount(user_id:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT count(MILKAR_PRAKAR) as MILKAR_PRAKAR
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR='घर कर लावायचा आहे'
+            AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getChaluKhatedarTotal(user_id:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT *
+            FROM newuser
+            WHERE user_id = ?
+            AND DELETED_AT IS NULL
+            ORDER BY VARD_NUMBER,ANNU_KRAMANK
+        `;
+        const results: any = await executeQuery(query, [user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getAdhikrutTotal(user_id:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT *
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR='अधिकृत'
+            AND DELETED_AT IS NULL
+            ORDER BY VARD_NUMBER,ANNU_KRAMANK
+        `;
+        const results: any = await executeQuery(query, [user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+export async function getIndiraAwasTotal(user_id:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT *
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR='घरकुल'
+            AND DELETED_AT IS NULL
+            ORDER BY ANNU_KRAMANK ,VARD_NUMBER 
+        `;
+        const results: any = await executeQuery(query, [user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getImlakarTotal(user_id:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT *
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR='इमलाकर'
+            AND DELETED_AT IS NULL
+             ORDER BY ANNU_KRAMANK ,VARD_NUMBER  
+        `;
+        const results: any = await executeQuery(query, [user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
+
+export async function getGharKarTotal(user_id:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT *
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR='घर कर लावायचा आहे'
+            AND DELETED_AT IS NULL
+             ORDER BY ANNU_KRAMANK ,VARD_NUMBER 
+        `;
+        const results: any = await executeQuery(query, [user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}

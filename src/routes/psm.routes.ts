@@ -61,6 +61,14 @@ export class psmRoutes {
 
         this.router.post('/get-user-activity', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getActivityCount);
         this.router.post('/get-member-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getMemberDetails);
+        this.router.post('/get-chalu-khatedar-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getChaluKhatedarTotal);
+        this.router.post('/get-adhikrut-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getAdhikrutTotal);
+        this.router.post('/get-indira-awas-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getIndiraAwasTotal);
+        this.router.post('/get-imlakar-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getImlakarTotal);
+        this.router.post('/get-ghar-kar-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getgharKarTotal);
+
+        
+        
 
         this.router.post('/add-new-customer-in-malmatta-nodni', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.createCustomerInfo);
         this.router.post('/search-customer-in-malmatta-nodni', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.searchCustomers);

@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import * as Jwt from "jsonwebtoken";
 import { getEnvironmentVariable } from "../../environments/env";
 import { logger } from "../../logger/Logger";
-import { getCounts, getMemberList, signIn } from "../../services/admin/users.service";
+import { getAdhikrutCount, getAdhikrutTotal, getChaluKhatedarCount, getChaluKhatedarTotal, getCounts, getGharKarCount, getGharKarTotal, getImlakarCount, getImlakarTotal, getIndiraAwasCount, getIndiraAwasTotal, getMemberList, signIn } from "../../services/admin/users.service";
 import { _200, _400 } from "../../utils/ApiResponse";
 import e = require("express");
 import { Utils } from "../../utils/util";
@@ -80,17 +80,24 @@ export class AuthController {
 
     static async getActivityCount(req: Request, res: Response) {
         try {
-            let response = [];
-            response['data'] = {};
+            // let response = [];
+            // response['data'] = {};
             const { user_id } = req.body;
-            getCounts(user_id).then((result) => {
-                response['data'] = result;
-                return _200(res, "User list retrieved successfully", response);
+            const chalu_khatedar = await getChaluKhatedarCount(Number(user_id));
+            const adhikrut = await getAdhikrutCount(Number(user_id));
+            const indira_Awas = await getIndiraAwasCount(Number(user_id));
+            const imlakar = await getImlakarCount(Number(user_id));
+            const gharkar = await getGharKarCount(Number(user_id));
+            const response = {
+                "chalu_khatedar": chalu_khatedar.ANNU_KRAMANK,
+                "adhikrut": adhikrut.MILKAR_PRAKAR,
+                "indira_awas": indira_Awas.MILKAR_PRAKAR,
+                "imlakar": imlakar.MILKAR_PRAKAR,
+                "ghar_kar": gharkar.MILKAR_PRAKAR
             }
-            ).catch((error) => {
-                logger.error(error);
-                return _400(res, error.message);
-            });
+            
+            return _200(res, "User list retrieved successfully", response);
+            
         } catch (error) {
             logger.error(error);
             return _400(res, error.message);
@@ -116,4 +123,66 @@ export class AuthController {
             return _400(res, error.message);
         }
     }
+
+    static async getChaluKhatedarTotal(req: Request, res:Response){
+        try {
+            // let response = [];
+            // response['data'] = {};
+            const { user_id } = req.body;
+            const chalu_khatedar = await getChaluKhatedarTotal(Number(user_id));
+            
+            
+            return _200(res, "User list retrieved successfully", { status: 200, data: chalu_khatedar });
+            
+        } catch (error) {
+            logger.error(error);
+            return _400(res, error.message);
+        }
+    }
+
+    static async getAdhikrutTotal(req: Request, res:Response){
+        try {
+            const { user_id } = req.body;
+            const data = await getAdhikrutTotal(Number(user_id));
+            return _200(res, "User list retrieved successfully", { status: 200, data: data });
+            
+        } catch (error) {
+            logger.error(error);
+            return _400(res, error.message);
+        }
+    }
+    static async getIndiraAwasTotal(req: Request, res:Response){
+        try {
+            const { user_id } = req.body;
+            const data = await getIndiraAwasTotal(Number(user_id));
+            return _200(res, "User list retrieved successfully", { status: 200, data: data });
+            
+        } catch (error) {
+            logger.error(error);
+            return _400(res, error.message);
+        }
+    }
+    static async getImlakarTotal(req: Request, res:Response){
+        try {
+            const { user_id } = req.body;
+            const data = await getImlakarTotal(Number(user_id));
+            return _200(res, "User list retrieved successfully", { status: 200, data: data });
+            
+        } catch (error) {
+            logger.error(error);
+            return _400(res, error.message);
+        }
+    }
+    static async getgharKarTotal(req: Request, res:Response){
+        try {
+            const { user_id } = req.body;
+            const data = await getGharKarTotal(Number(user_id));
+            return _200(res, "User list retrieved successfully", { status: 200, data: data });
+            
+        } catch (error) {
+            logger.error(error);
+            return _400(res, error.message);
+        }
+    }
+    
 }
