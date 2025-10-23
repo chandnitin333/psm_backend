@@ -69,12 +69,13 @@ export class Namuna9Controller {
             let rs4Data: any[] = [];
             if (rs1Data) {
                 for (const item of rs1Data) {
+                    // console.log("item", item)
                     const newUserDataRs3 = await getUserDataForRs3(Number(decoded_user['userId']),item.NEWUSER_ID) || [];
                     if(newUserDataRs3.length > 0){
                         for(const data_rs3 of newUserDataRs3){
                             const sevakarParam = {
                                 'user_id': Number(decoded_user['userId']),
-                                "previousYear_id": Number(yearRS42[0].Year_id) - 1,
+                                "previousYear_id": Number(yearRS42[0].YEAR_ID) - 1,
                                 "vard_number": data_rs3.VARD_NUMBER,
                                 "newuser_id":data_rs3.NEWUSER_ID,
                             }
@@ -181,7 +182,7 @@ export class Namuna9Controller {
                 for (const item of rs4) {
                     const sevakarParam = {
                         'user_id': Number(decoded_user['userId']),
-                        "previousYear_id": Number(yearRS10[0].Year_id) - 1,
+                        "previousYear_id": Number(yearRS10[0].YEAR_ID) - 1,
                         "vard_number": item.VARD_NUMBER,
                         "newuser_id":item.NEWUSER_ID,
                     }
@@ -237,7 +238,7 @@ export class Namuna9Controller {
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,
                 yearRs10: yearRS10,
-                rs3: rs3,
+                rs3: [{"VARD_NUMBER":rs3?.VARD_NUMBER}],
                 rs35 : rs35,
                 rs36: rs36,
                 rs4: updatedRs4,
@@ -267,12 +268,6 @@ export class Namuna9Controller {
             }
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const yearRS42 = await fetchCurrentYear();
-
-            let bhumikar0 = 0, bhumicount0 = 0, VIZ0 = 0, VIZcount0 = 0,
-            aarogya0 = 0, aarogyacount0 = 0, safai0 = 0, safaicount0 = 0,
-            pani0 = 0, panicount0 = 0, vishesh0 = 0, visheshcount0 = 0,
-            bhumi00 = 0, diva00 = 0, aarogya00 = 0, safai00 = 0, 
-            samanya00 = 0, vishesh00 = 0, etar00 = 0, notice00 = 0, total00 = 0;
 
             const rs3Data = await getBhumikar_bhumiCountandOther(Number(decoded_user['userId']), ward_number);
             const rs4Data = await getBhumi_deva_from_newsevakar(Number(decoded_user['userId']), ward_number, yearRS42.yearId);
@@ -319,11 +314,11 @@ export class Namuna9Controller {
             // const yearRS42 = await fetchCurrentYear();
             const yearRS1 = await getYearByYearId(year);
             const rs3Data = await getBhumikar_bhumiCountandOther(Number(decoded_user['userId']), ward_number);
-            const rs4Data = await getBhumi_deva_from_newsevakar(Number(decoded_user['userId']), ward_number, yearRS1[0].Year_id);
+            const rs4Data = await getBhumi_deva_from_newsevakar(Number(decoded_user['userId']), ward_number, yearRS1[0].YEAR_ID);
             const rs5Data = await getAudhogikData(Number(decoded_user['userId']), ward_number ,'औद्योगिक');
-            const rd8Data = await getAudhogik_from_newsevakar(Number(decoded_user['userId']), ward_number, yearRS1[0].Year_id,'औद्योगिक');
+            const rd8Data = await getAudhogik_from_newsevakar(Number(decoded_user['userId']), ward_number, yearRS1[0].YEAR_ID,'औद्योगिक');
             const rs9Data = await getAudhogikData(Number(decoded_user['userId']), ward_number ,'मनोरा');
-            const rs10Data = await getAudhogik_from_newsevakar(Number(decoded_user['userId']), ward_number, yearRS1[0].Year_id.yearId,'मनोरा');
+            const rs10Data = await getAudhogik_from_newsevakar(Number(decoded_user['userId']), ward_number, yearRS1[0].Year_id,'मनोरा');
 
 
              const all_data = {
@@ -332,6 +327,7 @@ export class Namuna9Controller {
                 rs3 : rs3Data,
                 rs4 : rs4Data,
                 rs5 : rs5Data,
+                rs8 : rd8Data,
                 rs9 : rs9Data,
                 rs10: rs10Data
             }

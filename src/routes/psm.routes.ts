@@ -154,6 +154,9 @@ export class psmRoutes {
         this.router.post('/get-namuna-8-1-single-vard', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Namuna8Controller.get_namuna_8_1_single_vard);
         this.router.post('/get-namuna-8-images', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Namuna8Controller.get_namuna_8_1_single_vard_images); // for single and multiple
         this.router.post('/get-namuna-8-ghosvara', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Namuna8Controller.get_namuna_8_ghosvara);
+        this.router.post('/get-namuna-8-sarkari', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Namuna8Controller.namuna_8_sarkari_with_ward);
+
+        
         
 
         this.router.post('/get-namuna-9-anukramnika', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Namuna9Controller.get_namuna_9_anukramnika);

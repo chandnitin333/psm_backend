@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
 import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
-import { fetchAarogya_aarogyaCount, fetchBhumu_bhumiCount, fetchCurrentYear, fetchManora_Count, fetchSafai_SafaiCount, fetchSamanya_Pani_kar_count, fetchVanijya_Count, fetchViseshPaniKar_Count, fetchViz_VizCount, getConstructionTaxDetails, getConstructionTaxDetailsForNamuna8, getEntriesDetails, getRecordBasedOnStartandEnd, getTaxLandData, getTaxPayerDetails, getTaxPayerDetailsForNamuna8, getUserDataForAdhikrutGharkul, getUserDataForGharKar, getUserDataForRs3, getYearByYearId, gettaxationLandDetails } from "../../services/main/customer.service";
+import { countConstructiontax, countTaxPayer, countTaxationLand, fetchAarogya_aarogyaCount, fetchBhumu_bhumiCount, fetchCurrentYear, fetchManora_Count, fetchSafai_SafaiCount, fetchSamanya_Pani_kar_count, fetchVanijya_Count, fetchViseshPaniKar_Count, fetchViz_VizCount, getConstructionForsarkari8, getConstructionTaxDetails, getConstructionTaxDetailsForNamuna8, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getNewDistinctUserDetails, getNewDistinctUserwithStartEndDetails, getNewUserDetails, getRecordBasedOnStartandEnd, getTaxLandData, getTaxPayerDetails, getTaxPayerDetailsForNamuna8, getTaxationLandDetails, getTaxationandMilkat, getUserDataForAdhikrutGharkul, getUserDataForGharKar, getUserDataForRs3, getYearByYearId, gettaxationLandDetails } from "../../services/main/customer.service";
    
 export class Namuna8Controller {
    static async get_namuna_8_anukramnika(req: Request, res: Response) {
@@ -231,6 +231,7 @@ export class Namuna8Controller {
             const authHeader = req.headers.authorization;
             const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
             const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+           
             const entriesParam = {
                 'district_id': Number(decoded_user['DISTRICT_ID']),
                 'taluka_id': Number(decoded_user['TALUKA_ID']),
@@ -238,6 +239,7 @@ export class Namuna8Controller {
                 'gatgrampanchayat_id': Number(decoded_user['GATGRAMPANCHAYAT_id']),
                 'user_id': Number(decoded_user['userId'])
             }
+            //  decoded_user['userId'] = 1013;
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const yearRS42 = await fetchCurrentYear();
             const rs2Data = await fetchBhumu_bhumiCount(Number(decoded_user['userId']), ward_number,yearRS42.previousYear, yearRS42.year_4);
@@ -278,6 +280,74 @@ export class Namuna8Controller {
             logger.error(error);
             return _400(res, error.message);
         }
+    }
+
+    static async namuna_8_sarkari_with_ward(req: Request, res: Response) {
+        try {
+            // const new_user_id = Number(req.params.new_user_id);
+            const authHeader = req.headers.authorization;
+            const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
+            const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+            // console.log(decoded_user['userId']);
+
+            const newUserDataDBrs14: any = await getNewDistinctUserwithStartEndDetails(Number(decoded_user['userId']), req.body.ward, req.body.start, req.body.end);
+            
+            
+            const entriesParam = {
+                'district_id': Number(decoded_user['DISTRICT_ID']),
+                'taluka_id': Number(decoded_user['TALUKA_ID']),
+                'panchayat_id': Number(decoded_user['PANCHAYAT_ID']),
+                'gatgrampanchayat_id': Number(decoded_user['GATGRAMPANCHAYAT_id']),
+                'user_id': Number(decoded_user['userId'])
+            }
+            const entriesDetailsRs66 = await getEntriesDetailsForNamuna8Sarkari(entriesParam);
+            const updatedRs3: any[] = [];
+            if(newUserDataDBrs14.length > 0){
+                for(let item14 of newUserDataDBrs14){
+                    const countTaxationlandC = await countTaxationLand(Number(item14?.new_user_id),Number(decoded_user['userId']));
+                    const countConstructionTaxRs1C1 = await countConstructiontax(Number(item14?.new_user_id),Number(decoded_user['userId']));
+                    const taxPayerDBC2 = await countTaxPayer(Number(item14?.new_user_id),Number(decoded_user['userId']));
+                    const taxationLandDetailsDbRs4 = await getTaxationLandDetails(Number(item14?.new_user_id),Number(decoded_user['userId']))
+                    const taxandMilkatDetailsRs101 = await getTaxationandMilkat(Number(item14?.new_user_id),Number(decoded_user['userId']))
+                    const taxandMilkatDetailsRs10 = [{"MILKAT_VAPAR_NAME": taxandMilkatDetailsRs101[0]?.MILKAT_VAPAR_NAME}]
+                    const newUserDataDBRs3: any = await getNewUserDetails(Number(item14?.new_user_id),Number(decoded_user['userId']));
+                    const getConstructionForsarkari8Rs7 = await getConstructionForsarkari8(Number(item14?.new_user_id),Number(decoded_user['userId']));
+                    const taxPayerDetailsRs6 =  await getTaxPayerDetails(Number(decoded_user['userId']), Number(item14?.new_user_id));
+
+                    updatedRs3.push({ ...item14,countTaxationlandC,countConstructionTaxRs1C1,taxPayerDBC2,taxationLandDetailsDbRs4, taxandMilkatDetailsRs10,newUserDataDBRs3, getConstructionForsarkari8Rs7,  taxPayerDetailsRs6});
+                }
+            }
+            // 
+            // 
+            // const all_counts = {
+            //     "count": countTaxationland[0].count,
+            //     "count1": countConstructionTaxRs1[0].count1,
+            //     "count2": taxPayerDB[0].count2
+            // }
+            // let a: any;
+            // if(all_counts.count1 == 0 || all_counts.count2 == 0){
+            //     a = 1 + all_counts.count1 + all_counts.count2;
+            // }else{
+            //     a = 3
+            // }
+            // all_counts['a'] = a;
+            // 
+            // 
+            // 
+            // const s = newUserDataDBRs3[0].BHUMIKAR + newUserDataDBRs3[0].VIZ_DIVVABATTIKAR + newUserDataDBRs3[0].AAROGYA_RAKSHAN_KAR + newUserDataDBRs3[0].SAFAI_KAR;
+            // all_counts['s'] = s;
+            // 
+            // 
+            const all_data = {
+                entriesDetailsRs66: entriesDetailsRs66,
+                rs14: updatedRs3
+            }
+            return _200(res, "Customer details fetched successfully", { status: 200, data: all_data });
+        } catch (error) {
+            logger.error(error);
+            return _400(res, error.message);
+        }
+
     }
 
 }

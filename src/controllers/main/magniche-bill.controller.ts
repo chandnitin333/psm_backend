@@ -16,7 +16,7 @@ export class MagnicheBillController {
             const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
             const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
             let page_number: number = req.body.page_number ? Number(req.body.page_number) : 1;
-            const data = await searchMagnicheBillData(1008, req.body,page_number);
+            const data = await searchMagnicheBillData(Number(decoded_user['userId']), req.body,page_number);
             return _200(res, "Magniche Bill details fetched successfully", data);
         } catch (error) {
             console.error('Error in search:', error);

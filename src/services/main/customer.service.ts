@@ -456,12 +456,33 @@ export async function getNewUserSevakarDetails(sevakar:any): Promise<any | null>
 export async function getNewDistinctUserDetails(new_user_id: number, user_id: number): Promise<any | null> {
     try {
         const query = `
-        SELECT DISTINCT newuser_id AS newww, vard_number, annu_kramank 
+        SELECT DISTINCT NEWUSER_ID AS newww, VARD_NUMBER, ANNU_KRAMANK 
         FROM newuser 
         WHERE user_id = ? 
-        AND newuser_id = ? AND DELETED_AT IS NULL
+        AND NEWUSER_ID = ? AND DELETED_AT IS NULL
         `;
         const results: any = await executeQuery(query, [user_id, new_user_id]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching new user details: ${error.message}`);
+        throw error;
+    }
+}
+export async function getNewDistinctUserwithStartEndDetails( user_id: number, vard_number:number, start:number, end:number): Promise<any | null> {
+    try {
+        const query = `
+        SELECT DISTINCT NEWUSER_ID AS new_user_id, VARD_NUMBER, ANNU_KRAMANK 
+        FROM newuser 
+        WHERE user_id = ? 
+        AND VARD_NUMBER = ?
+        AND ANNU_KRAMANK BETWEEN ? AND ? 
+        AND DELETED_AT IS NULL
+        ORDER BY ANNU_KRAMANK ASC
+        `;
+        const results: any = await executeQuery(query, [user_id, vard_number, start, end]);
         if (results.length > 0) {
             return results as any;
         }
@@ -727,7 +748,7 @@ export async function getUserDataForRs3(user_id:number, new_user_id:number): Pro
             SELECT *
             FROM newuser
             WHERE user_id = ?
-            AND newuser_id = ?
+            AND NEWUSER_ID = ?
             AND DELETED_AT IS NULL;
         `;
         const results: any = await executeQuery(query, [user_id, new_user_id]);
@@ -748,10 +769,10 @@ export async function getUserDataForGharKar(user_id: number, ward_number: number
             FROM newuser
             WHERE user_id = ?
             AND MILKAR_PRAKAR = 'घर कर लावायचा आहे'
-            AND vard_number = ?
-            AND annu_kramank BETWEEN ? AND ?
+            AND VARD_NUMBER = ?
+            AND ANNU_KRAMANK BETWEEN ? AND ?
             AND DELETED_AT IS NULL
-            ORDER BY annu_kramank ASC
+            ORDER BY ANNU_KRAMANK ASC
         `;
         const results: any = await executeQuery(query, [user_id, ward_number,start,end]);
         if (results.length > 0) {
@@ -775,6 +796,30 @@ export async function getImlakarNew(user_id: number, ward_number: number, start:
             AND ANNU_KRAMANK BETWEEN ? AND ?
             AND DELETED_AT IS NULL
             ORDER BY ANNU_KRAMANK ASC
+        `;
+        const results: any = await executeQuery(query, [user_id, ward_number,start,end]);
+        if (results.length > 0) {
+            return results as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+export async function getImlakarNewDistinct(user_id: number, ward_number: number, start: number, end: number): Promise<any | null> {
+    try{
+        const query = `
+           SELECT DISTINCT(NEWUSER_ID), ANNU_KRAMANK
+            FROM newuser
+            WHERE 
+                MILKAR_PRAKAR = 'इमलाकर'
+                AND USER_ID = ?
+                AND VARD_NUMBER = ?
+                AND ANNU_KRAMANK BETWEEN ? AND ?
+                AND DELETED_AT IS NULL
+            ORDER BY ANNU_KRAMANK ASC;
+
         `;
         const results: any = await executeQuery(query, [user_id, ward_number,start,end]);
         if (results.length > 0) {
@@ -995,11 +1040,11 @@ export async function fetchCurrentYear():Promise<any | null>{
         if (results.length > 0) {
            let returnData = {
                 'yearId': results[0].YEAR_ID,
-                'currentYear': results[0].yyy,
-                'prevuiousYear': results[0].yyy - 1,
-                'nextYear': results[0].yyy + 1,
-                'year_4': results[0].yyy + 4,
-                'year_3': results[0].yyy + 3,
+                'currentYear': Number(results[0].yyy),
+                'prevuiousYear': Number(results[0].yyy) - 1,
+                'nextYear': Number(results[0].yyy) + 1,
+                'year_4': Number(results[0].yyy) + 4,
+                'year_3': Number(results[0].yyy) + 3,
                 'yearId_negative_1': (results[0].YEAR_ID) - 1
 
             }
@@ -1023,7 +1068,7 @@ export async function  fetchBhumu_bhumiCount(user_id, ward_no, previousYear, yea
                 AND user_id = ?
                 AND VARD_NUMBER = ?
                 AND YEARS >= ?
-                AND YEARS < ?`;
+                AND YEARS <= ?`;
          const results: any = await executeQuery(query,[user_id, ward_no, previousYear, year_4]);
         if (results.length > 0) {
             return results as any;
@@ -1481,44 +1526,35 @@ export async function searchMagnicheBillData(user_id: number, data: any, page:nu
         const params: (number | string)[] = [user_id, user_id];
 
             if (data.from_year) {
-                sql += ' AND A.YEARS_ID LIKE ?';
-                params.push(`%${data.from_year}%`);
+                sql += ' AND A.YEARS_ID >= ?';
+                params.push(`${data.from_year}`);
             }
             if (data.to_year) {
-                sql += ' AND A.YEARS_ID LIKE ?';
-                params.push(`%${data.to_year}%`);
+                sql += ' AND A.YEARS_ID <= ?';
+                params.push(`${data.to_year}`);
             }
             if (data.from_anu_kramank) {
-                sql += ' AND A.ANNU_KRAMANK LIKE ?';
-                params.push(`%${data.from_anu_kramank}%`);
+                sql += ' AND A.ANNU_KRAMANK >= ?';
+                params.push(`${data.from_anu_kramank}`);
             }
             if (data.to_anu_kramank) {
-                sql += ' AND a.PLOT_NO LIKE ?';
-                params.push(`%${data.to_anu_kramank}%`);
+                sql += ' AND A.ANNU_KRAMANK <= ?';
+                params.push(`${data.to_anu_kramank}`);
             }
             if (data.vard_number) {
                 sql += ' AND A.VARD_NUMBER LIKE ?';
                 params.push(`%${data.vard_number}%`);
             }
-            // if (data.start_date) {
-            //     sql += ' AND a.SURVEY_KRAMANK LIKE ?';
-            //     params.push(`%${data.start_date}%`);
-            // }
-            // if (data.end_date) {
-            //     sql += ' AND a.HOMEUSER_NAME LIKE ?';
-            //     params.push(`%${data.end_date}%`);
-            // }
-            // if (data.bharna) {
-            //     sql += ' AND a.BHOGATWARGARACHE_NAME LIKE ?';
-            //     params.push(`%${data.bharna}%`);
-            // }
         let totalCount = await getMalmattaNotdniRecordCount(sql, params);
-        sql += ` ORDER BY A.VARD_NUMBER, A.ANNU_KRAMANK ASC LIMIT ${limit} OFFSET ${offset}`;
-        const results: any = await executeQuery(sql, params);
+        sql += ` ORDER BY A.VARD_NUMBER, A.ANNU_KRAMANK `;
+        // sql += ` ORDER BY A.VARD_NUMBER, A.ANNU_KRAMANK ASC LIMIT ${limit} OFFSET ${offset}`;
+        // const results: any = await executeQuery(sql, params);
         // if (results.length > 0) {
         //     return results as any;
         // }
         // return [];
+        // console.log("sql", sql);
+        // console.log("params", params);    
         return executeQuery(sql, params).then(result => {    
             (result) ? result : null;
             return (result) ? { 'data': result, 'total_count': totalCount } : null;
