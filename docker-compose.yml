@@ -7,7 +7,7 @@ services:
     ports:
       - "4444:4444"
     volumes:
-      - ./uploads:/app/uploads
+      - ./uploads:/app/uploads/photos
     restart: always
     networks:
       - psm_default1
