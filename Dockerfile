@@ -19,6 +19,9 @@ RUN npm install --save-dev typescript
 # Build the TypeScript code (compile to dist folder)
 RUN npx tsc
 
+# Create uploads directory and set permissions
+RUN mkdir -p /app/uploads && chmod -R 777 /app/uploads
+
 # Expose port 4444
 EXPOSE 4444
 

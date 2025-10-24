@@ -37,6 +37,9 @@ export class Server {
         this.app.use(bodyParser.json());
         this.app.use(cors({ origin: '*' }));
 
+        // Serve static files from uploads directory
+        this.app.use('/uploads', express.static('uploads'));
+
         this.app.use((_, res, next) => {
 
             res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
