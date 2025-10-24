@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "4444:4444"
+    volumes:
+      - /var/www/uploads:/app/uploads
     restart: always
     networks:
       - psm_default1

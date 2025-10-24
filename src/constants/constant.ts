@@ -36,4 +36,4 @@ export const DATA_KEY = 'data';
 
 export const ADMIN_EMAIL = 'admin@gmail.com';
 
-export const UPLOAD_PATH = '/uploads/photos';
+export const UPLOAD_PATH = '/app/uploads';
