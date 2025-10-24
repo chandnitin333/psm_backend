@@ -9,7 +9,7 @@ services:
       - "4444:4444"
     volumes:
       # Host path → Container path
-      - /var/www/uploads:/app/uploads/photos
+      - /var/www/uploads:/app/uploads
     restart: always
     networks:
       - psm_default1
