@@ -126,13 +126,12 @@ export class AuthController {
 
     static async getChaluKhatedarTotal(req: Request, res:Response){
         try {
-            // let response = [];
-            // response['data'] = {};
+            let page_number: number = req.body.page_number ? Number(req.body.page_number) : 1;
             const { user_id } = req.body;
-            const chalu_khatedar = await getChaluKhatedarTotal(Number(user_id));
+            const chalu_khatedar = await getChaluKhatedarTotal(Number(user_id), page_number);
             
             
-            return _200(res, "User list retrieved successfully", { status: 200, data: chalu_khatedar });
+            return _200(res, "User list retrieved successfully", chalu_khatedar);
             
         } catch (error) {
             logger.error(error);
@@ -143,8 +142,9 @@ export class AuthController {
     static async getAdhikrutTotal(req: Request, res:Response){
         try {
             const { user_id } = req.body;
-            const data = await getAdhikrutTotal(Number(user_id));
-            return _200(res, "User list retrieved successfully", { status: 200, data: data });
+            let page_number: number = req.body.page_number ? Number(req.body.page_number) : 1;
+            const data = await getAdhikrutTotal(Number(user_id),page_number);
+            return _200(res, "User list retrieved successfully", data);
             
         } catch (error) {
             logger.error(error);
@@ -154,8 +154,9 @@ export class AuthController {
     static async getIndiraAwasTotal(req: Request, res:Response){
         try {
             const { user_id } = req.body;
-            const data = await getIndiraAwasTotal(Number(user_id));
-            return _200(res, "User list retrieved successfully", { status: 200, data: data });
+            let page_number: number = req.body.page_number ? Number(req.body.page_number) : 1;
+            const data = await getIndiraAwasTotal(Number(user_id),page_number);
+            return _200(res, "User list retrieved successfully", data);
             
         } catch (error) {
             logger.error(error);
@@ -165,8 +166,9 @@ export class AuthController {
     static async getImlakarTotal(req: Request, res:Response){
         try {
             const { user_id } = req.body;
-            const data = await getImlakarTotal(Number(user_id));
-            return _200(res, "User list retrieved successfully", { status: 200, data: data });
+            let page_number: number = req.body.page_number ? Number(req.body.page_number) : 1;
+            const data = await getImlakarTotal(Number(user_id),page_number);
+            return _200(res, "User list retrieved successfully", data);
             
         } catch (error) {
             logger.error(error);
@@ -176,8 +178,9 @@ export class AuthController {
     static async getgharKarTotal(req: Request, res:Response){
         try {
             const { user_id } = req.body;
-            const data = await getGharKarTotal(Number(user_id));
-            return _200(res, "User list retrieved successfully", { status: 200, data: data });
+            let page_number: number = req.body.page_number ? Number(req.body.page_number) : 1;
+            const data = await getGharKarTotal(Number(user_id),page_number);
+            return _200(res, "User list retrieved successfully", data);
             
         } catch (error) {
             logger.error(error);
