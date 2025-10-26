@@ -747,9 +747,9 @@ export async function getUserDataForRs3(user_id:number, new_user_id:number): Pro
         const query = `
             SELECT *
             FROM newuser
-            WHERE user_id = ?
+            WHERE DELETED_AT IS NULL 
+            AND user_id = ?
             AND NEWUSER_ID = ?
-            AND DELETED_AT IS NULL;
         `;
         const results: any = await executeQuery(query, [user_id, new_user_id]);
         if (results.length > 0) {
