@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import * as Jwt from "jsonwebtoken";
 import { getEnvironmentVariable } from "../../environments/env";
 import { logger } from "../../logger/Logger";
-import { getAdhikrutCount, getAdhikrutTotal, getChaluKhatedarCount, getChaluKhatedarTotal, getCounts, getGharKarCount, getGharKarTotal, getImlakarCount, getImlakarTotal, getIndiraAwasCount, getIndiraAwasTotal, getMemberList, signIn } from "../../services/admin/users.service";
+import { getAdhikrutCount, getAdhikrutTotal, getAudhogikTotal, getChaluKhatedarCount, getChaluKhatedarTotal, getCounts, getGharKarCount, getGharKarTotal, getImlakarCount, getImlakarTotal, getIndiraAwasCount, getIndiraAwasTotal, getManaoraCounts, getManoraTotal, getMemberList, getodyogikCounts, signIn } from "../../services/admin/users.service";
 import { _200, _400 } from "../../utils/ApiResponse";
 import e = require("express");
 import { Utils } from "../../utils/util";
@@ -88,6 +88,8 @@ export class AuthController {
             const indira_Awas = await getIndiraAwasCount(Number(user_id));
             const imlakar = await getImlakarCount(Number(user_id));
             const gharkar = await getGharKarCount(Number(user_id));
+            const oudogyik =  await getodyogikCounts(Number(user_id));
+            const manaora  = await getManaoraCounts(Number(user_id));
             const response = {
                 "chalu_khatedar": chalu_khatedar.ANNU_KRAMANK,
                 "adhikrut": adhikrut.MILKAR_PRAKAR,
@@ -187,5 +189,31 @@ export class AuthController {
             return _400(res, error.message);
         }
     }
+    static async getAudhogikTotal(req: Request, res:Response){
+        try {
+            const { user_id } = req.body;
+            let page_number: number = req.body.page_number ? Number(req.body.page_number) : 1;
+            const data = await getAudhogikTotal(Number(user_id),page_number);
+            return _200(res, "list retrieved successfully", data);
+            
+        } catch (error) {
+            logger.error(error);
+            return _400(res, error.message);
+        }
+    }
+    static async getManoraTotal(req: Request, res:Response){
+        try {
+            const { user_id } = req.body;
+            let page_number: number = req.body.page_number ? Number(req.body.page_number) : 1;
+            const data = await getManoraTotal(Number(user_id),page_number);
+            return _200(res, "list retrieved successfully", data);
+            
+        } catch (error) {
+            logger.error(error);
+            return _400(res, error.message);
+        }
+    }
+
+   
     
 }

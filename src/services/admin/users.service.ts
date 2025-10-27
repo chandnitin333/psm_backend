@@ -1184,3 +1184,102 @@ export async function getGharKarTotal(user_id:number, page:number): Promise<any 
         throw error;
     }
 }
+
+
+
+export async function getodyogikCounts(user_id:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT count(MILKAR_PRAKAR) as MILKAR_PRAKAR
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR='औद्योगिक'
+            AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getManaoraCounts(user_id:number): Promise<any | null> {
+    try {
+        const query = `
+            SELECT count(MILKAR_PRAKAR) as MILKAR_PRAKAR
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR='मनोरा'
+            AND DELETED_AT IS NULL
+        `;
+        const results: any = await executeQuery(query, [user_id]);
+        if (results.length > 0) {
+            return results[0] as any;
+        }
+        return null;
+    } catch (error) {
+        logger.error(`Error fetching user data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+// 
+
+export async function getAudhogikTotal(user_id:number, page:number): Promise<any | null> {
+    try {
+        let limit: number = PAGINATION.LIMIT;
+        const offset = (page - 1) * limit;
+        let query = `
+            SELECT *
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR='औद्योगिक'
+            AND DELETED_AT IS NULL
+        `;
+        const params =[user_id] 
+        let totalCount = await getRecordCount(query, params);
+        query += ` ORDER BY VARD_NUMBER,ANNU_KRAMANK DESC LIMIT ${limit} OFFSET ${offset}`;
+        const results: any = await executeQuery(query, params);
+       return executeQuery(query, params).then(result => {    
+            (result) ? result : null;
+            return (result) ? { 'data': result, 'total_count': totalCount } : null;
+        }).catch(error => {
+            console.error("getAudhogikTotal fetch data error: ", error);
+            return [];
+        });
+    } catch (error) {
+        logger.error(`Error fetching data for Rs3: ${error.message}`);
+        throw error;
+    }
+}
+
+export async function getManoraTotal(user_id:number, page:number): Promise<any | null> {
+    try {
+        let limit: number = PAGINATION.LIMIT;
+        const offset = (page - 1) * limit;
+        let query = `
+            SELECT *
+            FROM newuser
+            WHERE user_id = ?
+            AND MILKAR_PRAKAR='मनोरा'
+            AND DELETED_AT IS NULL
+        `;
+        const params =[user_id] 
+        let totalCount = await getRecordCount(query, params);
+        query += ` ORDER BY VARD_NUMBER,ANNU_KRAMANK DESC LIMIT ${limit} OFFSET ${offset}`;
+        const results: any = await executeQuery(query, params);
+       return executeQuery(query, params).then(result => {    
+            (result) ? result : null;
+            return (result) ? { 'data': result, 'total_count': totalCount } : null;
+        }).catch(error => {
+            console.error("getAudhogikTotal fetch data error: ", error);
+            return [];
+        });
+    } catch (error) {
+        logger.error(`Error fetching data for Rs3: ${error.message}`);
+        throw error;
+    }
+}

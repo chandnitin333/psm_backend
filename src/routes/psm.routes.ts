@@ -66,6 +66,8 @@ export class psmRoutes {
         this.router.post('/get-indira-awas-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getIndiraAwasTotal);
         this.router.post('/get-imlakar-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getImlakarTotal);
         this.router.post('/get-ghar-kar-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getgharKarTotal);
+        this.router.post('/get-audhygik-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getAudhogikTotal);
+        this.router.post('/get-manora-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, AuthController.getManoraTotal);
 
         
         
