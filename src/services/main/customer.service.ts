@@ -836,14 +836,10 @@ export async function getImlakarAnukramnika(user_id: number, ward_number: number
         const query = `
            SELECT *
             FROM newuser
-            WHERE 
-                MILKAR_PRAKAR = 'इमलाकर'
-                AND USER_ID = ?
-                AND VARD_NUMBER = ?
-                AND DELETED_AT IS NULL
-            ORDER BY ANNU_KRAMANK ASC;
-
-        `;
+            WHERE DELETED_AT IS NULL
+                AND MILKAR_PRAKAR = 'इमलाकर'
+                AND user_id = ?
+                AND VARD_NUMBER = ?        `;
         const results: any = await executeQuery(query, [user_id,ward_number]);
         if (results.length > 0) {
             return results as any;
