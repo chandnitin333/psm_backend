@@ -8,7 +8,7 @@ const multerStorage = multer.diskStorage({
     await fs.promises.mkdir(uploadDir, { recursive: true });
     req.body.fileMimeType = file.mimetype;
     req.body.fileName = file.originalname;
-    req.body.filePath = `${UPLOAD_PATH}/${file.originalname}`;
+    // req.body.filePath = `${UPLOAD_PATH}/${file.originalname}`;
     req.body.fileSize = file.size;
     req.body.fileType = file.mimetype.split("/")[0];
     req.body.fileExtension = file.mimetype.split("/")[1];

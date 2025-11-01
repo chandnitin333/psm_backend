@@ -26,7 +26,7 @@ export class UploadFile {
             const uploadData = {
                 ...req.body,
                 name: req?.body?.file_name,
-                r_path: req?.body?.fileDestination + '/' + req?.body?.newFileName,
+                r_path: req?.body?.newFileName,
 
             };
             logger.info(`uploadData=====${JSON.stringify(uploadData)}`);
@@ -73,7 +73,7 @@ export class UploadFile {
             const uploadData = {
                 ...req.body,
                 name: req?.body?.file_name,
-                r_path: req?.body?.fileDestination + '/' + req?.body?.newFileName,
+                r_path: req?.body?.req?.body?.newFileName,
 
             };
 

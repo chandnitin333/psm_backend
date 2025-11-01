@@ -215,7 +215,7 @@ export class FerFarYadi {
                 name: req?.body?.name,
                 ferfar_id: Number(req?.body?.ferfar_id),
                 new_user_id: new_user_id,
-                r_path: req?.body?.fileDestination + '/' + req?.body?.newFileName,
+                r_path: req?.body?.newFileName,
 
             };
             // console.log("uploadData===", uploadData);

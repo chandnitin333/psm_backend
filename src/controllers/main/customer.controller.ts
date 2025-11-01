@@ -404,14 +404,14 @@ export class CustomerController {
             if (!req?.files) {
                 return _400(res, "Image is required");
             }
-            // console.log("ferfarDetail===", ferfarDetail.NEWUSER_ID);
+            // console.log("ferfarDetail==========", req?.body);
             const uploadData = {
                 user_id: Number(req?.body?.user_id),
                 new_user_id: Number(req?.body?.new_user_id),
-                r_path: req?.body?.fileDestination + '/' + req?.body?.newFileName,
+                r_path: req?.body?.newFileName,
 
             };
-            console.log("uploadData===", uploadData);
+            // console.log("uploadData===", uploadData);
             await updateCustomerImagePath(uploadData);
             return _201(res, "Customer Image updated successfully");
         } catch (error) {
