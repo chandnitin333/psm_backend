@@ -95,7 +95,9 @@ export class AuthController {
                 "adhikrut": adhikrut.MILKAR_PRAKAR,
                 "indira_awas": indira_Awas.MILKAR_PRAKAR,
                 "imlakar": imlakar.MILKAR_PRAKAR,
-                "ghar_kar": gharkar.MILKAR_PRAKAR
+                "ghar_kar": gharkar.MILKAR_PRAKAR,
+                "audyogik": oudogyik.MILKAR_PRAKAR,
+                "manora": manaora.MILKAR_PRAKAR
             }
             
             return _200(res, "User list retrieved successfully", response);

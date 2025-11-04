@@ -1190,10 +1190,10 @@ export async function getGharKarTotal(user_id:number, page:number): Promise<any 
 export async function getodyogikCounts(user_id:number): Promise<any | null> {
     try {
         const query = `
-            SELECT count(MILKAR_PRAKAR) as MILKAR_PRAKAR
+            SELECT count(vanijya) as MILKAR_PRAKAR
             FROM newuser
             WHERE user_id = ?
-            AND MILKAR_PRAKAR='औद्योगिक'
+            AND vanijya='औद्योगिक'
             AND DELETED_AT IS NULL
         `;
         const results: any = await executeQuery(query, [user_id]);
@@ -1210,10 +1210,10 @@ export async function getodyogikCounts(user_id:number): Promise<any | null> {
 export async function getManaoraCounts(user_id:number): Promise<any | null> {
     try {
         const query = `
-            SELECT count(MILKAR_PRAKAR) as MILKAR_PRAKAR
+            SELECT count(vanijya) as MILKAR_PRAKAR
             FROM newuser
             WHERE user_id = ?
-            AND MILKAR_PRAKAR='मनोरा'
+            AND vanijya='मनोरा'
             AND DELETED_AT IS NULL
         `;
         const results: any = await executeQuery(query, [user_id]);
@@ -1236,7 +1236,7 @@ export async function getAudhogikTotal(user_id:number, page:number): Promise<any
             SELECT *
             FROM newuser
             WHERE user_id = ?
-            AND MILKAR_PRAKAR='औद्योगिक'
+            AND vanijya='औद्योगिक'
             AND DELETED_AT IS NULL
         `;
         const params =[user_id] 
@@ -1264,7 +1264,7 @@ export async function getManoraTotal(user_id:number, page:number): Promise<any |
             SELECT *
             FROM newuser
             WHERE user_id = ?
-            AND MILKAR_PRAKAR='मनोरा'
+            AND vanijya='मनोरा'
             AND DELETED_AT IS NULL
         `;
         const params =[user_id] 
