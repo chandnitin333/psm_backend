@@ -939,7 +939,7 @@ export async function searchCustomer(user_id: number, data: any, page:number): P
                 params.push(`%${data.txt_patta}%`);
             }
         let totalCount = await getMalmattaNotdniRecordCount(sql, params);
-        sql += ` ORDER BY a.NEWUSER_ID DESC LIMIT ${limit} OFFSET ${offset}`;
+        sql += ` ORDER BY a.ANNU_KRAMANK ASC LIMIT ${limit} OFFSET ${offset}`;
         const results: any = await executeQuery(sql, params);
         // if (results.length > 0) {
         //     return results as any;
