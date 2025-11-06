@@ -43,7 +43,7 @@ export async function getTaxGenerationData(page:number,ward_no:string,from_year:
             params.push(`${to_year}`);
         }
         let totalCount = await getRecordCount(sql, params);
-        sql += ` ORDER BY A.NEWUSERSAVEKAR_ID DESC LIMIT ${limit} OFFSET ${offset}`;
+        sql += ` ORDER BY A.ANNU_KRAMANK,A.vard_number DESC LIMIT ${limit} OFFSET ${offset}`;
         // console.log("getTaxGenerationData SQL Query: ", totalCount);
         //  return Object.keys(result).length;
         return executeQuery(sql, params).then(result => {    
