@@ -501,14 +501,14 @@ export const saveTaxPayers = async (data: any, table_name:string) => {
         let sql = `INSERT INTO ${table_name} (
                     newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR,
                     MANORAMASTER_ID, AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1,
-                    CAPITAL, TAXATION, RNO, taxp1000, vard_number, annu_kramank, Year_id,
+                    CAPITAL, TAXATION, majla,RNO, taxp1000, vard_number, annu_kramank, Year_id,
                     Year_name, reg_date, tdate, ttime,RandomNumber, Token
                                 ) 
                                 VALUES (
                                     ?, ?, ?, ?, ?, ?, 
                                     ?, ?, ?, ?, ?, ?, 
                                     ?, ?, ?, ?, ?, ?, 
-                                    ?, ?, ?, ?, ?, ?,?
+                                    ?, ?, ?, ?, ?, ?,?,?
                                 )`;
         const params = [
             data.newuser_id,
@@ -525,6 +525,7 @@ export const saveTaxPayers = async (data: any, table_name:string) => {
             data.totalarea1,
             data.levyrate,
             data.karAkarani,
+            data.majla,
             data.rno,
             1000,
             data.vard_number,
@@ -899,7 +900,8 @@ export async function updateManoraKarAkaraniRecords(data:any, id:any, table_name
                     AREAI1 = ?, 
                     TOTALAREA1 = ?, 
                     CAPITAL = ?, 
-                    TAXATION = ?
+                    TAXATION = ?,
+                    majla=?
                 WHERE TAXPAYERS_ID = ?`;
         data = Object.values(data);
         await executeQuery(sql, [...data,id]);
