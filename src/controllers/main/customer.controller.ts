@@ -233,7 +233,7 @@ export class CustomerController {
 
             }
         ];
-        console.log(years);
+        // console.log("kundan---------->",years_response);
         const newUserDataDB: any = await getNewUserDetails(Number(new_user_id),Number(decoded_user['userId']));
         const entriesParam = {
             'district_id': Number(decoded_user['DISTRICT_ID']),
@@ -245,20 +245,53 @@ export class CustomerController {
         const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
         const sevakarParam = {
             'user_id': Number(decoded_user['userId']),
-            "previousYear_id": Number(years_response[0].Year_id) - 1,
+            "previousYear_id": Number(years_response[0].Year_id),
             "vard_number": newUserDataDB[0].VARD_NUMBER,
             "newuser_id":newUserDataDB[0].NEWUSER_ID,
         }
+        // console.log("year id", Number(years_response[0].Year_id) - 1)
         const newUserSevakarDB = await getNewUserSevakarDetails(sevakarParam);
-        newUserDataDB.forEach((userData: any) => {
+        // console.log("hello-----------",newUserSevakarDB);
+        // console.log("newUserDataDB-----------",newUserDataDB);
+        // newUserDataDB.forEach((userData: any) => {
             // Perform operations on each userData object
             // For example:
-            console.log(userData);
-        });
+            // console.log(userData);
+        // });
         const ls1 = 0;
         const pl1 = 0;
         const etar = 0;
         const notice = 0;
+        let bhumiPercentAmtPlus = (newUserSevakarDB[0].bhumi * newUserSevakarDB[0].plus) / 100;
+        let bhumiWithPercentplus = newUserSevakarDB[0].bhumi + bhumiPercentAmtPlus;
+        let bhumiPercentAmtless = (newUserDataDB[0].BHUMIKAR * newUserSevakarDB[0].less) / 100;
+        let bhumiWithPercentless = newUserDataDB[0].BHUMIKAR - bhumiPercentAmtless;
+
+        let divaPercentAmtPlus = (newUserSevakarDB[0].diva * newUserSevakarDB[0].diva_batti_plus_5) / 100;
+        let divaWithPercentplus = newUserSevakarDB[0].diva + divaPercentAmtPlus;
+        let divaPercentAmtless = (newUserDataDB[0].VIZ_DIVVABATTIKAR * newUserSevakarDB[0].diva_batti_less_5) / 100;
+        let divaWithPercentless = newUserDataDB[0].VIZ_DIVVABATTIKAR - divaPercentAmtless;
+
+        let aarogyaPercentAmtPlus = (newUserSevakarDB[0].aarogya * newUserSevakarDB[0].aarogya_plus_5) / 100;
+        let aarogyaWithPercentplus = newUserSevakarDB[0].aarogya + aarogyaPercentAmtPlus;
+        let aarogyaPercentAmtless = (newUserDataDB[0].AAROGYA_RAKSHAN_KAR * newUserSevakarDB[0].aarogya_less_5) / 100;
+        let aarogyaWithPercentless = newUserDataDB[0].AAROGYA_RAKSHAN_KAR - aarogyaPercentAmtless;
+
+        let safaePercentAmtPlus = (newUserSevakarDB[0].safai * newUserSevakarDB[0].safae_plus_5) / 100;
+        let safaeWithPercentplus = newUserSevakarDB[0].safai + safaePercentAmtPlus;
+        let safaePercentAmtless = (newUserDataDB[0].SAFAI_KAR * newUserSevakarDB[0].safae_less_5) / 100;
+        let safaeWithPercentless = newUserDataDB[0].SAFAI_KAR - safaePercentAmtless;
+
+        let samanyaPercentAmtPlus = (newUserSevakarDB[0].samanya * newUserSevakarDB[0].samanya_pani_plus_5) / 100;
+        let samanyaWithPercentplus = newUserSevakarDB[0].samanya + samanyaPercentAmtPlus;
+        let samanyaPercentAmtless = (newUserDataDB[0].SAMANYA_PANI_KAR * newUserSevakarDB[0].samanya_pani_less_5) / 100;
+        let samanyaWithPercentless = newUserDataDB[0].SAMANYA_PANI_KAR - samanyaPercentAmtless;
+
+        let visheshPercentAmtPlus = (newUserSevakarDB[0].vishesh * newUserSevakarDB[0].vishesh_pani_plus_5) / 100;
+        let visheshWithPercentplus = newUserSevakarDB[0].vishesh + visheshPercentAmtPlus;
+        let visheshPercentAmtless = (newUserDataDB[0].VISHESH_PANI_KAR * newUserSevakarDB[0].vishesh_pani_less_5) / 100;
+        let visheshWithPercentless = newUserDataDB[0].VISHESH_PANI_KAR - visheshPercentAmtless;
+
         const alphabets = {
             "a": Math.round(
                     newUserDataDB[0].BHUMIKAR +
@@ -266,19 +299,20 @@ export class CustomerController {
                     newUserDataDB[0].AAROGYA_RAKSHAN_KAR +
                     newUserDataDB[0].SAFAI_KAR
                 ),
-            "b": Math.round(newUserSevakarDB[0].bhumi + newUserDataDB[0].BHUMIKAR),
-            "d": newUserSevakarDB[0].diva +  newUserDataDB[0].VIZ_DIVVABATTIKAR,
-            "e": newUserSevakarDB[0].aarogya +  newUserDataDB[0].AAROGYA_RAKSHAN_KAR,
-            "f": newUserSevakarDB[0].safai +  newUserDataDB[0].SAFAI_KAR,
-            "g": newUserSevakarDB[0].samanya +  newUserDataDB[0].SAMANYA_PANI_KAR,
-            "h": newUserSevakarDB[0].vishesh +  newUserDataDB[0].VISHESH_PANI_KAR,
+            
+            "b": Math.round(bhumiWithPercentplus + bhumiWithPercentless),
+            "d": divaWithPercentplus +  divaWithPercentless,
+            "e": aarogyaWithPercentplus +  aarogyaWithPercentless,
+            "f": safaeWithPercentplus +  safaeWithPercentless,
+            "g": samanyaWithPercentplus +  samanyaWithPercentless,
+            "h": visheshWithPercentplus +  visheshWithPercentless,
             "i": newUserSevakarDB[0].total +  newUserDataDB[0].EKUN,
             "n": newUserSevakarDB[0].etar + etar,
             "o": newUserSevakarDB[0].notice + notice,
-            "ls": newUserSevakarDB[0].less + ls1,
-            "pl": newUserSevakarDB[0].plus + pl1,
-            "magilnewpl": Math.round((newUserSevakarDB[0].bhumi / 100) * newUserSevakarDB[0].plus),
-            "totalnewpl": Math.round(Math.round((newUserSevakarDB[0].bhumi / 100) * newUserSevakarDB[0].plus) + pl1), // pl1 should be declared
+            // "ls": newUserSevakarDB[0].less + ls1,
+            // "pl": newUserSevakarDB[0].plus + pl1,
+            // "magilnewpl": Math.round((newUserSevakarDB[0].bhumi / 100) * newUserSevakarDB[0].plus),
+            // "totalnewpl": Math.round(Math.round((newUserSevakarDB[0].bhumi / 100) * newUserSevakarDB[0].plus) + pl1), // pl1 should be declared
             "k": Math.round(newUserSevakarDB[0].total),
             //  "k": Math.round(newUserSevakarDB[0].bhumi + newUserSevakarDB[0].diva + newUserSevakarDB[0].aarogya + newUserSevakarDB[0].safai + newUserSevakarDB[0].samanya + newUserSevakarDB[0].vishesh + newUserSevakarDB[0].etar + newUserSevakarDB[0].notice),
             "l": Math.round(
@@ -297,7 +331,7 @@ export class CustomerController {
                 newUserDataDB[0].SAMANYA_PANI_KAR +
                 newUserDataDB[0].VISHESH_PANI_KAR
             ),
-            "s": Math.round(newUserSevakarDB[0].bhumi + newUserSevakarDB[0].diva + newUserSevakarDB[0].aarogya + newUserSevakarDB[0].safai + newUserSevakarDB[0].less) + Math.round((newUserSevakarDB[0].bhumi / 100) * newUserSevakarDB[0].plus),
+            "s": Math.round(newUserSevakarDB[0].bhumi + newUserSevakarDB[0].diva + newUserSevakarDB[0].aarogya + newUserSevakarDB[0].safai),
             "j": Math.round(newUserSevakarDB[0].bhumi + newUserDataDB[0].BHUMIKAR) + Math.round(newUserSevakarDB[0].diva +  newUserDataDB[0].VIZ_DIVVABATTIKAR) +
             Math.round(newUserSevakarDB[0].aarogya +  newUserDataDB[0].AAROGYA_RAKSHAN_KAR) + Math.round(newUserSevakarDB[0].safai +  newUserDataDB[0].SAFAI_KAR) +Math.round(newUserSevakarDB[0].less + ls1) + Math.round(Math.round((newUserSevakarDB[0].bhumi / 100) * newUserSevakarDB[0].plus) + pl1)
         }

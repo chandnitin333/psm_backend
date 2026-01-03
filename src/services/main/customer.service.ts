@@ -490,7 +490,7 @@ export async function getYear(): Promise<any | null> {
 
 export async function getNewUserSevakarDetails(sevakar:any): Promise<any | null> {
     try {
-        console.log("sevakar-->", sevakar);
+        // console.log("sevakar-->", sevakar);
         // const sevakarParam = {
         //     'user_id': Number(decoded_user['userId']),
         //     "previousYear_id": Number(years_response[0].Year_id) - 1,
@@ -510,12 +510,25 @@ export async function getNewUserSevakarDetails(sevakar:any): Promise<any | null>
                         IFNULL(SUM(notice_fees), 0) AS notice,
                         IFNULL(SUM(total), 0) AS total,
                         IFNULL(SUM(less5), 0) AS less,
-                        IFNULL(SUM(plus5), 0) AS plus
+                        IFNULL(SUM(plus5), 0) AS plus,
+                        IFNULL(SUM(diva_batti_less_5), 0) AS diva_batti_less_5,
+                        IFNULL(SUM(diva_batti_plus_5),0) AS diva_batti_plus_5,
+                        IFNULL(SUM(aarogya_less_5), 0) AS aarogya_less_5,
+                        IFNULL(SUM(aarogya_plus_5), 0) AS aarogya_plus_5,
+                        IFNULL(SUM(safae_less_5), 0) AS safae_less_5,
+                        IFNULL(SUM(safae_plus_5),0) AS safae_plus_5,
+                        IFNULL(SUM(samanya_pani_less_5), 0) AS samanya_pani_less_5,
+                        IFNULL(SUM(samanya_pani_plus_5),0) AS samanya_pani_plus_5,
+                        IFNULL(SUM(vishesh_pani_less_5), 0) AS vishesh_pani_less_5,
+                        IFNULL(SUM(vishesh_pani_plus_5), 0) AS vishesh_pani_plus_5
                     FROM newusersavekar
                     WHERE USER_ID = ? AND YEAR_ID = ? AND vard_number = ? AND NEWUSER_ID = ? AND DELETED_AT IS NULL;
 
         `;
+        console.log("binding-->", binding);
+        console.log("query-->", query); 
         const results: any = await executeQuery(query, binding);
+        console.log("results-->", results);
         if (results.length > 0) {
             return results as any;
         }
