@@ -77,6 +77,7 @@ export class psmRoutes {
         this.router.post('/get-annu-kramank-in-malmatta-nodni', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.getAnnuKramank);
         this.router.post('/get-malmatta-nodni-list-info', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.getMalmattaNodniInfoList);
         this.router.post('/insert-update-sillak-joda', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.createUpdateSillakJoda);
+        this.router.post('/check-sillak-joda-exist', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.checkSillakJodaExist);
         this.router.post('/verify-user-for-permission', GlobalMiddleware.checkError, CustomerController.verifyUser);
         this.router.post('/update-customer-image', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.addUploadCustomerimage);
 
@@ -151,6 +152,10 @@ export class psmRoutes {
         this.router.post('/delete-khula-bhukhand-session-wise-clear-api', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.delete_khulabhukahnd_by_session_wise);
         this.router.post('/delete-building-kar-session-wise-clear-api', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.delete_buildingKarKarano_by_session_wise);
         this.router.post('/delete-monora-kar-session-wise-clear-api', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.delete_manoraKarAkarani_by_session_wise);
+
+        // Validation APIs for checking if अनु क्रमांक and वॉर्ड क्रमांक already exist
+        this.router.post('/check-annu-kramank-exists', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.checkAnnuKramankExists);
+        this.router.post('/check-ward-number-exists', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.checkWardNumberExists);
 
         // manora form
         this.router.post('/save-tax-payer', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Nodni.saveTaxPeryers);

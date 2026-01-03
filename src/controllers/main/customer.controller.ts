@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
 import { signIn } from "../../services/admin/users.service";
-import { addNewCustomerInNodniFormInfo, countConstructiontax, countTaxPayer, countTaxationLand, getAnnuKramank, getConstructionBynew_userid, getConstructionForsarkari8, getConstructionTaxDetails, getCustomerDetailsById, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getMalmattaNotdniList, getManoraBynew_userid, getNewDistinctUserDetails, getNewUserDetails, getNewUserSevakarDetails, getTaxPayerDetails, getTaxationBynew_userid, getTaxationLandDetails, getTaxationandMilkat, getYear, gettaxationLandDetails, insertUpdateSillakJoda, searchCustomer, softDeleteMalmattaNodniInfo, updateCustomerImagePath, updateMalmattaNodniInfo } from "../../services/main/customer.service";
+import { addNewCustomerInNodniFormInfo, checkSillakJodaExistAPI, countConstructiontax, countTaxPayer, countTaxationLand, getAnnuKramank, getConstructionBynew_userid, getConstructionForsarkari8, getConstructionTaxDetails, getCustomerDetailsById, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getMalmattaNotdniList, getManoraBynew_userid, getNewDistinctUserDetails, getNewUserDetails, getNewUserSevakarDetails, getTaxPayerDetails, getTaxationBynew_userid, getTaxationLandDetails, getTaxationandMilkat, getYear, gettaxationLandDetails, insertUpdateSillakJoda, searchCustomer, softDeleteMalmattaNodniInfo, updateCustomerImagePath, updateMalmattaNodniInfo } from "../../services/main/customer.service";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
 import { Utils } from "../../utils/util";
 import * as jwt from 'jsonwebtoken';
@@ -420,6 +420,24 @@ export class CustomerController {
             //return _400(res, "Error while uploading file");
         }
     }
+
+
+    static async checkSillakJodaExist(req: Request, res: Response) {
+        const validationError = Utils.validateRequestBody(req.body, ["year_id", "user_id", "newuser_id", "ward_no"]);
+        if (validationError) {
+            return _400(res, validationError);
+        }
+
+        try {
+            const result: any = await checkSillakJodaExistAPI(req.body);
+            if (result && result.length > 0) {
+                return _200(res, "Sillak Joda already exists", { status: 200, exists: true, data: result });
+            } else {
+                return _200(res, "Sillak Joda does not exist", { status: 200, exists: false, data: [] });
+            }
+        } catch (error) {
+            logger.error("Error checking sillak joda exist", error);
+            return _400(res, "Error checking sillak joda exist");
+        }
+    }
 }
-
-

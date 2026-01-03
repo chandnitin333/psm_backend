@@ -1055,10 +1055,53 @@ export async function updateNodniForm(data:any, id:any): Promise<any> {
             txt_kamayacha_address, txt_bhogatwarache_malak, txt_east, txt_west, txt_north, txt_south,
             txt_water, txt_washroom, txt_milkat_prakar, txt_emarat_jamin, txt_emarat_mokdi,
             txt_lambi, txt_rundi, txt_shetrafadh_foot, txt_shetrafadh_meter,
-            urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio, 
+            urvarit_khali_jaga_feet,urvarit_khali_jaga_meter,  emaratiche_bhandavali_mulya, jaminiche_bhandavali_mulya, ekun_bhandavli_mulya,emartiche_kar_akarani_txt, khula_bhukand_kar_aakarani_txt, gruhkar_bhumikar_from_property_tax,gruhkar_bhumikar_from_tax_payble,chalu_kar, magil_kar,ekun_kar_bharna,magahun_ghat_kiva_badal, vanijya_prakar_radio,
             check1,viz_divabatti_kar,check2,aaraogya_rakashan_kar,check3,safae_kar,check4,samanya_pani_kar,check5,vishesh_pani_kar,ekun,ekun_kar_bharna,id]);
     } catch (err) {
         logger.error('Error ::updateNodniForm :', err);
         throw err;
     }
 }
+
+// Check if अनु क्रमांक (annu_kramank) already exists for the user
+export const checkAnnuKramankExists = async (data: any) => {
+    try {
+        const sql = `SELECT COUNT(*) as count FROM newuser
+                     WHERE ANNU_KRAMANK = ?
+                     AND user_id = ?
+                     AND DELETED_AT IS NULL`;
+        const result: any[] = await executeQuery(sql, [data.annu_kramank, data.user_id]);
+
+        const exists = result[0].count > 0;
+        return {
+            exists: exists,
+            message: exists ? 'अनु क्रमांक already exists. Please add different अनु क्रमांक' : 'अनु क्रमांक available. ',
+            count: result[0].count
+        };
+    } catch (err) {
+        logger.error('Error ::checkAnnuKramankExists :', err);
+        throw err;
+    }
+};
+
+// Check if वॉर्ड क्रमांक (ward_number) already exists for the user
+export const checkWardNumberExists = async (data: any) => {
+    try {
+        const sql = `SELECT COUNT(*) as count FROM newuser
+                     WHERE VARD_NUMBER = ?
+                     AND ANNU_KRAMANK = ?
+                     AND user_id = ?
+                     AND DELETED_AT IS NULL`;
+        const result: any[] = await executeQuery(sql, [data.ward_number, data.annu_kramank, data.user_id]);
+
+        const exists = result[0].count > 0;
+        return {
+            exists: exists,
+            message: exists ? 'वॉर्ड क्रमांक already exists. Please add different वॉर्ड क्रमांक' : 'वॉर्ड क्रमांक available.',
+            count: result[0].count
+        };
+    } catch (err) {
+        logger.error('Error ::checkWardNumberExists :', err);
+        throw err;
+    }
+};

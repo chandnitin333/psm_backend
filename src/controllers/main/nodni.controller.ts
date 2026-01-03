@@ -4,7 +4,7 @@ import { _200, _201, _400 } from "../../utils/ApiResponse";
 
 import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
-import { deleteKhaliBhukhand, deleteKhulaBhukhandBySession, deleteManoraKarAkaraniRecord, delete_buildingKarAkarniSession, delete_manoraKarBySession, deletebandkamKarAkkarniRecord, getAnnualRateAkarniDar, getBhandkamModalData, getBharankDar_buildingModal, getBharankFromMalmattecheDDL, getBuildingAnnuRateAndAkaranidar, getKhulabhukhandModalData, getManoraKarAkaraniRecortds, getYearIdAndYearName, get_AllWardNoList, get_buildingKar_MalmattechePrakar, get_buildingKar_MalmattecheVarnan, get_buildingKar_bandkamachaMajla, get_khulaBhukhandKar_Gavthan, get_khulaBhukhandKar_MalmattechePrakar, get_monoraKar_MalmattechePrakar, get_monoraKar_MalmattecheVarnan, get_monoraKar_ManoracheBhag, openConstructionTaxAssessment, otherTaxCalculation, saveBandhKam, saveKhaliBhuKhand, saveNondni, saveTaxPayers, taxAssessmentForConstruction, taxAssessmentForTowers, updateBandkamModalRecords, updateKhaliBhukhand, updateManoraKarAkaraniRecords, updateNodniForm } from "../../services/admin/nodni.service";
+import { deleteKhaliBhukhand, deleteKhulaBhukhandBySession, deleteManoraKarAkaraniRecord, delete_buildingKarAkarniSession, delete_manoraKarBySession, deletebandkamKarAkkarniRecord, getAnnualRateAkarniDar, getBhandkamModalData, getBharankDar_buildingModal, getBharankFromMalmattecheDDL, getBuildingAnnuRateAndAkaranidar, getKhulabhukhandModalData, getManoraKarAkaraniRecortds, getYearIdAndYearName, get_AllWardNoList, get_buildingKar_MalmattechePrakar, get_buildingKar_MalmattecheVarnan, get_buildingKar_bandkamachaMajla, get_khulaBhukhandKar_Gavthan, get_khulaBhukhandKar_MalmattechePrakar, get_monoraKar_MalmattechePrakar, get_monoraKar_MalmattecheVarnan, get_monoraKar_ManoracheBhag, openConstructionTaxAssessment, otherTaxCalculation, saveBandhKam, saveKhaliBhuKhand, saveNondni, saveTaxPayers, taxAssessmentForConstruction, taxAssessmentForTowers, updateBandkamModalRecords, updateKhaliBhukhand, updateManoraKarAkaraniRecords, updateNodniForm, checkAnnuKramankExists, checkWardNumberExists } from "../../services/admin/nodni.service";
 import { getConstructionBynew_userid, getManoraBynew_userid, getTaxationBynew_userid } from "../../services/main/customer.service";
 
 // फेरफार यादी (Ferfar Yadi) Module API     
@@ -656,6 +656,48 @@ static async deleteBandhKamModal_original_table( req: Request, res: Response) {
         } catch (error) {
             logger.error("Error deleting मनोरा कर आकारणी", error);
             return _400(res, "Error deleting मनोरा कर आकारणी");
+        }
+    }
+
+    // Check if अनु क्रमांक already exists for the user
+    static async checkAnnuKramankExists(req: Request, res: Response) {
+        try {
+            const authHeader = req.headers.authorization;
+            const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
+            const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+
+            const payload = {
+                annu_kramank: req.body.annu_kramank,
+                user_id: Number(decoded_user['userId'])
+            };
+            // console.log("kundan-----", Number(decoded_user['userId']))
+
+            const result: any = await checkAnnuKramankExists(payload);
+            return _200(res, result.message, { status: 200, data: result });
+        } catch (error) {
+            logger.error("Error checking अनु क्रमांक existence", error);
+            return _400(res, "Error checking अनु क्रमांक existence");
+        }
+    }
+
+    // Check if वॉर्ड क्रमांक already exists for the user
+    static async checkWardNumberExists(req: Request, res: Response) {
+        try {
+            const authHeader = req.headers.authorization;
+            const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
+            const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+
+            const payload = {
+                ward_number: req.body.ward_number,
+                annu_kramank: req.body.annu_kramank,
+                user_id: Number(decoded_user['userId'])
+            };
+
+            const result: any = await checkWardNumberExists(payload);
+            return _200(res, result.message, { status: 200, data: result });
+        } catch (error) {
+            logger.error("Error checking वॉर्ड क्रमांक existence", error);
+            return _400(res, "Error checking वॉर्ड क्रमांक existence");
         }
     }
 }
