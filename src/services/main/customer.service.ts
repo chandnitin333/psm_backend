@@ -1544,7 +1544,26 @@ export async function getAudhogikData(user_id:number, vard_number:number, vanijy
         if (results.length > 0) {
             return results[0] as any;
         }
-        return null;
+        return {
+            manoraaddition: 0,
+            ws: 0,
+            VIZ1: 0,
+            VIZcount1: 0,
+            aarogya1: 0,
+            aarogyacount1: 0,
+            safai1: 0,
+            safaicount1: 0,
+            pani1: 0,
+            panicount1: 0,
+            vishesh1: 0,
+            visheshcount1: 0,
+            VIZ_DIVVABATTIKAR: 0,
+            AAROGYA_RAKSHAN_KAR: 0,
+            SAFAI_KAR: 0,
+            SAMANYA_PANI_KAR: 0,
+            VISHESH_PANI_KAR: 0,
+            EKUN: 0
+        };
     } catch (error) {
         logger.error(`Error fetching year details: ${error.message}`);
         throw error;
