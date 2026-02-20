@@ -776,22 +776,29 @@ export async function getRecordBasedOnStartandEnd(user_id: number, ward_number: 
         let results: any = [];
         if(new_user_id != null && new_user_id != undefined && new_user_id != ''){
             const query = `
-            SELECT * 
-                FROM newuser 
-                WHERE NEWUSER_ID = ? 
+            SELECT *
+                FROM newuser
+                WHERE NEWUSER_ID = ?
             `;
             results = await executeQuery(query, [new_user_id]);
         } else{
-            const query = `
-            SELECT * 
-                FROM newuser 
-                WHERE user_id = ? 
-                AND VARD_NUMBER = ? 
-                AND ANNU_KRAMANK BETWEEN ? AND ? 
+            let query = `
+            SELECT *
+                FROM newuser
+                WHERE user_id = ?
                 AND DELETED_AT IS NULL
-                ORDER BY ANNU_KRAMANK ASC
             `;
-            results = await executeQuery(query, [user_id, ward_number, start, end]);
+            const params: any[] = [user_id];
+            if (ward_number) {
+                query += ` AND VARD_NUMBER = ?`;
+                params.push(ward_number);
+            }
+            if (start && end) {
+                query += ` AND ANNU_KRAMANK BETWEEN ? AND ?`;
+                params.push(start, end);
+            }
+            query += ` ORDER BY ANNU_KRAMANK ASC`;
+            results = await executeQuery(query, params);
         }
         if (results.length > 0) {
             return results as any;
@@ -805,18 +812,25 @@ export async function getRecordBasedOnStartandEnd(user_id: number, ward_number: 
 
 export async function getTaxLandData(user_id: number, ward_number: number, start: number, end: number): Promise<any | null> {
     try {
-        const query = `
+        let query = `
            SELECT newuser_id, Annu_kramank
             FROM taxationland
             WHERE user_id = ?
-            AND vard_number = ?
             AND extra = 1
             AND taxpayersss = 1
-            AND Annu_kramank BETWEEN ? AND ?
             AND DELETED_AT IS NULL
-            ORDER BY CAST(Annu_kramank AS UNSIGNED) asc
         `;
-        const results: any = await executeQuery(query, [user_id, ward_number, start, end]);
+        const params: any[] = [user_id];
+        if (ward_number) {
+            query += ` AND vard_number = ?`;
+            params.push(ward_number);
+        }
+        if (start && end) {
+            query += ` AND Annu_kramank BETWEEN ? AND ?`;
+            params.push(start, end);
+        }
+        query += ` ORDER BY CAST(Annu_kramank AS UNSIGNED) asc`;
+        const results: any = await executeQuery(query, params);
         if (results.length > 0) {
             return results as any;
         }
@@ -849,17 +863,24 @@ export async function getUserDataForRs3(user_id:number, new_user_id:number): Pro
 
 export async function getUserDataForGharKar(user_id: number, ward_number: number, start: number, end: number): Promise<any | null> {
     try {
-        const query = `
+        let query = `
            SELECT *
             FROM newuser
             WHERE user_id = ?
             AND MILKAR_PRAKAR = 'घर कर लावायचा आहे'
-            AND VARD_NUMBER = ?
-            AND ANNU_KRAMANK BETWEEN ? AND ?
             AND DELETED_AT IS NULL
-            ORDER BY ANNU_KRAMANK ASC
         `;
-        const results: any = await executeQuery(query, [user_id, ward_number,start,end]);
+        const params: any[] = [user_id];
+        if (ward_number) {
+            query += ` AND VARD_NUMBER = ?`;
+            params.push(ward_number);
+        }
+        if (start && end) {
+            query += ` AND ANNU_KRAMANK BETWEEN ? AND ?`;
+            params.push(start, end);
+        }
+        query += ` ORDER BY ANNU_KRAMANK ASC`;
+        const results: any = await executeQuery(query, params);
         if (results.length > 0) {
             return results as any;
         }
