@@ -3,15 +3,49 @@ import { executeQuery } from "../../config/db/db";
 import { logger } from "../../logger/Logger";
 
 
-export const addGramPanchayat = async (params: object) => {
+let scannerColumnsEnsured = false;
+const ensureScannerColumns = async () => {
+    if (scannerColumnsEnsured) return;
     try {
+        const cols: any = await executeQuery(
+            `SHOW COLUMNS FROM panchayat WHERE Field IN ('GHAR_TAX_SCANNER', 'PANI_TAX_SCANNER')`,
+            []
+        );
+        const existing = new Set((cols as any[]).map((c: any) => c.Field));
+        if (!existing.has('GHAR_TAX_SCANNER')) {
+            await executeQuery(
+                `ALTER TABLE panchayat ADD COLUMN GHAR_TAX_SCANNER VARCHAR(200) DEFAULT NULL`,
+                []
+            );
+            logger.info("Added GHAR_TAX_SCANNER column to panchayat");
+        }
+        if (!existing.has('PANI_TAX_SCANNER')) {
+            await executeQuery(
+                `ALTER TABLE panchayat ADD COLUMN PANI_TAX_SCANNER VARCHAR(200) DEFAULT NULL`,
+                []
+            );
+            logger.info("Added PANI_TAX_SCANNER column to panchayat");
+        }
+        scannerColumnsEnsured = true;
+    } catch (err) {
+        logger.error("ensureScannerColumns :: ", err);
+    }
+};
+
+
+export const addGramPanchayat = async (params: any[]) => {
+    try {
+        await ensureScannerColumns();
+        const [districtId, talukaId, name, gharTaxScanner, paniTaxScanner] = params;
         let sql = `SELECT PANCHAYAT_ID FROM panchayat WHERE DISTRICT_ID = ? AND TALUKA_ID=? AND PANCHAYAT_NAME=? AND DELETED_AT IS NULL`;
-        return executeQuery(sql, params).then(result => {
+        const dupParams = [districtId, talukaId, name];
+        return executeQuery(sql, dupParams).then(result => {
             if (result && (result as any[]).length > 0) {
                 return "exists";
             } else {
-                sql = `INSERT INTO panchayat (DISTRICT_ID, TALUKA_ID, PANCHAYAT_NAME) VALUES (?, ?, ?)`;
-                return executeQuery(sql, params).then(result => {
+                sql = `INSERT INTO panchayat (DISTRICT_ID, TALUKA_ID, PANCHAYAT_NAME, GHAR_TAX_SCANNER, PANI_TAX_SCANNER) VALUES (?, ?, ?, ?, ?)`;
+                const insertParams = [districtId, talukaId, name, gharTaxScanner ?? null, paniTaxScanner ?? null];
+                return executeQuery(sql, insertParams).then(result => {
                     return (result) ? result : null;
                 }).catch(error => {
                     console.error("addGramPanchayat fetch data error: ", error);
@@ -31,7 +65,8 @@ export const addGramPanchayat = async (params: object) => {
 
 export const getGramPanchayat = async (params: object) => {
     try {
-        let sql = ` select p.PANCHAYAT_ID ,p.DISTRICT_ID , p.TALUKA_ID , RTRIM(p.PANCHAYAT_NAME)  AS PANCHAYAT_NAME,  RTRIM(d.DISTRICT_NAME) AS DISTRICT_NAME, RTRIM(t.TALUKA_NAME) AS TALUKA_NAME from panchayat p join district d on p.DISTRICT_ID = d.DISTRICT_ID join taluka t on p.TALUKA_ID = t.TALUKA_ID where p.PANCHAYAT_ID = ?`
+        await ensureScannerColumns();
+        let sql = ` select p.PANCHAYAT_ID ,p.DISTRICT_ID , p.TALUKA_ID , RTRIM(p.PANCHAYAT_NAME)  AS PANCHAYAT_NAME, p.GHAR_TAX_SCANNER, p.PANI_TAX_SCANNER, RTRIM(d.DISTRICT_NAME) AS DISTRICT_NAME, RTRIM(t.TALUKA_NAME) AS TALUKA_NAME from panchayat p join district d on p.DISTRICT_ID = d.DISTRICT_ID join taluka t on p.TALUKA_ID = t.TALUKA_ID where p.PANCHAYAT_ID = ?`
         return executeQuery(sql, params).then(result => {
             return (result) ? result[0] : null;
         }).catch(error => {
@@ -46,11 +81,12 @@ export const getGramPanchayat = async (params: object) => {
 
 export const getGramPanchayatList = async (params: object) => {
     try {
+        await ensureScannerColumns();
         const { limit, offset, searchValue } = params as { limit: number, offset: number, searchValue?: string };
-        let sql = `select p.PANCHAYAT_ID ,p.DISTRICT_ID , p.TALUKA_ID , RTRIM(p.PANCHAYAT_NAME) AS PANCHAYAT_NAME,  RTRIM(d.DISTRICT_NAME) AS DISTRICT_NAME, RTRIM(t.TALUKA_NAME) AS TALUKA_NAME 
-               from panchayat p 
-               join district d on p.DISTRICT_ID = d.DISTRICT_ID 
-               join taluka t on p.TALUKA_ID = t.TALUKA_ID 
+        let sql = `select p.PANCHAYAT_ID ,p.DISTRICT_ID , p.TALUKA_ID , RTRIM(p.PANCHAYAT_NAME) AS PANCHAYAT_NAME, p.GHAR_TAX_SCANNER, p.PANI_TAX_SCANNER, RTRIM(d.DISTRICT_NAME) AS DISTRICT_NAME, RTRIM(t.TALUKA_NAME) AS TALUKA_NAME
+               from panchayat p
+               join district d on p.DISTRICT_ID = d.DISTRICT_ID
+               join taluka t on p.TALUKA_ID = t.TALUKA_ID
                WHERE p.DELETED_AT IS NULL`;
 
         let data = [];
@@ -95,21 +131,37 @@ export const getGramPanchayaCount = async (sql: string, params: object) => {
 
 }
 
-export const updateGramPanchayat = async (params: object) => {
+export const updateGramPanchayat = async (params: any[]) => {
     try {
-        let sql = `SELECT PANCHAYAT_ID FROM panchayat WHERE DISTRICT_ID = ? AND TALUKA_ID=? AND PANCHAYAT_NAME=? AND DELETED_AT IS NULL`;
-        return executeQuery(sql, params).then(result => {
+        await ensureScannerColumns();
+        const [districtId, talukaId, name, panchayatId, gharTaxScanner, paniTaxScanner] = params;
+        // Duplicate check excludes the current row.
+        let dupSql = `SELECT PANCHAYAT_ID FROM panchayat WHERE DISTRICT_ID = ? AND TALUKA_ID = ? AND PANCHAYAT_NAME = ? AND PANCHAYAT_ID <> ? AND DELETED_AT IS NULL`;
+        const dupParams = [districtId, talukaId, name, panchayatId];
+        return executeQuery(dupSql, dupParams).then(result => {
             if (result && (result as any[]).length > 0) {
                 return "exists";
-            } else {
-                let sql = `UPDATE panchayat SET DISTRICT_ID = ?, TALUKA_ID=?, PANCHAYAT_NAME=? WHERE PANCHAYAT_ID = ? and DELETED_AT IS NULL`
-                return executeQuery(sql, params).then(result => {
-                    return (result) ? result : null;
-                }).catch(error => {
-                    console.error("updateGramPanchayat fetch data error: ", error);
-                    return null;
-                });
             }
+
+            const setClauses: string[] = ['DISTRICT_ID = ?', 'TALUKA_ID = ?', 'PANCHAYAT_NAME = ?'];
+            const updateParams: any[] = [districtId, talukaId, name];
+            if (gharTaxScanner) {
+                setClauses.push('GHAR_TAX_SCANNER = ?');
+                updateParams.push(gharTaxScanner);
+            }
+            if (paniTaxScanner) {
+                setClauses.push('PANI_TAX_SCANNER = ?');
+                updateParams.push(paniTaxScanner);
+            }
+            updateParams.push(panchayatId);
+
+            const sql = `UPDATE panchayat SET ${setClauses.join(', ')} WHERE PANCHAYAT_ID = ? AND DELETED_AT IS NULL`;
+            return executeQuery(sql, updateParams).then(result => {
+                return (result) ? result : null;
+            }).catch(error => {
+                console.error("updateGramPanchayat fetch data error: ", error);
+                return null;
+            });
         }).catch(error => {
             console.error("addGramPanchayat fetch data error: ", error);
             return null;

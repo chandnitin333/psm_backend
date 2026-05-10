@@ -2,37 +2,38 @@ import { executeQuery } from "../../config/db/db";
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
 // कामकाज कमेटी 
-async function addMember(member: any): Promise<void> {
+async function addMember(member: any): Promise<any> {
     const query = `
-        INSERT INTO MemberMaster (PANCHAYAT_ID, NAME_NAME, MIDDLE_NAME, LAST_NAME, DESIGNATION_ID, MOBILE_NO)
+        INSERT INTO membermaster (PANCHAYAT_ID, NAME_NAME, MIDDLE_NAME, LAST_NAME, DESIGNATION_ID, MOBILE_NO)
         VALUES (?, ?, ?, ?, ?, ?)
     `;
     const values = [
-        member.panchayat_id,
-        member.member_name,
-        member.member_middle_name,
-        member.member_last_name,
-        member.destination_id,
-        member.mobile_number,
+        member?.panchayat_id ?? null,
+        member?.member_name ?? null,
+        member?.member_middle_name ?? null,
+        member?.member_last_name ?? null,
+        member?.destination_id ?? null,
+        member?.mobile_number ?? null,
     ];
-    await executeQuery(query, values);
+    const result = await executeQuery(query, values);
     logger.info("Member added successfully");
+    return result;
 }
 
 async function updateMember(member: any): Promise<void> {
     const query = `
-        UPDATE MemberMaster
+        UPDATE membermaster
         SET PANCHAYAT_ID = ?, NAME_NAME = ?, MIDDLE_NAME = ?, LAST_NAME = ?, DESIGNATION_ID = ?, MOBILE_NO = ?
         WHERE MEMBERMASTER_ID = ?
     `;
     const values = [
-        member.panchayat_id,
-        member.member_name,
-        member.member_middle_name,
-        member.member_last_name,
-        member.destination_id,
-        member.mobile_number,
-        member.id,
+        member?.panchayat_id ?? null,
+        member?.member_name ?? null,
+        member?.member_middle_name ?? null,
+        member?.member_last_name ?? null,
+        member?.destination_id ?? null,
+        member?.mobile_number ?? null,
+        member?.id ?? null,
     ];
     logger.info("Member updated successfully");
     return await executeQuery(query, values);
@@ -41,7 +42,7 @@ async function updateMember(member: any): Promise<void> {
 
 async function getMember(memberId: number): Promise<any | null> {
     const query = `
-        SELECT * FROM MemberMaster
+        SELECT * FROM membermaster
         WHERE MEMBERMASTER_ID = ? AND DELETED_AT IS NULL
     `;
     const results: any = await executeQuery(query, [memberId]);
@@ -55,7 +56,7 @@ async function getMembersList(page: number = 1, memberName?: string, panchayat_i
     let limit: number = PAGINATION.LIMIT;
     const offset = (page - 1) * limit;
     let query = `
-        SELECT * FROM MemberMaster
+        SELECT * FROM membermaster
         WHERE DELETED_AT IS NULL
     `;
     const values: any[] = [];
@@ -75,7 +76,7 @@ async function getMembersList(page: number = 1, memberName?: string, panchayat_i
 }
 async function softDeleteMember(memberId: number): Promise<void> {
     const query = `
-        UPDATE MemberMaster
+        UPDATE membermaster
         SET DELETED_AT = NOW()
         WHERE MEMBERMASTER_ID = ?
     `;
@@ -86,7 +87,7 @@ async function softDeleteMember(memberId: number): Promise<void> {
 
 //get total count of member
 async function getMemberCount(): Promise<number> {
-    const result = await executeQuery('SELECT COUNT(*) as count FROM MemberMaster WHERE DELETED_AT IS NULL', []);
+    const result = await executeQuery('SELECT COUNT(*) as count FROM membermaster WHERE DELETED_AT IS NULL', []);
     return result[0].count;
 }
 
