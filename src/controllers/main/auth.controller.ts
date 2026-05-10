@@ -111,14 +111,16 @@ export class AuthController {
 
     static async getMemberDetails(req: Request, res: Response) {
         try {
-            let response = [];
-            response['data'] = {};
-            const { panchayat_id } = req.body;
-            getMemberList(panchayat_id).then((result) => {
+            let response: any = {};
+            const tokenPanchayatId = (req as any)?.user?.PANCHAYAT_ID;
+            const panchayat_id = req.body?.panchayat_id || tokenPanchayatId;
+            if (!panchayat_id) {
+                return _400(res, "panchayat_id not found in request or token");
+            }
+            getMemberList(Number(panchayat_id)).then((result) => {
                 response['data'] = result;
                 return _200(res, "Member list retrieved successfully", response);
-            }
-            ).catch((error) => {
+            }).catch((error) => {
                 logger.error(error);
                 return _400(res, error.message);
             });
