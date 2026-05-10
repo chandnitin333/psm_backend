@@ -199,3 +199,12 @@ export async function softDeleteDandSut(id: number): Promise<any> {
     await ensureDandSutTable();
     return executeQuery(`UPDATE dand_sut SET deleted_at = NOW() WHERE id = ?`, [id]);
 }
+
+export async function getDandSutByPanchayat(panchayatId: number, karType: 'chalu' | 'magil'): Promise<any | null> {
+    await ensureDandSutTable();
+    const sql = `SELECT ${SELECTABLE_FIELDS.join(', ')} FROM dand_sut
+                 WHERE grampanchayat_id = ? AND kar_type = ? AND deleted_at IS NULL
+                 ORDER BY id DESC LIMIT 1`;
+    const result: any = await executeQuery(sql, [panchayatId, karType]);
+    return Array.isArray(result) && result.length > 0 ? result[0] : null;
+}

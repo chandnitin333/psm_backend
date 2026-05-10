@@ -19,6 +19,7 @@ import { GlobalMiddleware } from "../middleware/GlobalMiddleware";
 import { Namuna9Controller } from "../controllers/main/namuna-9.controller";
 import { MagnicheBillController } from "../controllers/main/magniche-bill.controller";
 import { ImlakarController } from "../controllers/main/imlakar.controller";
+import { SutDand } from "../controllers/admin/sut-dand.controller";
 
 export class psmRoutes {
     public router: Router;
@@ -78,6 +79,7 @@ export class psmRoutes {
         this.router.post('/get-malmatta-nodni-list-info', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.getMalmattaNodniInfoList);
         this.router.post('/insert-update-sillak-joda', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.createUpdateSillakJoda);
         this.router.post('/check-sillak-joda-exist', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.checkSillakJodaExist);
+        this.router.post('/get-dand-sut-by-panchayat', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, SutDand.getByPanchayat);
         this.router.post('/verify-user-for-permission', GlobalMiddleware.checkError, CustomerController.verifyUser);
         this.router.post('/update-customer-image', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.addUploadCustomerimage);
 

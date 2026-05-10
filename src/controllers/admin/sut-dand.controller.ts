@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
 import {
-    createDandSut, getDandSutById, listDandSut,
+    createDandSut, getDandSutById, getDandSutByPanchayat, listDandSut,
     softDeleteDandSut, updateDandSut,
 } from "../../services/admin/sut-dand.service";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
@@ -93,6 +93,22 @@ export class SutDand {
         } catch (error: any) {
             logger.error("SutDand.softDelete :: ", error?.message || error);
             return _400(res, error?.message || "Error deleting Sut Dand record");
+        }
+    }
+
+    static async getByPanchayat(req: Request, res: Response) {
+        try {
+            const panchayat_id = Number(req.body?.panchayat_id);
+            const kar_type = req.body?.kar_type;
+            if (!panchayat_id) return _400(res, "panchayat_id is required");
+            if (kar_type !== 'chalu' && kar_type !== 'magil') {
+                return _400(res, "kar_type must be either 'chalu' or 'magil'");
+            }
+            const row = await getDandSutByPanchayat(panchayat_id, kar_type);
+            return _200(res, "Sut Dand fetched", { data: row });
+        } catch (error: any) {
+            logger.error("SutDand.getByPanchayat :: ", error?.message || error);
+            return _400(res, error?.message || "Error fetching Sut Dand by panchayat");
         }
     }
 }
