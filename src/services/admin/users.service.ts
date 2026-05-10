@@ -928,11 +928,33 @@ export const getCounts = async (userId) => {
 
 export const getMemberList = async (panchayat_id) => {
   try {
-    const memberList = await executeQuery("CALL getMemberList(?)", [
-      panchayat_id,
-    ]);
-
-    return memberList[0];
+    if (!panchayat_id) return [];
+    // membermaster.DESIGNATION_ID is varchar while designation.DESIGNATION_ID is int —
+    // cast both sides explicitly so the JOIN doesn't silently return NULL.
+    const sql = `
+      SELECT
+        m.MEMBERMASTER_ID,
+        m.PANCHAYAT_ID,
+        m.NAME_NAME,
+        m.MIDDLE_NAME,
+        m.LAST_NAME,
+        m.MOBILE_NO,
+        m.DESIGNATION_ID,
+        TRIM(CONCAT_WS(' ',
+          NULLIF(TRIM(m.NAME_NAME), ''),
+          NULLIF(TRIM(m.MIDDLE_NAME), ''),
+          NULLIF(TRIM(m.LAST_NAME), '')
+        )) AS FULL_NAME,
+        RTRIM(d.DESIGNATION_NAME) AS DESIGNATION_NAME
+      FROM membermaster m
+      LEFT JOIN designation d
+        ON CAST(d.DESIGNATION_ID AS CHAR) = TRIM(IFNULL(m.DESIGNATION_ID, ''))
+       AND d.DELETED_AT IS NULL
+      WHERE m.PANCHAYAT_ID = ? AND m.DELETED_AT IS NULL
+      ORDER BY m.MEMBERMASTER_ID ASC
+    `;
+    const memberList = await executeQuery(sql, [panchayat_id]);
+    return memberList;
   } catch (err) {
     logger.error("Error fetching getMemberList", err);
     throw err;
