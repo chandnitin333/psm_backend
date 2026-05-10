@@ -25,6 +25,7 @@ import { MalmattechePrakar } from "../controllers/admin/malmatteche-prakar.contr
 import { Tower } from "../controllers/admin/tower.controller";
 import { UploadFile } from "../controllers/admin/upload-file.controller";
 import { User } from "../controllers/admin/user.controller";
+import { SutDand } from "../controllers/admin/sut-dand.controller";
 
 
 export class adminRoutes {
@@ -160,6 +161,13 @@ export class adminRoutes {
 
         this.router.post('/add-dashboard-data', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.addUploadData);
         this.router.post('/get-dashboard-data-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, DashboardUpload.getAllUploadData);
+
+        // Sut Dand
+        this.router.post('/sut-dand', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, SutDand.create);
+        this.router.post('/sut-dand-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, SutDand.list);
+        this.router.get('/sut-dand/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, SutDand.getById);
+        this.router.put('/sut-dand/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, SutDand.update);
+        this.router.delete('/sut-dand/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, SutDand.softDelete);
 
         // floor
         this.router.post('/floor', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, Floor.addFloor);
