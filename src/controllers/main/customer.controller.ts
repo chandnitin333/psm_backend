@@ -245,7 +245,9 @@ export class CustomerController {
         const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
         const sevakarParam = {
             'user_id': Number(decoded_user['userId']),
-            "previousYear_id": Number(years_response[0].Year_id),
+            // Magil (previous balance) records are saved in sillak joda under the
+            // PREVIOUS year, so look up Year_id - 1, not the current year.
+            "previousYear_id": Number(years_response[0].Year_id) - 1,
             "vard_number": newUserDataDB[0].VARD_NUMBER,
             "newuser_id":newUserDataDB[0].NEWUSER_ID,
         }
