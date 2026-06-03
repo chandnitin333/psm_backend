@@ -3,6 +3,11 @@ import { executeQuery } from "../../config/db/db";
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
 
+/** Current IST (UTC+5:30) wall-clock time as 'YYYY-MM-DD HH:mm:ss', independent of server timezone. */
+const istNow = (): string => {
+    return new Date(Date.now() + 5.5 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
+};
+
 let billTablesEnsured = false;
 const ensureBillPaymentTables = async () => {
     if (billTablesEnsured) return;
@@ -158,10 +163,10 @@ export async function createBillPaymentLink(data: {
 
     const token = crypto.randomBytes(16).toString("hex");
     await executeQuery(
-        `INSERT INTO bill_payment_link (token, user_id, newuser_id, ward_no, year_id, panchayat_id, report_type, bill_data)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO bill_payment_link (token, user_id, newuser_id, ward_no, year_id, panchayat_id, report_type, bill_data, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [token, data.user_id, data.newuser_id, data.ward_no, data.year_id, data.panchayat_id,
-            reportType, JSON.stringify(data.bill_data ?? {})]
+            reportType, JSON.stringify(data.bill_data ?? {}), istNow()]
     );
     return token;
 }
@@ -216,7 +221,8 @@ export async function getBillByToken(token: string): Promise<any | null> {
     // own bill and claims).
     const payments: any = await executeQuery(
         `SELECT p.id, p.kar_type, p.payment_mode, p.amount, p.utr_number, p.transaction_image,
-                p.payer_name, p.payer_remark, p.status, p.created_at
+                p.payer_name, p.payer_remark, p.status, p.created_at,
+                DATE_FORMAT(p.created_at, '%d/%m/%Y %H:%i') AS created_at_display
          FROM bill_payment p
          JOIN bill_payment_link l ON l.id = p.link_id
          WHERE l.user_id = ? AND l.newuser_id = ? AND l.ward_no = ? AND l.year_id <=> ?
@@ -259,12 +265,12 @@ export async function claimBillPayment(token: string, data: {
     const linkId = rows[0].id;
 
     await executeQuery(
-        `INSERT INTO bill_payment (link_id, kar_type, payment_mode, amount, utr_number, transaction_image, payer_name, payer_mobile, payer_remark, username, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'claimed')`,
+        `INSERT INTO bill_payment (link_id, kar_type, payment_mode, amount, utr_number, transaction_image, payer_name, payer_mobile, payer_remark, username, status, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'claimed', ?)`,
         [linkId, data.kar_type, data.payment_mode ?? null, Number(data.amount) || 0,
             data.utr_number ?? null, data.transaction_image ?? null,
             data.payer_name ?? null, data.payer_mobile ?? null, data.payer_remark ?? null,
-            data.username ?? null]
+            data.username ?? null, istNow()]
     );
     return { link_id: linkId };
 }
@@ -293,6 +299,8 @@ export async function listBillPayments(user_id: number, opts: { page?: number, s
         `SELECT p.id, p.kar_type, p.payment_mode, p.amount, p.utr_number, p.transaction_image,
                 p.payer_name, p.payer_mobile, p.payer_remark, p.username, p.status, p.remark,
                 p.created_at, p.updated_at,
+                DATE_FORMAT(p.created_at, '%d/%m/%Y %H:%i') AS created_at_display,
+                DATE_FORMAT(p.updated_at, '%d/%m/%Y %H:%i') AS updated_at_display,
                 l.token, l.newuser_id, l.ward_no, l.year_id, l.report_type, l.bill_data,
                 y.YEAR_NAME,
                 nu.HOMEUSER_NAME, nu.MALMATTA_NUMBER, nu.ANNU_KRAMANK
@@ -361,8 +369,8 @@ export async function updateBillPaymentStatus(user_id: number, paymentId: number
     );
     if (!Array.isArray(rows) || rows.length === 0) return false;
     await executeQuery(
-        `UPDATE bill_payment SET status = ?, remark = ?, updated_at = NOW() WHERE id = ?`,
-        [status, remark ?? null, paymentId]
+        `UPDATE bill_payment SET status = ?, remark = ?, updated_at = ? WHERE id = ?`,
+        [status, remark ?? null, istNow(), paymentId]
     );
     return true;
 }
