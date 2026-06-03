@@ -21,6 +21,7 @@ import { MagnicheBillController } from "../controllers/main/magniche-bill.contro
 import { ImlakarController } from "../controllers/main/imlakar.controller";
 import { SutDand } from "../controllers/admin/sut-dand.controller";
 import { BillPaymentController } from "../controllers/main/bill-payment.controller";
+import { PublicReportController } from "../controllers/main/public-report.controller";
 
 export class psmRoutes {
     public router: Router;
@@ -88,6 +89,10 @@ export class psmRoutes {
         this.router.post('/public/bill-pay/:token/claim', GlobalMiddleware.checkError, BillPaymentController.claimPayment);      // public — no auth
         this.router.post('/bill-payments-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BillPaymentController.listPayments);
         this.router.post('/bill-kar-status', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BillPaymentController.karStatusByNewusers);
+
+        // Public report view links (QR on printed reports — no login needed to view)
+        this.router.post('/generate-report-link', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, PublicReportController.generateLink);
+        this.router.get('/public/report/:token', GlobalMiddleware.checkError, PublicReportController.getPublicReport);   // public — no auth
         this.router.put('/bill-payment-status/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BillPaymentController.updateStatus);
         this.router.post('/verify-user-for-permission', GlobalMiddleware.checkError, CustomerController.verifyUser);
         this.router.post('/update-customer-image', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.addUploadCustomerimage);
