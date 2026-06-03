@@ -178,6 +178,26 @@ export class MagnicheBillController {
                                 let etar = 0;
                                 let notice = 0;
                                 for(const rs4_sevakar of rs4Data){
+                                    // ५% दंड (plus) थकबाकी (magil) वर आणि ५% सूट (less) चालू करावर —
+                                    // same rule as the single-user branch above.
+                                    let bhumiWithPercentplus = rs4_sevakar.bhumi + (rs4_sevakar.bhumi * rs4_sevakar.plus) / 100;
+                                    let bhumiWithPercentless = data_rs3.BHUMIKAR - (data_rs3.BHUMIKAR * rs4_sevakar.less) / 100;
+
+                                    let divaWithPercentplus = rs4_sevakar.diva + (rs4_sevakar.diva * rs4_sevakar.diva_batti_plus_5) / 100;
+                                    let divaWithPercentless = data_rs3.VIZ_DIVVABATTIKAR - (data_rs3.VIZ_DIVVABATTIKAR * rs4_sevakar.diva_batti_less_5) / 100;
+
+                                    let aarogyaWithPercentplus = rs4_sevakar.aarogya + (rs4_sevakar.aarogya * rs4_sevakar.aarogya_plus_5) / 100;
+                                    let aarogyaWithPercentless = data_rs3.AAROGYA_RAKSHAN_KAR - (data_rs3.AAROGYA_RAKSHAN_KAR * rs4_sevakar.aarogya_less_5) / 100;
+
+                                    let safaeWithPercentplus = rs4_sevakar.safai + (rs4_sevakar.safai * rs4_sevakar.safae_plus_5) / 100;
+                                    let safaeWithPercentless = data_rs3.SAFAI_KAR - (data_rs3.SAFAI_KAR * rs4_sevakar.safae_less_5) / 100;
+
+                                    let samanyaWithPercentplus = rs4_sevakar.samanya + (rs4_sevakar.samanya * rs4_sevakar.samanya_pani_plus_5) / 100;
+                                    let samanyaWithPercentless = data_rs3.SAMANYA_PANI_KAR - (data_rs3.SAMANYA_PANI_KAR * rs4_sevakar.samanya_pani_less_5) / 100;
+
+                                    let visheshWithPercentplus = rs4_sevakar.vishesh + (rs4_sevakar.vishesh * rs4_sevakar.vishesh_pani_plus_5) / 100;
+                                    let visheshWithPercentless = data_rs3.VISHESH_PANI_KAR - (data_rs3.VISHESH_PANI_KAR * rs4_sevakar.vishesh_pani_less_5) / 100;
+
                                     let alphabets = {
                                         "a": Math.round(
                                             data_rs3.BHUMIKAR +
@@ -185,12 +205,12 @@ export class MagnicheBillController {
                                             data_rs3.AAROGYA_RAKSHAN_KAR +
                                             data_rs3.SAFAI_KAR
                                         ),
-                                        "b": Math.round(rs4_sevakar.bhumi + data_rs3.BHUMIKAR),
-                                        "d": rs4_sevakar.diva +  data_rs3.VIZ_DIVVABATTIKAR,
-                                        "e": rs4_sevakar.aarogya +  data_rs3.AAROGYA_RAKSHAN_KAR,
-                                        "f": rs4_sevakar.safai +  data_rs3.SAFAI_KAR,
-                                        "g": rs4_sevakar.samanya +  data_rs3.SAMANYA_PANI_KAR,
-                                        "h": rs4_sevakar.vishesh +  data_rs3.VISHESH_PANI_KAR,
+                                        "b": Math.round(bhumiWithPercentplus + bhumiWithPercentless),
+                                        "d": divaWithPercentplus + divaWithPercentless,
+                                        "e": aarogyaWithPercentplus + aarogyaWithPercentless,
+                                        "f": safaeWithPercentplus + safaeWithPercentless,
+                                        "g": samanyaWithPercentplus + samanyaWithPercentless,
+                                        "h": visheshWithPercentplus + visheshWithPercentless,
                                         "i": rs4_sevakar.total +  data_rs3.EKUN,
                                         "n_etar": rs4_sevakar.etar + etar,
                                         "o_notice": rs4_sevakar.notice + notice,
@@ -409,6 +429,26 @@ export class MagnicheBillController {
                                 let etar = 0;
                                 let notice = 0;
                                 for(const rs4_sevakar of rs4Data){
+                                    // ५% दंड (plus) थकबाकी (magil) वर आणि ५% सूट (less) चालू करावर —
+                                    // same rule as the single-user branch above.
+                                    let bhumiWithPercentplus = rs4_sevakar.bhumi + (rs4_sevakar.bhumi * rs4_sevakar.plus) / 100;
+                                    let bhumiWithPercentless = data_rs3.BHUMIKAR - (data_rs3.BHUMIKAR * rs4_sevakar.less) / 100;
+
+                                    let divaWithPercentplus = rs4_sevakar.diva + (rs4_sevakar.diva * rs4_sevakar.diva_batti_plus_5) / 100;
+                                    let divaWithPercentless = data_rs3.VIZ_DIVVABATTIKAR - (data_rs3.VIZ_DIVVABATTIKAR * rs4_sevakar.diva_batti_less_5) / 100;
+
+                                    let aarogyaWithPercentplus = rs4_sevakar.aarogya + (rs4_sevakar.aarogya * rs4_sevakar.aarogya_plus_5) / 100;
+                                    let aarogyaWithPercentless = data_rs3.AAROGYA_RAKSHAN_KAR - (data_rs3.AAROGYA_RAKSHAN_KAR * rs4_sevakar.aarogya_less_5) / 100;
+
+                                    let safaeWithPercentplus = rs4_sevakar.safai + (rs4_sevakar.safai * rs4_sevakar.safae_plus_5) / 100;
+                                    let safaeWithPercentless = data_rs3.SAFAI_KAR - (data_rs3.SAFAI_KAR * rs4_sevakar.safae_less_5) / 100;
+
+                                    let samanyaWithPercentplus = rs4_sevakar.samanya + (rs4_sevakar.samanya * rs4_sevakar.samanya_pani_plus_5) / 100;
+                                    let samanyaWithPercentless = data_rs3.SAMANYA_PANI_KAR - (data_rs3.SAMANYA_PANI_KAR * rs4_sevakar.samanya_pani_less_5) / 100;
+
+                                    let visheshWithPercentplus = rs4_sevakar.vishesh + (rs4_sevakar.vishesh * rs4_sevakar.vishesh_pani_plus_5) / 100;
+                                    let visheshWithPercentless = data_rs3.VISHESH_PANI_KAR - (data_rs3.VISHESH_PANI_KAR * rs4_sevakar.vishesh_pani_less_5) / 100;
+
                                     let alphabets = {
                                         "a": Math.round(
                                             data_rs3.BHUMIKAR +
@@ -416,12 +456,12 @@ export class MagnicheBillController {
                                             data_rs3.AAROGYA_RAKSHAN_KAR +
                                             data_rs3.SAFAI_KAR
                                         ),
-                                        "b": Math.round(rs4_sevakar.bhumi + data_rs3.BHUMIKAR),
-                                        "d": rs4_sevakar.diva +  data_rs3.VIZ_DIVVABATTIKAR,
-                                        "e": rs4_sevakar.aarogya +  data_rs3.AAROGYA_RAKSHAN_KAR,
-                                        "f": rs4_sevakar.safai +  data_rs3.SAFAI_KAR,
-                                        "g": rs4_sevakar.samanya +  data_rs3.SAMANYA_PANI_KAR,
-                                        "h": rs4_sevakar.vishesh +  data_rs3.VISHESH_PANI_KAR,
+                                        "b": Math.round(bhumiWithPercentplus + bhumiWithPercentless),
+                                        "d": divaWithPercentplus + divaWithPercentless,
+                                        "e": aarogyaWithPercentplus + aarogyaWithPercentless,
+                                        "f": safaeWithPercentplus + safaeWithPercentless,
+                                        "g": samanyaWithPercentplus + samanyaWithPercentless,
+                                        "h": visheshWithPercentplus + visheshWithPercentless,
                                         "i": rs4_sevakar.total +  data_rs3.EKUN,
                                         "n_etar": rs4_sevakar.etar + etar,
                                         "o_notice": rs4_sevakar.notice + notice,

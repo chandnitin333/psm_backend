@@ -20,6 +20,7 @@ import { Namuna9Controller } from "../controllers/main/namuna-9.controller";
 import { MagnicheBillController } from "../controllers/main/magniche-bill.controller";
 import { ImlakarController } from "../controllers/main/imlakar.controller";
 import { SutDand } from "../controllers/admin/sut-dand.controller";
+import { BillPaymentController } from "../controllers/main/bill-payment.controller";
 
 export class psmRoutes {
     public router: Router;
@@ -80,6 +81,14 @@ export class psmRoutes {
         this.router.post('/insert-update-sillak-joda', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.createUpdateSillakJoda);
         this.router.post('/check-sillak-joda-exist', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.checkSillakJodaExist);
         this.router.post('/get-dand-sut-by-panchayat', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, SutDand.getByPanchayat);
+
+        // Bill payment links (gruhkar/panikar scanner payments)
+        this.router.post('/generate-bill-payment-link', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BillPaymentController.generateLink);
+        this.router.get('/public/bill-pay/:token', GlobalMiddleware.checkError, BillPaymentController.getPublicBill);            // public — no auth
+        this.router.post('/public/bill-pay/:token/claim', GlobalMiddleware.checkError, BillPaymentController.claimPayment);      // public — no auth
+        this.router.post('/bill-payments-list', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BillPaymentController.listPayments);
+        this.router.post('/bill-kar-status', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BillPaymentController.karStatusByNewusers);
+        this.router.put('/bill-payment-status/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BillPaymentController.updateStatus);
         this.router.post('/verify-user-for-permission', GlobalMiddleware.checkError, CustomerController.verifyUser);
         this.router.post('/update-customer-image', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, CustomerController.addUploadCustomerimage);
 
