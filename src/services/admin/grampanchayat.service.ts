@@ -4,27 +4,30 @@ import { logger } from "../../logger/Logger";
 
 
 let scannerColumnsEnsured = false;
+
+// Scanner images + bank details (one set for gruhkar, one for pani kar).
+const PANCHAYAT_EXTRA_COLUMNS = [
+    'GHAR_TAX_SCANNER', 'PANI_TAX_SCANNER',
+    'GHAR_BANK_NAME', 'GHAR_IFSC', 'GHAR_ACCOUNT_NO', 'GHAR_ACCOUNT_HOLDER', 'GHAR_UPI_ID',
+    'PANI_BANK_NAME', 'PANI_IFSC', 'PANI_ACCOUNT_NO', 'PANI_ACCOUNT_HOLDER', 'PANI_UPI_ID',
+];
+
 const ensureScannerColumns = async () => {
     if (scannerColumnsEnsured) return;
     try {
         const cols: any = await executeQuery(
-            `SHOW COLUMNS FROM panchayat WHERE Field IN ('GHAR_TAX_SCANNER', 'PANI_TAX_SCANNER')`,
-            []
+            `SHOW COLUMNS FROM panchayat WHERE Field IN (${PANCHAYAT_EXTRA_COLUMNS.map(() => '?').join(',')})`,
+            PANCHAYAT_EXTRA_COLUMNS
         );
         const existing = new Set((cols as any[]).map((c: any) => c.Field));
-        if (!existing.has('GHAR_TAX_SCANNER')) {
-            await executeQuery(
-                `ALTER TABLE panchayat ADD COLUMN GHAR_TAX_SCANNER VARCHAR(200) DEFAULT NULL`,
-                []
-            );
-            logger.info("Added GHAR_TAX_SCANNER column to panchayat");
-        }
-        if (!existing.has('PANI_TAX_SCANNER')) {
-            await executeQuery(
-                `ALTER TABLE panchayat ADD COLUMN PANI_TAX_SCANNER VARCHAR(200) DEFAULT NULL`,
-                []
-            );
-            logger.info("Added PANI_TAX_SCANNER column to panchayat");
+        for (const col of PANCHAYAT_EXTRA_COLUMNS) {
+            if (!existing.has(col)) {
+                await executeQuery(
+                    `ALTER TABLE panchayat ADD COLUMN ${col} VARCHAR(200) DEFAULT NULL`,
+                    []
+                );
+                logger.info(`Added ${col} column to panchayat`);
+            }
         }
         scannerColumnsEnsured = true;
     } catch (err) {
@@ -32,8 +35,13 @@ const ensureScannerColumns = async () => {
     }
 };
 
+export const BANK_FIELDS = [
+    'GHAR_BANK_NAME', 'GHAR_IFSC', 'GHAR_ACCOUNT_NO', 'GHAR_ACCOUNT_HOLDER', 'GHAR_UPI_ID',
+    'PANI_BANK_NAME', 'PANI_IFSC', 'PANI_ACCOUNT_NO', 'PANI_ACCOUNT_HOLDER', 'PANI_UPI_ID',
+];
 
-export const addGramPanchayat = async (params: any[]) => {
+
+export const addGramPanchayat = async (params: any[], bank: any = {}) => {
     try {
         await ensureScannerColumns();
         const [districtId, talukaId, name, gharTaxScanner, paniTaxScanner] = params;
@@ -43,8 +51,12 @@ export const addGramPanchayat = async (params: any[]) => {
             if (result && (result as any[]).length > 0) {
                 return "exists";
             } else {
-                sql = `INSERT INTO panchayat (DISTRICT_ID, TALUKA_ID, PANCHAYAT_NAME, GHAR_TAX_SCANNER, PANI_TAX_SCANNER) VALUES (?, ?, ?, ?, ?)`;
-                const insertParams = [districtId, talukaId, name, gharTaxScanner ?? null, paniTaxScanner ?? null];
+                const bankCols = BANK_FIELDS.join(', ');
+                const bankPlaceholders = BANK_FIELDS.map(() => '?').join(', ');
+                const bankValues = BANK_FIELDS.map(f => (bank?.[f] ?? null) || null);
+                sql = `INSERT INTO panchayat (DISTRICT_ID, TALUKA_ID, PANCHAYAT_NAME, GHAR_TAX_SCANNER, PANI_TAX_SCANNER, ${bankCols})
+                       VALUES (?, ?, ?, ?, ?, ${bankPlaceholders})`;
+                const insertParams = [districtId, talukaId, name, gharTaxScanner ?? null, paniTaxScanner ?? null, ...bankValues];
                 return executeQuery(sql, insertParams).then(result => {
                     return (result) ? result : null;
                 }).catch(error => {
@@ -66,7 +78,7 @@ export const addGramPanchayat = async (params: any[]) => {
 export const getGramPanchayat = async (params: object) => {
     try {
         await ensureScannerColumns();
-        let sql = ` select p.PANCHAYAT_ID ,p.DISTRICT_ID , p.TALUKA_ID , RTRIM(p.PANCHAYAT_NAME)  AS PANCHAYAT_NAME, p.GHAR_TAX_SCANNER, p.PANI_TAX_SCANNER, RTRIM(d.DISTRICT_NAME) AS DISTRICT_NAME, RTRIM(t.TALUKA_NAME) AS TALUKA_NAME from panchayat p join district d on p.DISTRICT_ID = d.DISTRICT_ID join taluka t on p.TALUKA_ID = t.TALUKA_ID where p.PANCHAYAT_ID = ?`
+        let sql = ` select p.*, RTRIM(p.PANCHAYAT_NAME)  AS PANCHAYAT_NAME, RTRIM(d.DISTRICT_NAME) AS DISTRICT_NAME, RTRIM(t.TALUKA_NAME) AS TALUKA_NAME from panchayat p join district d on p.DISTRICT_ID = d.DISTRICT_ID join taluka t on p.TALUKA_ID = t.TALUKA_ID where p.PANCHAYAT_ID = ?`
         return executeQuery(sql, params).then(result => {
             return (result) ? result[0] : null;
         }).catch(error => {
@@ -131,7 +143,7 @@ export const getGramPanchayaCount = async (sql: string, params: object) => {
 
 }
 
-export const updateGramPanchayat = async (params: any[]) => {
+export const updateGramPanchayat = async (params: any[], bank: any = {}) => {
     try {
         await ensureScannerColumns();
         const [districtId, talukaId, name, panchayatId, gharTaxScanner, paniTaxScanner] = params;
@@ -152,6 +164,14 @@ export const updateGramPanchayat = async (params: any[]) => {
             if (paniTaxScanner) {
                 setClauses.push('PANI_TAX_SCANNER = ?');
                 updateParams.push(paniTaxScanner);
+            }
+            // Bank/UPI details: text fields are always updated (empty clears them)
+            // when the field is present in the request body.
+            for (const f of BANK_FIELDS) {
+                if (bank && Object.prototype.hasOwnProperty.call(bank, f)) {
+                    setClauses.push(`${f} = ?`);
+                    updateParams.push((bank[f] ?? null) || null);
+                }
             }
             updateParams.push(panchayatId);
 

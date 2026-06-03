@@ -202,7 +202,9 @@ export async function getBillByToken(token: string): Promise<any | null> {
     let panchayat: any = null;
     try {
         const pRows: any = await executeQuery(
-            `SELECT PANCHAYAT_ID, RTRIM(PANCHAYAT_NAME) AS PANCHAYAT_NAME, GHAR_TAX_SCANNER, PANI_TAX_SCANNER
+            `SELECT PANCHAYAT_ID, RTRIM(PANCHAYAT_NAME) AS PANCHAYAT_NAME, GHAR_TAX_SCANNER, PANI_TAX_SCANNER,
+                    GHAR_BANK_NAME, GHAR_IFSC, GHAR_ACCOUNT_NO, GHAR_ACCOUNT_HOLDER, GHAR_UPI_ID,
+                    PANI_BANK_NAME, PANI_IFSC, PANI_ACCOUNT_NO, PANI_ACCOUNT_HOLDER, PANI_UPI_ID
              FROM panchayat WHERE PANCHAYAT_ID = ?`,
             [link.panchayat_id]
         );

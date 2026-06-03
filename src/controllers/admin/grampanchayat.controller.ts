@@ -1,7 +1,7 @@
 
 import { PAGINATION } from "../../constants/constant";
 import { logger } from "../../logger/Logger";
-import { addGramPanchayat, deleteGramPanchayat, getGramPanchayat, getGramPanchayatList, getPanchayatListForDDL, updateGramPanchayat } from "../../services/admin/grampanchayat.service";
+import { addGramPanchayat, BANK_FIELDS, deleteGramPanchayat, getGramPanchayat, getGramPanchayatList, getPanchayatListForDDL, updateGramPanchayat } from "../../services/admin/grampanchayat.service";
 import { _200, _201, _400, _404, _409 } from "../../utils/ApiResponse";
 import multer = require("multer");
 import * as fs from "fs";
@@ -35,6 +35,18 @@ const taxScannerUpload = scannerMulter.fields([
     { name: 'ghar_tax_scanner', maxCount: 1 },
     { name: 'pani_tax_scanner', maxCount: 1 },
 ]);
+
+function pickBankFields(req: any): any {
+    const bank: any = {};
+    for (const f of BANK_FIELDS) {
+        // Frontend sends lowercase keys (e.g. ghar_bank_name).
+        const lower = f.toLowerCase();
+        if (req?.body && Object.prototype.hasOwnProperty.call(req.body, lower)) {
+            bank[f] = req.body[lower];
+        }
+    }
+    return bank;
+}
 
 function pickUploadedFilename(req: any, field: string): string | null {
     const filesObj = req?.files;
@@ -73,7 +85,7 @@ export class grampanchayat {
             }
 
             const params = [districtId, talukaid, gramPanchayatName, gharTaxScanner, paniTaxScanner];
-            const result = await addGramPanchayat(params);
+            const result = await addGramPanchayat(params, pickBankFields(req));
             if (result === "exists") {
                 return _409(res, gramPanchayatName + ' Gram Panchayat Already Exists');
             }
@@ -154,7 +166,7 @@ export class grampanchayat {
             }
 
             const params = [districtId, talukaId, gramPanchayatName, grampanchayatId, gharTaxScanner, paniTaxScanner];
-            const result = await updateGramPanchayat(params);
+            const result = await updateGramPanchayat(params, pickBankFields(req));
             if (result === "exists") {
                 return _409(res, gramPanchayatName + ' Grampanchayat already exists. Please choose another gram panchayat name');
             }
