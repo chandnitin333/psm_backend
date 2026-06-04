@@ -7,9 +7,13 @@ CREATE TABLE IF NOT EXISTS `report_view_link` (
     `user_id` INT DEFAULT NULL,
     `newuser_id` INT DEFAULT NULL,
     `report_key` VARCHAR(40) DEFAULT NULL,
+    `scope_key` VARCHAR(64) DEFAULT NULL,
     `params` TEXT,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `deleted_at` DATETIME DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `uq_report_view_link_token` (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Migration for installs created before scope_key existed.
+ALTER TABLE `report_view_link` ADD COLUMN IF NOT EXISTS `scope_key` VARCHAR(64) DEFAULT NULL AFTER `report_key`;

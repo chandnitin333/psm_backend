@@ -18,6 +18,7 @@ const ensureReportLinkTable = async () => {
                 user_id INT DEFAULT NULL,
                 newuser_id INT DEFAULT NULL,
                 report_key VARCHAR(40) DEFAULT NULL,
+                scope_key VARCHAR(64) DEFAULT NULL,
                 params TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 deleted_at DATETIME DEFAULT NULL,
@@ -26,30 +27,50 @@ const ensureReportLinkTable = async () => {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci`,
             []
         );
+        const cols: any = await executeQuery(
+            `SHOW COLUMNS FROM report_view_link WHERE Field = 'scope_key'`,
+            []
+        );
+        if (!Array.isArray(cols) || cols.length === 0) {
+            await executeQuery(
+                `ALTER TABLE report_view_link ADD COLUMN scope_key VARCHAR(64) DEFAULT NULL AFTER report_key`,
+                []
+            );
+            logger.info("report_view_link: added scope_key column");
+        }
         reportLinkTableEnsured = true;
     } catch (err) {
         logger.error("ensureReportLinkTable :: ", err);
     }
 };
 
+/** Deterministic short hash of a report's parameters — used to scope links
+ *  for ward/range reports where newuser_id alone isn't enough. */
+export function reportScopeKey(obj: any): string {
+    const json = JSON.stringify(obj ?? {});
+    return crypto.createHash('md5').update(json).digest('hex');
+}
+
 /**
  * Create (or reuse) a public read-only view link for a report.
- * Idempotent per (user_id, newuser_id, report_key) — the params snapshot is
- * refreshed on every call so the link always reflects the latest context.
+ * Idempotent per (user_id, newuser_id, report_key, scope_key) — the params
+ * snapshot is refreshed on every call.
  */
 export async function createReportViewLink(data: {
     user_id: number,
-    newuser_id: number,
+    newuser_id: number | null,
     report_key: string,
+    scope_key?: string | null,
     params: any,
 }): Promise<string> {
     await ensureReportLinkTable();
 
     const existing: any = await executeQuery(
         `SELECT id, token FROM report_view_link
-         WHERE user_id = ? AND newuser_id = ? AND report_key = ? AND deleted_at IS NULL
+         WHERE user_id = ? AND newuser_id <=> ? AND report_key = ? AND scope_key <=> ?
+           AND deleted_at IS NULL
          ORDER BY id DESC LIMIT 1`,
-        [data.user_id, data.newuser_id, data.report_key]
+        [data.user_id, data.newuser_id ?? null, data.report_key, data.scope_key ?? null]
     );
     if (Array.isArray(existing) && existing.length > 0) {
         await executeQuery(
@@ -61,9 +82,9 @@ export async function createReportViewLink(data: {
 
     const token = crypto.randomBytes(16).toString("hex");
     await executeQuery(
-        `INSERT INTO report_view_link (token, user_id, newuser_id, report_key, params, created_at)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [token, data.user_id, data.newuser_id, data.report_key,
+        `INSERT INTO report_view_link (token, user_id, newuser_id, report_key, scope_key, params, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [token, data.user_id, data.newuser_id ?? null, data.report_key, data.scope_key ?? null,
             JSON.stringify(data.params ?? {}), istNow()]
     );
     return token;
@@ -72,7 +93,7 @@ export async function createReportViewLink(data: {
 export async function getReportViewLinkByToken(token: string): Promise<any | null> {
     await ensureReportLinkTable();
     const rows: any = await executeQuery(
-        `SELECT id, token, user_id, newuser_id, report_key, params, created_at
+        `SELECT id, token, user_id, newuser_id, report_key, scope_key, params, created_at
          FROM report_view_link WHERE token = ? AND deleted_at IS NULL`,
         [token]
     );
