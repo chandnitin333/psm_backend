@@ -950,10 +950,13 @@ export const getMemberList = async (panchayat_id) => {
       LEFT JOIN designation d
         ON CAST(d.DESIGNATION_ID AS CHAR) = TRIM(IFNULL(m.DESIGNATION_ID, ''))
        AND d.DELETED_AT IS NULL
-      WHERE m.PANCHAYAT_ID = ? AND m.DELETED_AT IS NULL
+      WHERE TRIM(IFNULL(m.PANCHAYAT_ID, '')) = TRIM(?) AND m.DELETED_AT IS NULL
       ORDER BY m.MEMBERMASTER_ID ASC
     `;
-    const memberList = await executeQuery(sql, [panchayat_id]);
+    // Pass as string so the TRIM-based comparison matches varchar PANCHAYAT_ID
+    // values regardless of stored type / trailing spaces.
+    const memberList: any = await executeQuery(sql, [String(panchayat_id)]);
+    logger.info(`getMemberList: panchayat_id=${panchayat_id} -> ${Array.isArray(memberList) ? memberList.length : 0} members`);
     return memberList;
   } catch (err) {
     logger.error("Error fetching getMemberList", err);

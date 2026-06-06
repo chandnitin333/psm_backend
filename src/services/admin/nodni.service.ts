@@ -485,8 +485,26 @@ export const saveBandhKam = async (data: any, table_name:string) => {
 }
 
 
+const majlaColumnEnsured: { [table: string]: boolean } = {};
+/** taxpayers / taxpayers_temp were created without a `majla` column, but the
+ *  manora insert writes to it. Add it on first use (self-healing). */
+const ensureMajlaColumn = async (table_name: string) => {
+    if (majlaColumnEnsured[table_name]) return;
+    try {
+        const cols: any = await executeQuery(`SHOW COLUMNS FROM ${table_name} WHERE Field = 'majla'`, []);
+        if (!Array.isArray(cols) || cols.length === 0) {
+            await executeQuery(`ALTER TABLE ${table_name} ADD COLUMN majla INT DEFAULT NULL`, []);
+            logger.info(`${table_name}: added majla column`);
+        }
+        majlaColumnEnsured[table_name] = true;
+    } catch (err) {
+        logger.error(`ensureMajlaColumn(${table_name}) :: `, err);
+    }
+};
+
 export const saveTaxPayers = async (data: any, table_name:string) => {
     try {
+        await ensureMajlaColumn(table_name);
         // let sql = `INSERT INTO TAXPAYERS (
         //         newuser_id, user_id, MILKAT_VAPAR_ID, MALMATTA_ID, VAPARACHE_PRAKAR, MANORAMASTER_ID, 
         //         AREAP, AREAI, TOTALAREA, AREAP1, AREAI1, TOTALAREA1, CAPITAL, TAXATION, RNO, 

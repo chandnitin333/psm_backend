@@ -915,19 +915,26 @@ export async function getImlakarNew(user_id: number, ward_number: number, start:
 }
 export async function getImlakarNewDistinct(user_id: number, ward_number: number, start: number, end: number): Promise<any | null> {
     try{
-        const query = `
+        // Start/End optional — when not provided, show the whole ward instead of
+        // returning nothing (ANNU_KRAMANK BETWEEN null AND null = 0 rows).
+        const hasRange = start !== null && start !== undefined && String(start) !== ''
+            && end !== null && end !== undefined && String(end) !== '';
+        let query = `
            SELECT DISTINCT(NEWUSER_ID), ANNU_KRAMANK
             FROM newuser
-            WHERE 
+            WHERE
                 MILKAR_PRAKAR = 'इमलाकर'
                 AND USER_ID = ?
                 AND VARD_NUMBER = ?
-                AND ANNU_KRAMANK BETWEEN ? AND ?
                 AND DELETED_AT IS NULL
-            ORDER BY ANNU_KRAMANK ASC;
-
         `;
-        const results: any = await executeQuery(query, [user_id, ward_number,start,end]);
+        const params: any[] = [user_id, ward_number];
+        if (hasRange) {
+            query += ` AND ANNU_KRAMANK BETWEEN ? AND ?`;
+            params.push(start, end);
+        }
+        query += ` ORDER BY ANNU_KRAMANK ASC`;
+        const results: any = await executeQuery(query, params);
         if (results.length > 0) {
             return results as any;
         }
@@ -959,17 +966,25 @@ export async function getImlakarAnukramnika(user_id: number, ward_number: number
 
 export async function getUserDataForAdhikrutGharkul(user_id: number, ward_number: number, start: number, end: number): Promise<any | null> {
     try {
-        const query = `
+        // Start/End are optional — when not provided, show the whole ward
+        // instead of returning nothing (annu_kramank BETWEEN null AND null = 0 rows).
+        const hasRange = start !== null && start !== undefined && String(start) !== ''
+            && end !== null && end !== undefined && String(end) !== '';
+        let query = `
            SELECT *
             FROM newuser
             WHERE user_id = ?
             AND (MILKAR_PRAKAR = 'अधिकृत' OR MILKAR_PRAKAR = 'घरकुल')
             AND vard_number = ?
-            AND annu_kramank BETWEEN ? AND ?
             AND DELETED_AT IS NULL
-            ORDER BY annu_kramank ASC
         `;
-        const results: any = await executeQuery(query, [user_id, ward_number,start,end]);
+        const params: any[] = [user_id, ward_number];
+        if (hasRange) {
+            query += ` AND annu_kramank BETWEEN ? AND ?`;
+            params.push(start, end);
+        }
+        query += ` ORDER BY annu_kramank ASC`;
+        const results: any = await executeQuery(query, params);
         if (results.length > 0) {
             return results as any;
         }
