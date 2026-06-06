@@ -52,6 +52,7 @@ export class psmRoutes {
         this.router.post('/add-district', GlobalMiddleware.checkError, district.addDistrict);
         this.router.post('/get-district', GlobalMiddleware.checkError, district.getDistrict);
         this.router.post('/sign-in', GlobalMiddleware.checkError, AuthController.authenticate);
+        this.router.post('/refresh-token', GlobalMiddleware.checkError, AuthController.refreshToken);
         this.router.post('/district-list-ddl', GlobalMiddleware.checkError, district.getAllDistrictDDL);
         this.router.post('/taluka-list-by-district-id', GlobalMiddleware.checkError, taluka.getTalukaByDistrict);  // On district selection taluka list shown
         this.router.post('/panchayat-list-by-taluka-id', GlobalMiddleware.checkError, gatgrampanchayat.getGrampanchayatByTalukaId);  // On taluka selection grampanchayat list shown

@@ -5,10 +5,34 @@ import * as Jwt from "jsonwebtoken";
 import { getEnvironmentVariable } from "../../environments/env";
 import { logger } from "../../logger/Logger";
 import { getAdhikrutCount, getAdhikrutTotal, getAudhogikTotal, getChaluKhatedarCount, getChaluKhatedarTotal, getCounts, getGharKarCount, getGharKarTotal, getImlakarCount, getImlakarTotal, getIndiraAwasCount, getIndiraAwasTotal, getManaoraCounts, getManoraTotal, getMemberList, getodyogikCounts, signIn } from "../../services/admin/users.service";
-import { _200, _400 } from "../../utils/ApiResponse";
+import { _200, _400, _401 } from "../../utils/ApiResponse";
 import e = require("express");
 import { Utils } from "../../utils/util";
 export class AuthController {
+
+    /**
+     * Issues a fresh 30-min token from the current (still-valid) one.
+     * The frontend calls this periodically while the user is active, so an
+     * actively-working session never expires; 30-min inactivity stops the
+     * refresh and the token lapses (idle logout).
+     */
+    static async refreshToken(req: Request, res: Response) {
+        try {
+            const authHeader = req.headers.authorization;
+            const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
+            if (!token) return _401(res, "No token provided");
+            const decoded: any = Jwt.verify(token, getEnvironmentVariable().jwt_secret);
+            // Drop the old iat/exp before re-signing.
+            const { iat, exp, ...payload } = decoded;
+            const newToken = Jwt.sign(payload, getEnvironmentVariable().jwt_secret, {
+                expiresIn: "30m",
+            });
+            return _200(res, "Token refreshed", { token: newToken });
+        } catch (error: any) {
+            logger.error("refreshToken :: ", error?.message || error);
+            return _401(res, "Session expired");
+        }
+    }
 
 
     static async authenticate(req: Request, res: Response) {
