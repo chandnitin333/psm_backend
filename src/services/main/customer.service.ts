@@ -964,12 +964,14 @@ export async function getImlakarAnukramnika(user_id: number, ward_number: number
     }
 }
 
-export async function getUserDataForAdhikrutGharkul(user_id: number, ward_number: number, start: number, end: number): Promise<any | null> {
+export async function getUserDataForAdhikrutGharkul(user_id: number, ward_number: number, start: number, end: number, new_user_id: any = null): Promise<any | null> {
     try {
         // Start/End are optional — when not provided, show the whole ward
         // instead of returning nothing (annu_kramank BETWEEN null AND null = 0 rows).
         const hasRange = start !== null && start !== undefined && String(start) !== ''
             && end !== null && end !== undefined && String(end) !== '';
+        // When a specific record is requested (per-record QR scan), narrow to it.
+        const hasOne = new_user_id !== null && new_user_id !== undefined && String(new_user_id) !== '';
         let query = `
            SELECT *
             FROM newuser
@@ -979,6 +981,10 @@ export async function getUserDataForAdhikrutGharkul(user_id: number, ward_number
             AND DELETED_AT IS NULL
         `;
         const params: any[] = [user_id, ward_number];
+        if (hasOne) {
+            query += ` AND NEWUSER_ID = ?`;
+            params.push(new_user_id);
+        }
         if (hasRange) {
             query += ` AND annu_kramank BETWEEN ? AND ?`;
             params.push(start, end);

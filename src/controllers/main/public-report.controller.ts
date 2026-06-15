@@ -446,7 +446,7 @@ export class PublicReportController {
             gatgrampanchayat_id: Number(ctx.gatgrampanchayat_id),
             user_id,
         });
-        const rs3Data = await getUserDataForAdhikrutGharkul(user_id, ward_number, start, end);
+        const rs3Data = await getUserDataForAdhikrutGharkul(user_id, ward_number, start, end, rp.new_user_id || null);
         const yearRS42 = await getYearByYearId(year);
         // Per-record detail lookups, but run in bounded-parallel chunks instead
         // of one-at-a-time. Same queries/data — just far faster for big wards
