@@ -5,7 +5,18 @@ import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
 import { getConstructionTaxDetails, getEntriesDetails, getRecordBasedOnStartandEnd, getTaxLandData, getTaxPayerDetails, getUserDataForGharKar, getUserDataForRs3, getYearByYearId, gettaxationLandDetails } from "../../services/main/customer.service";
 import { get_ward_number } from "../../services/main/ward-wise-adhar-list";
-   
+
+/** Run an async mapper over rows in bounded-parallel chunks instead of
+ *  one-by-one. Same per-row queries/data, order preserved — far faster. */
+async function mapChunked<T, R>(rows: T[], fn: (item: T) => Promise<R>, size = 20): Promise<R[]> {
+    const out: R[] = [];
+    for (let i = 0; i < rows.length; i += size) {
+        const built = await Promise.all(rows.slice(i, i + size).map(fn));
+        out.push(...built);
+    }
+    return out;
+}
+
 export class MalamattaGrahakYadiList {
    static async get_malmatta_darkachi_yadi_list(req: Request, res: Response) {
         try {
@@ -28,15 +39,15 @@ export class MalamattaGrahakYadiList {
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const yearRS10 = await getYearByYearId(year);
             const rs3Data = await getRecordBasedOnStartandEnd(Number(decoded_user['userId']), ward_number, start, end, new_user_id);
-            const updatedRs3: any[] = [];
-            if (rs3Data) {
-                for (const item of rs3Data) {
-                    const taxationLandRS4 = await gettaxationLandDetails(Number(decoded_user['userId']), item.NEWUSER_ID) || [];
-                    const constructionTaxRS5 = await getConstructionTaxDetails(Number(decoded_user['userId']), item.NEWUSER_ID) || [];
-                    const taxPayerRS6 = await getTaxPayerDetails(Number(decoded_user['userId']), item.NEWUSER_ID) || [];
-                    updatedRs3.push({ ...item,taxationLandRS4,constructionTaxRS5,taxPayerRS6 });
-                }
-            }
+            const uidDK = Number(decoded_user['userId']);
+            const updatedRs3 = await mapChunked(rs3Data || [], async (item: any) => {
+                const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
+                    gettaxationLandDetails(uidDK, item.NEWUSER_ID).then(r => r || []),
+                    getConstructionTaxDetails(uidDK, item.NEWUSER_ID).then(r => r || []),
+                    getTaxPayerDetails(uidDK, item.NEWUSER_ID).then(r => r || []),
+                ]);
+                return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+            });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,
                 yearRs10: yearRS10,
@@ -68,16 +79,16 @@ export class MalamattaGrahakYadiList {
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const yearRS10 = await getYearByYearId(year);
             const taxlandDataRs6 = await getTaxLandData(Number(decoded_user['userId']), ward_number, start, end);
-            const updatedRs6: any[] = [];
-            if (taxlandDataRs6) {
-                for (const item of taxlandDataRs6) {
-                    const newUserDataRs3 = await getUserDataForRs3(Number(decoded_user['userId']),item.newuser_id)
-                    const taxationLandRS4 = await gettaxationLandDetails(Number(decoded_user['userId']), item.newuser_id) || [];
-                    const constructionTaxRS5 = await getConstructionTaxDetails(Number(decoded_user['userId']), item.newuser_id) || [];
-                    const taxPayerRS8 = await getTaxPayerDetails(Number(decoded_user['userId']), item.newuser_id) || [];
-                    updatedRs6.push({ ...item,newUserDataRs3,taxationLandRS4,constructionTaxRS5,taxPayerRS8 });
-                }
-            }
+            const uidKB = Number(decoded_user['userId']);
+            const updatedRs6 = await mapChunked(taxlandDataRs6 || [], async (item: any) => {
+                const [newUserDataRs3, taxationLandRS4, constructionTaxRS5, taxPayerRS8] = await Promise.all([
+                    getUserDataForRs3(uidKB, item.newuser_id),
+                    gettaxationLandDetails(uidKB, item.newuser_id).then(r => r || []),
+                    getConstructionTaxDetails(uidKB, item.newuser_id).then(r => r || []),
+                    getTaxPayerDetails(uidKB, item.newuser_id).then(r => r || []),
+                ]);
+                return { ...item, newUserDataRs3, taxationLandRS4, constructionTaxRS5, taxPayerRS8 };
+            });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,
                 yearRs10: yearRS10,
@@ -110,16 +121,15 @@ export class MalamattaGrahakYadiList {
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const yearRS10 = await getYearByYearId(year);
             const newuserDataRs3 = await getUserDataForGharKar(Number(decoded_user['userId']), ward_number, start, end);
-            const updatedRs3: any[] = [];
-            if (newuserDataRs3) {
-                for (const item of newuserDataRs3) {
-                    // const newUserDataRs3 = await getUserDataForRs3(Number(decoded_user['userId']),item.NEWUSER_ID)
-                    const taxationLandRS4 = await gettaxationLandDetails(Number(decoded_user['userId']), item.NEWUSER_ID) || [];
-                    const constructionTaxRS5 = await getConstructionTaxDetails(Number(decoded_user['userId']), item.NEWUSER_ID) || [];
-                    const taxPayerRS6 = await getTaxPayerDetails(Number(decoded_user['userId']), item.NEWUSER_ID) || [];
-                    updatedRs3.push({ ...item,taxationLandRS4,constructionTaxRS5,taxPayerRS6 });
-                }
-            }
+            const uidGK = Number(decoded_user['userId']);
+            const updatedRs3 = await mapChunked(newuserDataRs3 || [], async (item: any) => {
+                const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
+                    gettaxationLandDetails(uidGK, item.NEWUSER_ID).then(r => r || []),
+                    getConstructionTaxDetails(uidGK, item.NEWUSER_ID).then(r => r || []),
+                    getTaxPayerDetails(uidGK, item.NEWUSER_ID).then(r => r || []),
+                ]);
+                return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+            });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,
                 yearRs10: yearRS10,

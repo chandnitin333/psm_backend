@@ -354,17 +354,17 @@ export class PublicReportController {
         } else {
             yearRS42 = await getYearByYearId(year);
         }
-        const updatedRs3: any[] = [];
-        if (rs3Data) {
-            for (const item of rs3Data) {
-                const taxationLandRS4 = await gettaxationLandDetails(user_id, Number(item.NEWUSER_ID)) || [];
-                const constructionTaxRS5 = withImages
-                    ? await getConstructionTaxDetails(user_id, Number(item.NEWUSER_ID)) || []
-                    : await getConstructionTaxDetailsForNamuna8(user_id, Number(item.NEWUSER_ID)) || [];
-                const taxPayerRS6 = await getTaxPayerDetailsForNamuna8(user_id, Number(item.NEWUSER_ID)) || [];
-                updatedRs3.push({ ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 });
-            }
-        }
+        const updatedRs3 = await PublicReportController.mapChunked(rs3Data || [], async (item: any) => {
+            const nid = Number(item.NEWUSER_ID);
+            const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
+                gettaxationLandDetails(user_id, nid).then(r => r || []),
+                (withImages
+                    ? getConstructionTaxDetails(user_id, nid)
+                    : getConstructionTaxDetailsForNamuna8(user_id, nid)).then(r => r || []),
+                getTaxPayerDetailsForNamuna8(user_id, nid).then(r => r || []),
+            ]);
+            return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+        });
         const all_data: any = {
             newUserDataDBRs2: entriesDetailsDB,
             yearRs42: yearRS42,
@@ -396,15 +396,18 @@ export class PublicReportController {
         });
         const rs3Data = await getUserDataForAdhikrutGharkul(user_id, ward_number, start, end);
         const yearRS42 = await getYearByYearId(year);
-        const updatedRs3: any[] = [];
-        if (rs3Data) {
-            for (const item of rs3Data) {
-                const taxationLandRS4 = await gettaxationLandDetails(user_id, Number(item.NEWUSER_ID)) || [];
-                const constructionTaxRS5 = await getConstructionTaxDetails(user_id, Number(item.NEWUSER_ID)) || [];
-                const taxPayerRS6 = await getTaxPayerDetails(user_id, Number(item.NEWUSER_ID)) || [];
-                updatedRs3.push({ ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 });
-            }
-        }
+        // Per-record detail lookups, but run in bounded-parallel chunks instead
+        // of one-at-a-time. Same queries/data — just far faster for big wards
+        // (sequential N+1 was timing out and surfacing as an "invalid link").
+        const updatedRs3 = await PublicReportController.mapChunked(rs3Data || [], async (item: any) => {
+            const nid = Number(item.NEWUSER_ID);
+            const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
+                gettaxationLandDetails(user_id, nid).then(r => r || []),
+                getConstructionTaxDetails(user_id, nid).then(r => r || []),
+                getTaxPayerDetails(user_id, nid).then(r => r || []),
+            ]);
+            return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+        });
         return {
             newUserDataDBRs2: entriesDetailsDB,
             yearRs42: yearRS42,
@@ -412,6 +415,19 @@ export class PublicReportController {
             // Echo the from/to years so the public template can render the header line.
             from_to_year: { from_year: rp.from_year, to_year: rp.to_year },
         };
+    }
+
+    /** Run an async mapper over rows in bounded-parallel chunks (CHUNK at a
+     *  time) instead of strictly one-by-one. Same per-row queries and data,
+     *  order preserved — just far faster for big wards, so heavy reports no
+     *  longer crawl / time out (a timeout surfaced as an "invalid link"). */
+    private static async mapChunked<T, R>(rows: T[], fn: (item: T) => Promise<R>, size = 20): Promise<R[]> {
+        const out: R[] = [];
+        for (let i = 0; i < rows.length; i += size) {
+            const built = await Promise.all(rows.slice(i, i + size).map(fn));
+            out.push(...built);
+        }
+        return out;
     }
 
     /** Same data assembly as Namuna8Controller.namuna_8_sarkari_with_ward. */
@@ -428,26 +444,29 @@ export class PublicReportController {
             gatgrampanchayat_id: Number(ctx.gatgrampanchayat_id),
             user_id,
         });
-        const updatedRs3: any[] = [];
-        if (newUserDataDBrs14.length > 0) {
-            for (const item14 of newUserDataDBrs14) {
-                const countTaxationlandC = await countTaxationLand(Number(item14?.new_user_id), user_id);
-                const countConstructionTaxRs1C1 = await countConstructiontax(Number(item14?.new_user_id), user_id);
-                const taxPayerDBC2 = await countTaxPayer(Number(item14?.new_user_id), user_id);
-                const taxationLandDetailsDbRs4 = await getTaxationLandDetails(Number(item14?.new_user_id), user_id);
-                const taxandMilkatDetailsRs101 = await getTaxationandMilkat(Number(item14?.new_user_id), user_id);
-                const taxandMilkatDetailsRs10 = [{ "MILKAT_VAPAR_NAME": taxandMilkatDetailsRs101[0]?.MILKAT_VAPAR_NAME }];
-                const newUserDataDBRs3: any = await getNewUserDetails(Number(item14?.new_user_id), user_id);
-                const getConstructionForsarkari8Rs7 = await getConstructionForsarkari8(Number(item14?.new_user_id), user_id);
-                const taxPayerDetailsRs6 = await getTaxPayerDetails(user_id, Number(item14?.new_user_id));
-
-                updatedRs3.push({
-                    ...item14, countTaxationlandC, countConstructionTaxRs1C1, taxPayerDBC2,
-                    taxationLandDetailsDbRs4, taxandMilkatDetailsRs10, newUserDataDBRs3,
-                    getConstructionForsarkari8Rs7, taxPayerDetailsRs6,
-                });
-            }
-        }
+        const updatedRs3 = await PublicReportController.mapChunked(newUserDataDBrs14 || [], async (item14: any) => {
+            const nid = Number(item14?.new_user_id);
+            const [
+                countTaxationlandC, countConstructionTaxRs1C1, taxPayerDBC2,
+                taxationLandDetailsDbRs4, taxandMilkatDetailsRs101, newUserDataDBRs3,
+                getConstructionForsarkari8Rs7, taxPayerDetailsRs6,
+            ] = await Promise.all([
+                countTaxationLand(nid, user_id),
+                countConstructiontax(nid, user_id),
+                countTaxPayer(nid, user_id),
+                getTaxationLandDetails(nid, user_id),
+                getTaxationandMilkat(nid, user_id),
+                getNewUserDetails(nid, user_id),
+                getConstructionForsarkari8(nid, user_id),
+                getTaxPayerDetails(user_id, nid),
+            ]);
+            const taxandMilkatDetailsRs10 = [{ "MILKAT_VAPAR_NAME": taxandMilkatDetailsRs101[0]?.MILKAT_VAPAR_NAME }];
+            return {
+                ...item14, countTaxationlandC, countConstructionTaxRs1C1, taxPayerDBC2,
+                taxationLandDetailsDbRs4, taxandMilkatDetailsRs10, newUserDataDBRs3,
+                getConstructionForsarkari8Rs7, taxPayerDetailsRs6,
+            };
+        });
         return {
             entriesDetailsRs66,
             rs14: updatedRs3,
@@ -469,15 +488,14 @@ export class PublicReportController {
         });
         const yearRS10 = await getYearByYearId(rp.year);
         const rs3Data = await getRecordBasedOnStartandEnd(user_id, rp.ward, rp.start, rp.end, null);
-        const updatedRs3: any[] = [];
-        if (rs3Data) {
-            for (const item of rs3Data) {
-                const taxationLandRS4 = await gettaxationLandDetails(user_id, item.NEWUSER_ID) || [];
-                const constructionTaxRS5 = await getConstructionTaxDetails(user_id, item.NEWUSER_ID) || [];
-                const taxPayerRS6 = await getTaxPayerDetails(user_id, item.NEWUSER_ID) || [];
-                updatedRs3.push({ ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 });
-            }
-        }
+        const updatedRs3 = await PublicReportController.mapChunked(rs3Data || [], async (item: any) => {
+            const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
+                gettaxationLandDetails(user_id, item.NEWUSER_ID).then(r => r || []),
+                getConstructionTaxDetails(user_id, item.NEWUSER_ID).then(r => r || []),
+                getTaxPayerDetails(user_id, item.NEWUSER_ID).then(r => r || []),
+            ]);
+            return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+        });
         return {
             newUserDataDBRs2: entriesDetailsDB,
             yearRs10: yearRS10,
@@ -500,16 +518,15 @@ export class PublicReportController {
         });
         const yearRS10 = await getYearByYearId(rp.year);
         const taxlandDataRs6 = await getTaxLandData(user_id, rp.ward, rp.start, rp.end);
-        const updatedRs6: any[] = [];
-        if (taxlandDataRs6) {
-            for (const item of taxlandDataRs6) {
-                const newUserDataRs3 = await getUserDataForRs3(user_id, item.newuser_id);
-                const taxationLandRS4 = await gettaxationLandDetails(user_id, item.newuser_id) || [];
-                const constructionTaxRS5 = await getConstructionTaxDetails(user_id, item.newuser_id) || [];
-                const taxPayerRS8 = await getTaxPayerDetails(user_id, item.newuser_id) || [];
-                updatedRs6.push({ ...item, newUserDataRs3, taxationLandRS4, constructionTaxRS5, taxPayerRS8 });
-            }
-        }
+        const updatedRs6 = await PublicReportController.mapChunked(taxlandDataRs6 || [], async (item: any) => {
+            const [newUserDataRs3, taxationLandRS4, constructionTaxRS5, taxPayerRS8] = await Promise.all([
+                getUserDataForRs3(user_id, item.newuser_id),
+                gettaxationLandDetails(user_id, item.newuser_id).then(r => r || []),
+                getConstructionTaxDetails(user_id, item.newuser_id).then(r => r || []),
+                getTaxPayerDetails(user_id, item.newuser_id).then(r => r || []),
+            ]);
+            return { ...item, newUserDataRs3, taxationLandRS4, constructionTaxRS5, taxPayerRS8 };
+        });
         return {
             newUserDataDBRs2: entriesDetailsDB,
             yearRs10: yearRS10,
@@ -532,15 +549,14 @@ export class PublicReportController {
         });
         const yearRS10 = await getYearByYearId(rp.year);
         const newuserDataRs3 = await getUserDataForGharKar(user_id, rp.ward, rp.start, rp.end);
-        const updatedRs3: any[] = [];
-        if (newuserDataRs3) {
-            for (const item of newuserDataRs3) {
-                const taxationLandRS4 = await gettaxationLandDetails(user_id, item.NEWUSER_ID) || [];
-                const constructionTaxRS5 = await getConstructionTaxDetails(user_id, item.NEWUSER_ID) || [];
-                const taxPayerRS6 = await getTaxPayerDetails(user_id, item.NEWUSER_ID) || [];
-                updatedRs3.push({ ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 });
-            }
-        }
+        const updatedRs3 = await PublicReportController.mapChunked(newuserDataRs3 || [], async (item: any) => {
+            const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
+                gettaxationLandDetails(user_id, item.NEWUSER_ID).then(r => r || []),
+                getConstructionTaxDetails(user_id, item.NEWUSER_ID).then(r => r || []),
+                getTaxPayerDetails(user_id, item.NEWUSER_ID).then(r => r || []),
+            ]);
+            return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+        });
         return {
             newUserDataDBRs2: entriesDetailsDB,
             yearRs10: yearRS10,
@@ -563,11 +579,9 @@ export class PublicReportController {
         });
         const rs1Data = await getRecordBasedOnStartandEnd(user_id, rp.ward, rp.start, rp.end, null);
         const yearRS42 = await getYearByYearId(rp.year);
-        const updatedRs3: any[] = [];
-        let rs4Data: any[] = [];
-        if (rs1Data) {
-            for (const item of rs1Data) {
-                const newUserDataRs3 = await getUserDataForRs3(user_id, item.NEWUSER_ID) || [];
+        const updatedRs3 = await PublicReportController.mapChunked(rs1Data || [], async (item: any) => {
+            let rs4Data: any[] = [];
+            const newUserDataRs3 = await getUserDataForRs3(user_id, item.NEWUSER_ID) || [];
                 if (newUserDataRs3.length > 0) {
                     for (const data_rs3 of newUserDataRs3) {
                         const sevakarParam = {
@@ -649,9 +663,8 @@ export class PublicReportController {
                         }
                     }
                 }
-                updatedRs3.push({ newUserDataRs3, rs4Data });
-            }
-        }
+            return { newUserDataRs3, rs4Data };
+        });
         return {
             newUserDataDBRs2: entriesDetailsDB,
             yearRs42: yearRS42,

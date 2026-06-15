@@ -4,7 +4,19 @@ import { logger } from "../../logger/Logger";
 import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
 import { countConstructiontax, countTaxPayer, countTaxationLand, fetchAarogya_aarogyaCount, fetchBhumu_bhumiCount, fetchCurrentYear, fetchManora_Count, fetchSafai_SafaiCount, fetchSamanya_Pani_kar_count, fetchVanijya_Count, fetchViseshPaniKar_Count, fetchViz_VizCount, getConstructionForsarkari8, getConstructionTaxDetails, getConstructionTaxDetailsForNamuna8, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getNewDistinctUserDetails, getNewDistinctUserwithStartEndDetails, getNewUserDetails, getRecordBasedOnStartandEnd, getTaxLandData, getTaxPayerDetails, getTaxPayerDetailsForNamuna8, getTaxationLandDetails, getTaxationandMilkat, getUserDataForAdhikrutGharkul, getUserDataForGharKar, getUserDataForRs3, getYearByYearId, gettaxationLandDetails } from "../../services/main/customer.service";
-   
+
+/** Run an async mapper over rows in bounded-parallel chunks (default 20 at a
+ *  time) instead of one-by-one. Same per-row queries/data, order preserved —
+ *  just far faster for big wards (sequential N+1 made these reports crawl). */
+async function mapChunked<T, R>(rows: T[], fn: (item: T) => Promise<R>, size = 20): Promise<R[]> {
+    const out: R[] = [];
+    for (let i = 0; i < rows.length; i += size) {
+        const built = await Promise.all(rows.slice(i, i + size).map(fn));
+        out.push(...built);
+    }
+    return out;
+}
+
 export class Namuna8Controller {
    static async get_namuna_8_anukramnika(req: Request, res: Response) {
         try {
@@ -59,13 +71,23 @@ export class Namuna8Controller {
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const rs3Data = await getUserDataForAdhikrutGharkul(Number(decoded_user['userId']), ward_number, start, end);
             const yearRS42 = await getYearByYearId(year);
+            // Per-record detail lookups in bounded-parallel chunks (same queries
+            // and data, just far faster — sequential N+1 made big wards crawl).
+            const uid = Number(decoded_user['userId']);
             const updatedRs3: any[] = [];
             if (rs3Data) {
-                for (const item of rs3Data) {
-                    const taxationLandRS4 = await gettaxationLandDetails(Number(decoded_user['userId']), Number(item.NEWUSER_ID)) || [];
-                    const constructionTaxRS5 = await getConstructionTaxDetails(Number(decoded_user['userId']), Number(item.NEWUSER_ID)) || [];
-                    const taxPayerRS6 = await getTaxPayerDetails(Number(decoded_user['userId']), Number(item.NEWUSER_ID)) || [];
-                    updatedRs3.push({ ...item,taxationLandRS4,constructionTaxRS5,taxPayerRS6 });
+                const CHUNK = 20;
+                for (let i = 0; i < rs3Data.length; i += CHUNK) {
+                    const built = await Promise.all(rs3Data.slice(i, i + CHUNK).map(async (item: any) => {
+                        const nid = Number(item.NEWUSER_ID);
+                        const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
+                            gettaxationLandDetails(uid, nid).then(r => r || []),
+                            getConstructionTaxDetails(uid, nid).then(r => r || []),
+                            getTaxPayerDetails(uid, nid).then(r => r || []),
+                        ]);
+                        return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+                    }));
+                    updatedRs3.push(...built);
                 }
             }
             const all_data = {
@@ -100,16 +122,15 @@ export class Namuna8Controller {
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const yearRS10 = await getYearByYearId(year);
             const taxlandDataRs3 = await getUserDataForGharKar(Number(decoded_user['userId']), ward_number, start, end);
-            const updatedRs3: any[] = [];
-            if (taxlandDataRs3) {
-                for (const item of taxlandDataRs3) {
-                    // const newUserDataRs3 = await getUserDataForRs3(Number(decoded_user['userId']),item.NEWUSER_ID)
-                    const taxationLandRS4 = await gettaxationLandDetails(Number(decoded_user['userId']), item.NEWUSER_ID) || [];
-                    const constructionTaxRS5 = await getConstructionTaxDetails(Number(decoded_user['userId']), item.NEWUSER_ID) || [];
-                    const taxPayerRS8 = await getTaxPayerDetails(Number(decoded_user['userId']), item.NEWUSER_ID) || [];
-                    updatedRs3.push({ ...item,taxationLandRS4,constructionTaxRS5,taxPayerRS8 });
-                }
-            }
+            const uidGK = Number(decoded_user['userId']);
+            const updatedRs3 = await mapChunked(taxlandDataRs3 || [], async (item: any) => {
+                const [taxationLandRS4, constructionTaxRS5, taxPayerRS8] = await Promise.all([
+                    gettaxationLandDetails(uidGK, item.NEWUSER_ID).then(r => r || []),
+                    getConstructionTaxDetails(uidGK, item.NEWUSER_ID).then(r => r || []),
+                    getTaxPayerDetails(uidGK, item.NEWUSER_ID).then(r => r || []),
+                ]);
+                return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS8 };
+            });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,
                 yearRs10: yearRS10,
@@ -151,15 +172,16 @@ export class Namuna8Controller {
             }else{
                 yearRS42 = await getYearByYearId(year);
             }
-            const updatedRs3: any[] = [];
-            if (rs3Data) {
-                for (const item of rs3Data) {
-                    const taxationLandRS4 = await gettaxationLandDetails(Number(decoded_user['userId']), Number(item.NEWUSER_ID)) || [];
-                    const constructionTaxRS5 = await getConstructionTaxDetailsForNamuna8(Number(decoded_user['userId']), Number(item.NEWUSER_ID)) || [];
-                    const taxPayerRS6 = await getTaxPayerDetailsForNamuna8(Number(decoded_user['userId']), Number(item.NEWUSER_ID)) || [];
-                    updatedRs3.push({ ...item,taxationLandRS4,constructionTaxRS5,taxPayerRS6 });
-                }
-            }
+            const uidSV = Number(decoded_user['userId']);
+            const updatedRs3 = await mapChunked(rs3Data || [], async (item: any) => {
+                const nid = Number(item.NEWUSER_ID);
+                const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
+                    gettaxationLandDetails(uidSV, nid).then(r => r || []),
+                    getConstructionTaxDetailsForNamuna8(uidSV, nid).then(r => r || []),
+                    getTaxPayerDetailsForNamuna8(uidSV, nid).then(r => r || []),
+                ]);
+                return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+            });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,
                 yearRs42: yearRS42,
@@ -201,15 +223,16 @@ export class Namuna8Controller {
             }else{
                 yearRS42 = await getYearByYearId(year);
             }
-            const updatedRs3: any[] = [];
-            if (rs3Data) {
-                for (const item of rs3Data) {
-                    const taxationLandRS4 = await gettaxationLandDetails(Number(decoded_user['userId']), Number(item.NEWUSER_ID)) || [];
-                    const constructionTaxRS5 = await getConstructionTaxDetails(Number(decoded_user['userId']), Number(item.NEWUSER_ID)) || [];
-                    const taxPayerRS6 = await getTaxPayerDetailsForNamuna8(Number(decoded_user['userId']), Number(item.NEWUSER_ID)) || [];
-                    updatedRs3.push({ ...item,taxationLandRS4,constructionTaxRS5,taxPayerRS6 });
-                }
-            }
+            const uidIMG = Number(decoded_user['userId']);
+            const updatedRs3 = await mapChunked(rs3Data || [], async (item: any) => {
+                const nid = Number(item.NEWUSER_ID);
+                const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
+                    gettaxationLandDetails(uidIMG, nid).then(r => r || []),
+                    getConstructionTaxDetails(uidIMG, nid).then(r => r || []),
+                    getTaxPayerDetailsForNamuna8(uidIMG, nid).then(r => r || []),
+                ]);
+                return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+            });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,
                 yearRs42: yearRS42,
