@@ -62,6 +62,58 @@ export class PublicReportController {
         }
     }
 
+    /** Bulk variant: one call creates/reuses a per-record link for many
+     *  new_user_ids of the SAME param report (e.g. one QR per row of a ward
+     *  list). Body: { report_key, report_params, new_user_ids: number[] }.
+     *  Returns { tokens: { <new_user_id>: <token> } }. Avoids N separate
+     *  generate-link HTTP calls when a report has hundreds of rows. */
+    static async generateLinksBulk(req: Request, res: Response) {
+        try {
+            const authHeader = req.headers.authorization;
+            const token = authHeader ? authHeader.slice(7) : null;
+            const decoded_user: any = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+
+            const { report_key, report_params, new_user_ids } = req.body || {};
+            const isParam = PARAM_REPORTS.includes(report_key);
+            const isNewuser = NEWUSER_REPORTS.includes(report_key);
+            if (!isParam && !isNewuser) {
+                return _400(res, `report_key must be one of: ${SUPPORTED_REPORTS.join(', ')}`);
+            }
+            if (!Array.isArray(new_user_ids) || new_user_ids.length === 0) {
+                return _400(res, "new_user_ids (non-empty array) is required");
+            }
+
+            const baseCtx = {
+                user_id: Number(decoded_user.userId),
+                district_id: Number(decoded_user.DISTRICT_ID),
+                taluka_id: Number(decoded_user.TALUKA_ID),
+                panchayat_id: Number(decoded_user.PANCHAYAT_ID),
+                gatgrampanchayat_id: Number(decoded_user.GATGRAMPANCHAYAT_id),
+            };
+
+            const tokens: { [key: string]: string } = {};
+            // Create links in bounded-parallel chunks (each is one idempotent upsert).
+            // PARAM reports scope by params+new_user_id; NEWUSER reports by newuser_id alone.
+            await PublicReportController.mapChunked(new_user_ids, async (nid: any) => {
+                const rp = isParam ? { ...(report_params || {}), new_user_id: Number(nid) } : null;
+                const linkToken = await createReportViewLink({
+                    user_id: baseCtx.user_id,
+                    newuser_id: Number(nid),
+                    report_key,
+                    scope_key: isParam ? reportScopeKey(rp) : null,
+                    params: isParam ? { ...baseCtx, report_params: rp } : { ...baseCtx },
+                });
+                tokens[String(nid)] = linkToken;
+                return null;
+            });
+
+            return _201(res, "Report links generated", { tokens });
+        } catch (error: any) {
+            logger.error("PublicReport.generateLinksBulk :: ", error?.message || error);
+            return _400(res, error?.message || "Error generating report links");
+        }
+    }
+
     /** Public (no auth): return the report data for a view link. */
     static async getPublicReport(req: Request, res: Response) {
         try {

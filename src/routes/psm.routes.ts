@@ -93,6 +93,7 @@ export class psmRoutes {
 
         // Public report view links (QR on printed reports — no login needed to view)
         this.router.post('/generate-report-link', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, PublicReportController.generateLink);
+        this.router.post('/generate-report-links-bulk', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, PublicReportController.generateLinksBulk);
         this.router.get('/public/report/:token', GlobalMiddleware.checkError, PublicReportController.getPublicReport);   // public — no auth
         this.router.put('/bill-payment-status/:id', GlobalMiddleware.checkError, GlobalMiddleware.authenticate, BillPaymentController.updateStatus);
         this.router.post('/verify-user-for-permission', GlobalMiddleware.checkError, CustomerController.verifyUser);
