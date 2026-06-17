@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
 import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
-import { countConstructiontax, countTaxPayer, countTaxationLand, fetchAarogya_aarogyaCount, fetchBhumu_bhumiCount, fetchCurrentYear, fetchManora_Count, fetchSafai_SafaiCount, fetchSamanya_Pani_kar_count, fetchVanijya_Count, fetchViseshPaniKar_Count, fetchViz_VizCount, getConstructionForsarkari8, getConstructionTaxDetails, getConstructionTaxDetailsForNamuna8, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getNewDistinctUserDetails, getNewDistinctUserwithStartEndDetails, getNewUserDetails, getRecordBasedOnStartandEnd, getTaxLandData, getTaxPayerDetails, getTaxPayerDetailsForNamuna8, getTaxationLandDetails, getTaxationandMilkat, getUserDataForAdhikrutGharkul, getUserDataForGharKar, getUserDataForRs3, getYearByYearId, gettaxationLandDetails } from "../../services/main/customer.service";
+import { batchConstructionTaxDetails, batchTaxPayerDetailsForNamuna8, batchTaxationLandDetails, countConstructiontax, countTaxPayer, countTaxationLand, fetchAarogya_aarogyaCount, fetchBhumu_bhumiCount, fetchCurrentYear, fetchManora_Count, fetchSafai_SafaiCount, fetchSamanya_Pani_kar_count, fetchVanijya_Count, fetchViseshPaniKar_Count, fetchViz_VizCount, getConstructionForsarkari8, getConstructionTaxDetails, getConstructionTaxDetailsForNamuna8, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getNewDistinctUserDetails, getNewDistinctUserwithStartEndDetails, getNewUserDetails, getRecordBasedOnStartandEnd, getTaxLandData, getTaxPayerDetails, getTaxPayerDetailsForNamuna8, getTaxationLandDetails, getTaxationandMilkat, getUserDataForAdhikrutGharkul, getUserDataForGharKar, getUserDataForRs3, getYearByYearId, gettaxationLandDetails } from "../../services/main/customer.service";
 
 /** Run an async mapper over rows in bounded-parallel chunks (default 20 at a
  *  time) instead of one-by-one. Same per-row queries/data, order preserved —
@@ -223,15 +223,24 @@ export class Namuna8Controller {
             }else{
                 yearRS42 = await getYearByYearId(year);
             }
+            // BATCH: all 3 detail sets for every record in 3 queries total
+            // (was 3 queries per record → ~1000+ round-trips for a full ward).
+            // Same columns / per-record caps → identical output, far faster.
             const uidIMG = Number(decoded_user['userId']);
-            const updatedRs3 = await mapChunked(rs3Data || [], async (item: any) => {
-                const nid = Number(item.NEWUSER_ID);
-                const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
-                    gettaxationLandDetails(uidIMG, nid).then(r => r || []),
-                    getConstructionTaxDetails(uidIMG, nid).then(r => r || []),
-                    getTaxPayerDetailsForNamuna8(uidIMG, nid).then(r => r || []),
-                ]);
-                return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+            const idsIMG = (rs3Data || []).map((r: any) => Number(r.NEWUSER_ID));
+            const [tlMap, ctMap, tpMap] = await Promise.all([
+                batchTaxationLandDetails(uidIMG, idsIMG),
+                batchConstructionTaxDetails(uidIMG, idsIMG),
+                batchTaxPayerDetailsForNamuna8(uidIMG, idsIMG),
+            ]);
+            const updatedRs3 = (rs3Data || []).map((item: any) => {
+                const key = String(item.NEWUSER_ID);
+                return {
+                    ...item,
+                    taxationLandRS4: tlMap.get(key) || [],
+                    constructionTaxRS5: ctMap.get(key) || [],
+                    taxPayerRS6: tpMap.get(key) || [],
+                };
             });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,

@@ -1140,6 +1140,91 @@ export async function getTaxPayerDetailsForNamuna8(user_id: number, new_user_id:
     }
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * BATCH variants — fetch details for MANY newuser_ids in ONE query each, then
+ * group in JS. Same columns / per-record LIMIT / order as the single-record
+ * versions above, so output is identical — but it turns the per-record N+1
+ * (3 queries × hundreds of records) into just 3 queries for the whole report.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+/** taxationland details for many records (per-record cap 3, like LIMIT 3). */
+export async function batchTaxationLandDetails(user_id: number, ids: number[]): Promise<Map<string, any[]>> {
+    const map = new Map<string, any[]>();
+    const unique = Array.from(new Set((ids || []).filter(x => x !== null && x !== undefined)));
+    if (unique.length === 0) return map;
+    const placeholders = unique.map(() => '?').join(',');
+    const query = `
+        SELECT A.*, M.MILKAT_VAPAR_NAME, P.PRAKAR_NAME, G.GATGRAMPANCHAYAT_NAME, T.VAPARACHE_PRAKAR
+        FROM taxationland A
+        LEFT JOIN milkat_vapar M ON M.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID
+        LEFT JOIN openplot O ON O.OPENPLOT_ID = A.OPENPLOT_ID
+        LEFT JOIN prakar P ON P.PRAKAR_ID = O.PRAKAR_ID
+        LEFT JOIN gatgrampanchayat G ON G.GATGRAMPANCHAYAT_ID = A.GATGRAMPANCHAYAT_ID
+        LEFT JOIN taxationland T ON T.TAXATIONLAND_ID = A.TAXATIONLAND_ID
+        WHERE A.user_id = ? AND A.newuser_id IN (${placeholders}) AND A.DELETED_AT IS NULL
+        ORDER BY A.newuser_id, A.TAXATIONLAND_ID
+    `;
+    const rows: any = await executeQuery(query, [user_id, ...unique]);
+    for (const row of rows) {
+        const key = String(row.newuser_id);
+        let arr = map.get(key);
+        if (!arr) { arr = []; map.set(key, arr); }
+        if (arr.length < 3) arr.push(row);
+    }
+    return map;
+}
+
+/** constructiontax details for many records (per-record cap 5, ORDER BY id). */
+export async function batchConstructionTaxDetails(user_id: number, ids: number[]): Promise<Map<string, any[]>> {
+    const map = new Map<string, any[]>();
+    const unique = Array.from(new Set((ids || []).filter(x => x !== null && x !== undefined)));
+    if (unique.length === 0) return map;
+    const placeholders = unique.map(() => '?').join(',');
+    const query = `
+        SELECT A.*, M.MILKAT_VAPAR_NAME, MAL.DESCRIPTION_NAME, C.VAPARACHE_PRAKAR, F.FLOOR_NAME
+        FROM constructiontax A
+        LEFT JOIN milkat_vapar M ON M.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID
+        LEFT JOIN malmatta MAL ON MAL.MALMATTA_ID = A.MALMATTA_ID
+        LEFT JOIN constructiontax C ON C.CONSTRUCTIONTAX_ID = A.CONSTRUCTIONTAX_ID
+        LEFT JOIN floor F ON F.FLOOR_ID = A.FLOOR_ID
+        WHERE A.newuser_id IN (${placeholders}) AND A.user_id = ? AND A.DELETED_AT IS NULL
+        ORDER BY A.newuser_id, A.CONSTRUCTIONTAX_ID ASC
+    `;
+    const rows: any = await executeQuery(query, [...unique, user_id]);
+    for (const row of rows) {
+        const key = String(row.newuser_id);
+        let arr = map.get(key);
+        if (!arr) { arr = []; map.set(key, arr); }
+        if (arr.length < 5) arr.push(row);
+    }
+    return map;
+}
+
+/** taxpayers details for many records (per-record cap 3, ORDER BY id) — Namuna-8 join set. */
+export async function batchTaxPayerDetailsForNamuna8(user_id: number, ids: number[]): Promise<Map<string, any[]>> {
+    const map = new Map<string, any[]>();
+    const unique = Array.from(new Set((ids || []).filter(x => x !== null && x !== undefined)));
+    if (unique.length === 0) return map;
+    const placeholders = unique.map(() => '?').join(',');
+    const query = `
+        SELECT A.*, M.MILKAT_VAPAR_NAME, MAL.DESCRIPTION_NAME, MANO.MANORAMASTER_NAME
+        FROM taxpayers A
+        LEFT JOIN milkat_vapar M ON M.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID
+        LEFT JOIN malmatta MAL ON MAL.MALMATTA_ID = A.MALMATTA_ID
+        LEFT JOIN manoramaster MANO ON MANO.MANORAMASTER_ID = A.MANORAMASTER_ID
+        WHERE A.newuser_id IN (${placeholders}) AND A.user_id = ? AND A.DELETED_AT IS NULL
+        ORDER BY A.newuser_id, A.TAXPAYERS_ID ASC
+    `;
+    const rows: any = await executeQuery(query, [...unique, user_id]);
+    for (const row of rows) {
+        const key = String(row.newuser_id);
+        let arr = map.get(key);
+        if (!arr) { arr = []; map.set(key, arr); }
+        if (arr.length < 3) arr.push(row);
+    }
+    return map;
+}
+
 export async function updateCustomerImagePath(imaggeData: any): Promise<void> {
     try {
         const query = `UPDATE newuser SET r_path = ? WHERE NEWUSER_ID = ? AND user_id = ?`;
