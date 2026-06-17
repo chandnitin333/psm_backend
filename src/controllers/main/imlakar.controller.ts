@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
 import { logger } from "../../logger/Logger";
-import { getConstructionTaxDetails, getEntriesDetails, getImlakarAnukramnika, getImlakarNewDistinct, getTaxPayerDetails, getUserDataForRs3, getYearByYearId, gettaxationLandDetails } from "../../services/main/customer.service";
+import { batchConstructionTaxDetails, batchTaxPayerDetails, batchTaxationLandDetails, batchUserDataForRs3, getConstructionTaxDetails, getEntriesDetails, getImlakarAnukramnika, getImlakarNewDistinct, getTaxPayerDetails, getUserDataForRs3, getYearByYearId, gettaxationLandDetails } from "../../services/main/customer.service";
 import { _200, _400 } from "../../utils/ApiResponse";
 
 /** Run an async mapper over rows in bounded-parallel chunks instead of
@@ -40,16 +40,24 @@ export class ImlakarController {
             const rs3Data = await getImlakarNewDistinct(Number(decoded_user['userId']), ward_number, start, end);
             // console.log("-----",rs3Data);
             const yearRS42 = await getYearByYearId(year);
+            // BATCH: 4 detail sets in 4 queries (was N+1). Same output.
             const uidIM = Number(decoded_user['userId']);
-            const updatedRs3 = await mapChunked(rs3Data || [], async (item: any) => {
-                const nid = Number(item.NEWUSER_ID);
-                const [rs3Details, taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
-                    getUserDataForRs3(uidIM, nid).then(r => r || {}),
-                    gettaxationLandDetails(uidIM, nid).then(r => r || []),
-                    getConstructionTaxDetails(uidIM, nid).then(r => r || []),
-                    getTaxPayerDetails(uidIM, nid).then(r => r || []),
-                ]);
-                return { ...item, rs3Details, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+            const idsIM = (rs3Data || []).map((r: any) => Number(r.NEWUSER_ID));
+            const [urIM, tlIM, ctIM, tpIM] = await Promise.all([
+                batchUserDataForRs3(uidIM, idsIM),
+                batchTaxationLandDetails(uidIM, idsIM),
+                batchConstructionTaxDetails(uidIM, idsIM),
+                batchTaxPayerDetails(uidIM, idsIM),
+            ]);
+            const updatedRs3 = (rs3Data || []).map((item: any) => {
+                const key = String(item.NEWUSER_ID);
+                return {
+                    ...item,
+                    rs3Details: urIM.get(key) || {},
+                    taxationLandRS4: tlIM.get(key) || [],
+                    constructionTaxRS5: ctIM.get(key) || [],
+                    taxPayerRS6: tpIM.get(key) || [],
+                };
             });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,

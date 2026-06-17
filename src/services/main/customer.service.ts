@@ -1225,6 +1225,78 @@ export async function batchTaxPayerDetailsForNamuna8(user_id: number, ids: numbe
     return map;
 }
 
+/** constructiontax (Namuna-8 join set: no self-join, no VAPARACHE_PRAKAR) for many records, cap 5. */
+export async function batchConstructionTaxDetailsForNamuna8(user_id: number, ids: number[]): Promise<Map<string, any[]>> {
+    const map = new Map<string, any[]>();
+    const unique = Array.from(new Set((ids || []).filter(x => x !== null && x !== undefined)));
+    if (unique.length === 0) return map;
+    const placeholders = unique.map(() => '?').join(',');
+    const query = `
+        SELECT A.*, M.MILKAT_VAPAR_NAME, MAL.DESCRIPTION_NAME, F.FLOOR_NAME
+        FROM constructiontax A
+        LEFT JOIN milkat_vapar M ON M.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID
+        LEFT JOIN malmatta MAL ON MAL.MALMATTA_ID = A.MALMATTA_ID
+        LEFT JOIN floor F ON F.FLOOR_ID = A.FLOOR_ID
+        WHERE A.newuser_id IN (${placeholders}) AND A.user_id = ? AND A.DELETED_AT IS NULL
+        ORDER BY A.newuser_id, A.CONSTRUCTIONTAX_ID ASC
+    `;
+    const rows: any = await executeQuery(query, [...unique, user_id]);
+    for (const row of rows) {
+        const key = String(row.newuser_id);
+        let arr = map.get(key);
+        if (!arr) { arr = []; map.set(key, arr); }
+        if (arr.length < 5) arr.push(row);
+    }
+    return map;
+}
+
+/** taxpayers (full join set: self-join + VAPARACHE_PRAKAR + MANORAMASTER_NAME) for many records, cap 3. */
+export async function batchTaxPayerDetails(user_id: number, ids: number[]): Promise<Map<string, any[]>> {
+    const map = new Map<string, any[]>();
+    const unique = Array.from(new Set((ids || []).filter(x => x !== null && x !== undefined)));
+    if (unique.length === 0) return map;
+    const placeholders = unique.map(() => '?').join(',');
+    const query = `
+        SELECT A.*, M.MILKAT_VAPAR_NAME, MAL.DESCRIPTION_NAME, T.VAPARACHE_PRAKAR, MANO.MANORAMASTER_NAME
+        FROM taxpayers A
+        LEFT JOIN milkat_vapar M ON M.MILKAT_VAPAR_ID = A.MILKAT_VAPAR_ID
+        LEFT JOIN malmatta MAL ON MAL.MALMATTA_ID = A.MALMATTA_ID
+        LEFT JOIN taxpayers T ON T.TAXPAYERS_ID = A.TAXPAYERS_ID
+        LEFT JOIN manoramaster MANO ON MANO.MANORAMASTER_ID = A.MANORAMASTER_ID
+        WHERE A.newuser_id IN (${placeholders}) AND A.user_id = ? AND A.DELETED_AT IS NULL
+        ORDER BY A.newuser_id, A.TAXPAYERS_ID ASC
+    `;
+    const rows: any = await executeQuery(query, [...unique, user_id]);
+    for (const row of rows) {
+        const key = String(row.newuser_id);
+        let arr = map.get(key);
+        if (!arr) { arr = []; map.set(key, arr); }
+        if (arr.length < 3) arr.push(row);
+    }
+    return map;
+}
+
+/** newuser rows (getUserDataForRs3) for many records — usually 1 row per id. */
+export async function batchUserDataForRs3(user_id: number, ids: number[]): Promise<Map<string, any[]>> {
+    const map = new Map<string, any[]>();
+    const unique = Array.from(new Set((ids || []).filter(x => x !== null && x !== undefined)));
+    if (unique.length === 0) return map;
+    const placeholders = unique.map(() => '?').join(',');
+    const query = `
+        SELECT *
+        FROM newuser
+        WHERE DELETED_AT IS NULL AND user_id = ? AND NEWUSER_ID IN (${placeholders})
+    `;
+    const rows: any = await executeQuery(query, [user_id, ...unique]);
+    for (const row of rows) {
+        const key = String(row.NEWUSER_ID);
+        let arr = map.get(key);
+        if (!arr) { arr = []; map.set(key, arr); }
+        arr.push(row);
+    }
+    return map;
+}
+
 export async function updateCustomerImagePath(imaggeData: any): Promise<void> {
     try {
         const query = `UPDATE newuser SET r_path = ? WHERE NEWUSER_ID = ? AND user_id = ?`;

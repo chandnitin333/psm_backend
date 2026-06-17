@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
 import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
-import { getConstructionTaxDetails, getEntriesDetails, getRecordBasedOnStartandEnd, getTaxLandData, getTaxPayerDetails, getUserDataForGharKar, getUserDataForRs3, getYearByYearId, gettaxationLandDetails } from "../../services/main/customer.service";
+import { batchConstructionTaxDetails, batchTaxPayerDetails, batchTaxationLandDetails, batchUserDataForRs3, getConstructionTaxDetails, getEntriesDetails, getRecordBasedOnStartandEnd, getTaxLandData, getTaxPayerDetails, getUserDataForGharKar, getUserDataForRs3, getYearByYearId, gettaxationLandDetails } from "../../services/main/customer.service";
 import { get_ward_number } from "../../services/main/ward-wise-adhar-list";
 
 /** Run an async mapper over rows in bounded-parallel chunks instead of
@@ -39,14 +39,22 @@ export class MalamattaGrahakYadiList {
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const yearRS10 = await getYearByYearId(year);
             const rs3Data = await getRecordBasedOnStartandEnd(Number(decoded_user['userId']), ward_number, start, end, new_user_id);
+            // BATCH: 3 detail sets in 3 queries (was N+1). Same output.
             const uidDK = Number(decoded_user['userId']);
-            const updatedRs3 = await mapChunked(rs3Data || [], async (item: any) => {
-                const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
-                    gettaxationLandDetails(uidDK, item.NEWUSER_ID).then(r => r || []),
-                    getConstructionTaxDetails(uidDK, item.NEWUSER_ID).then(r => r || []),
-                    getTaxPayerDetails(uidDK, item.NEWUSER_ID).then(r => r || []),
-                ]);
-                return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+            const idsDK = (rs3Data || []).map((r: any) => Number(r.NEWUSER_ID));
+            const [tlDK, ctDK, tpDK] = await Promise.all([
+                batchTaxationLandDetails(uidDK, idsDK),
+                batchConstructionTaxDetails(uidDK, idsDK),
+                batchTaxPayerDetails(uidDK, idsDK),
+            ]);
+            const updatedRs3 = (rs3Data || []).map((item: any) => {
+                const key = String(item.NEWUSER_ID);
+                return {
+                    ...item,
+                    taxationLandRS4: tlDK.get(key) || [],
+                    constructionTaxRS5: ctDK.get(key) || [],
+                    taxPayerRS6: tpDK.get(key) || [],
+                };
             });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,
@@ -79,15 +87,24 @@ export class MalamattaGrahakYadiList {
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const yearRS10 = await getYearByYearId(year);
             const taxlandDataRs6 = await getTaxLandData(Number(decoded_user['userId']), ward_number, start, end);
+            // BATCH: 4 detail sets in 4 queries (was N+1). Same output.
             const uidKB = Number(decoded_user['userId']);
-            const updatedRs6 = await mapChunked(taxlandDataRs6 || [], async (item: any) => {
-                const [newUserDataRs3, taxationLandRS4, constructionTaxRS5, taxPayerRS8] = await Promise.all([
-                    getUserDataForRs3(uidKB, item.newuser_id),
-                    gettaxationLandDetails(uidKB, item.newuser_id).then(r => r || []),
-                    getConstructionTaxDetails(uidKB, item.newuser_id).then(r => r || []),
-                    getTaxPayerDetails(uidKB, item.newuser_id).then(r => r || []),
-                ]);
-                return { ...item, newUserDataRs3, taxationLandRS4, constructionTaxRS5, taxPayerRS8 };
+            const idsKB = (taxlandDataRs6 || []).map((r: any) => Number(r.newuser_id));
+            const [urKB, tlKB, ctKB, tpKB] = await Promise.all([
+                batchUserDataForRs3(uidKB, idsKB),
+                batchTaxationLandDetails(uidKB, idsKB),
+                batchConstructionTaxDetails(uidKB, idsKB),
+                batchTaxPayerDetails(uidKB, idsKB),
+            ]);
+            const updatedRs6 = (taxlandDataRs6 || []).map((item: any) => {
+                const key = String(item.newuser_id);
+                return {
+                    ...item,
+                    newUserDataRs3: urKB.get(key) || null,
+                    taxationLandRS4: tlKB.get(key) || [],
+                    constructionTaxRS5: ctKB.get(key) || [],
+                    taxPayerRS8: tpKB.get(key) || [],
+                };
             });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,
@@ -121,14 +138,22 @@ export class MalamattaGrahakYadiList {
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const yearRS10 = await getYearByYearId(year);
             const newuserDataRs3 = await getUserDataForGharKar(Number(decoded_user['userId']), ward_number, start, end);
+            // BATCH: 3 detail sets in 3 queries (was N+1). Same output.
             const uidGK = Number(decoded_user['userId']);
-            const updatedRs3 = await mapChunked(newuserDataRs3 || [], async (item: any) => {
-                const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
-                    gettaxationLandDetails(uidGK, item.NEWUSER_ID).then(r => r || []),
-                    getConstructionTaxDetails(uidGK, item.NEWUSER_ID).then(r => r || []),
-                    getTaxPayerDetails(uidGK, item.NEWUSER_ID).then(r => r || []),
-                ]);
-                return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+            const idsGK = (newuserDataRs3 || []).map((r: any) => Number(r.NEWUSER_ID));
+            const [tlGK, ctGK, tpGK] = await Promise.all([
+                batchTaxationLandDetails(uidGK, idsGK),
+                batchConstructionTaxDetails(uidGK, idsGK),
+                batchTaxPayerDetails(uidGK, idsGK),
+            ]);
+            const updatedRs3 = (newuserDataRs3 || []).map((item: any) => {
+                const key = String(item.NEWUSER_ID);
+                return {
+                    ...item,
+                    taxationLandRS4: tlGK.get(key) || [],
+                    constructionTaxRS5: ctGK.get(key) || [],
+                    taxPayerRS6: tpGK.get(key) || [],
+                };
             });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,

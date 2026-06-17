@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { logger } from "../../logger/Logger";
 import * as jwt from 'jsonwebtoken';
 import { getEnvironmentVariable } from "../../environments/env";
-import { batchConstructionTaxDetails, batchTaxPayerDetailsForNamuna8, batchTaxationLandDetails, countConstructiontax, countTaxPayer, countTaxationLand, fetchAarogya_aarogyaCount, fetchBhumu_bhumiCount, fetchCurrentYear, fetchManora_Count, fetchSafai_SafaiCount, fetchSamanya_Pani_kar_count, fetchVanijya_Count, fetchViseshPaniKar_Count, fetchViz_VizCount, getConstructionForsarkari8, getConstructionTaxDetails, getConstructionTaxDetailsForNamuna8, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getNewDistinctUserDetails, getNewDistinctUserwithStartEndDetails, getNewUserDetails, getRecordBasedOnStartandEnd, getTaxLandData, getTaxPayerDetails, getTaxPayerDetailsForNamuna8, getTaxationLandDetails, getTaxationandMilkat, getUserDataForAdhikrutGharkul, getUserDataForGharKar, getUserDataForRs3, getYearByYearId, gettaxationLandDetails } from "../../services/main/customer.service";
+import { batchConstructionTaxDetails, batchConstructionTaxDetailsForNamuna8, batchTaxPayerDetails, batchTaxPayerDetailsForNamuna8, batchTaxationLandDetails, countConstructiontax, countTaxPayer, countTaxationLand, fetchAarogya_aarogyaCount, fetchBhumu_bhumiCount, fetchCurrentYear, fetchManora_Count, fetchSafai_SafaiCount, fetchSamanya_Pani_kar_count, fetchVanijya_Count, fetchViseshPaniKar_Count, fetchViz_VizCount, getConstructionForsarkari8, getConstructionTaxDetails, getConstructionTaxDetailsForNamuna8, getEntriesDetails, getEntriesDetailsForNamuna8Sarkari, getNewDistinctUserDetails, getNewDistinctUserwithStartEndDetails, getNewUserDetails, getRecordBasedOnStartandEnd, getTaxLandData, getTaxPayerDetails, getTaxPayerDetailsForNamuna8, getTaxationLandDetails, getTaxationandMilkat, getUserDataForAdhikrutGharkul, getUserDataForGharKar, getUserDataForRs3, getYearByYearId, gettaxationLandDetails } from "../../services/main/customer.service";
 
 /** Run an async mapper over rows in bounded-parallel chunks (default 20 at a
  *  time) instead of one-by-one. Same per-row queries/data, order preserved —
@@ -71,25 +71,23 @@ export class Namuna8Controller {
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const rs3Data = await getUserDataForAdhikrutGharkul(Number(decoded_user['userId']), ward_number, start, end);
             const yearRS42 = await getYearByYearId(year);
-            // Per-record detail lookups in bounded-parallel chunks (same queries
-            // and data, just far faster — sequential N+1 made big wards crawl).
+            // BATCH: 3 detail sets for every record in 3 queries (was N+1). Same output.
             const uid = Number(decoded_user['userId']);
-            const updatedRs3: any[] = [];
-            if (rs3Data) {
-                const CHUNK = 20;
-                for (let i = 0; i < rs3Data.length; i += CHUNK) {
-                    const built = await Promise.all(rs3Data.slice(i, i + CHUNK).map(async (item: any) => {
-                        const nid = Number(item.NEWUSER_ID);
-                        const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
-                            gettaxationLandDetails(uid, nid).then(r => r || []),
-                            getConstructionTaxDetails(uid, nid).then(r => r || []),
-                            getTaxPayerDetails(uid, nid).then(r => r || []),
-                        ]);
-                        return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
-                    }));
-                    updatedRs3.push(...built);
-                }
-            }
+            const idsVN = (rs3Data || []).map((r: any) => Number(r.NEWUSER_ID));
+            const [tlVN, ctVN, tpVN] = await Promise.all([
+                batchTaxationLandDetails(uid, idsVN),
+                batchConstructionTaxDetails(uid, idsVN),
+                batchTaxPayerDetails(uid, idsVN),
+            ]);
+            const updatedRs3: any[] = (rs3Data || []).map((item: any) => {
+                const key = String(item.NEWUSER_ID);
+                return {
+                    ...item,
+                    taxationLandRS4: tlVN.get(key) || [],
+                    constructionTaxRS5: ctVN.get(key) || [],
+                    taxPayerRS6: tpVN.get(key) || [],
+                };
+            });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,
                 yearRs42: yearRS42,
@@ -122,14 +120,22 @@ export class Namuna8Controller {
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             const yearRS10 = await getYearByYearId(year);
             const taxlandDataRs3 = await getUserDataForGharKar(Number(decoded_user['userId']), ward_number, start, end);
+            // BATCH: 3 detail sets in 3 queries (was N+1). Same output.
             const uidGK = Number(decoded_user['userId']);
-            const updatedRs3 = await mapChunked(taxlandDataRs3 || [], async (item: any) => {
-                const [taxationLandRS4, constructionTaxRS5, taxPayerRS8] = await Promise.all([
-                    gettaxationLandDetails(uidGK, item.NEWUSER_ID).then(r => r || []),
-                    getConstructionTaxDetails(uidGK, item.NEWUSER_ID).then(r => r || []),
-                    getTaxPayerDetails(uidGK, item.NEWUSER_ID).then(r => r || []),
-                ]);
-                return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS8 };
+            const idsGK = (taxlandDataRs3 || []).map((r: any) => Number(r.NEWUSER_ID));
+            const [tlGK, ctGK, tpGK] = await Promise.all([
+                batchTaxationLandDetails(uidGK, idsGK),
+                batchConstructionTaxDetails(uidGK, idsGK),
+                batchTaxPayerDetails(uidGK, idsGK),
+            ]);
+            const updatedRs3 = (taxlandDataRs3 || []).map((item: any) => {
+                const key = String(item.NEWUSER_ID);
+                return {
+                    ...item,
+                    taxationLandRS4: tlGK.get(key) || [],
+                    constructionTaxRS5: ctGK.get(key) || [],
+                    taxPayerRS8: tpGK.get(key) || [],
+                };
             });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,
@@ -172,15 +178,22 @@ export class Namuna8Controller {
             }else{
                 yearRS42 = await getYearByYearId(year);
             }
+            // BATCH: 3 detail sets in 3 queries (was N+1). Same output.
             const uidSV = Number(decoded_user['userId']);
-            const updatedRs3 = await mapChunked(rs3Data || [], async (item: any) => {
-                const nid = Number(item.NEWUSER_ID);
-                const [taxationLandRS4, constructionTaxRS5, taxPayerRS6] = await Promise.all([
-                    gettaxationLandDetails(uidSV, nid).then(r => r || []),
-                    getConstructionTaxDetailsForNamuna8(uidSV, nid).then(r => r || []),
-                    getTaxPayerDetailsForNamuna8(uidSV, nid).then(r => r || []),
-                ]);
-                return { ...item, taxationLandRS4, constructionTaxRS5, taxPayerRS6 };
+            const idsSV = (rs3Data || []).map((r: any) => Number(r.NEWUSER_ID));
+            const [tlSV, ctSV, tpSV] = await Promise.all([
+                batchTaxationLandDetails(uidSV, idsSV),
+                batchConstructionTaxDetailsForNamuna8(uidSV, idsSV),
+                batchTaxPayerDetailsForNamuna8(uidSV, idsSV),
+            ]);
+            const updatedRs3 = (rs3Data || []).map((item: any) => {
+                const key = String(item.NEWUSER_ID);
+                return {
+                    ...item,
+                    taxationLandRS4: tlSV.get(key) || [],
+                    constructionTaxRS5: ctSV.get(key) || [],
+                    taxPayerRS6: tpSV.get(key) || [],
+                };
             });
             const all_data = {
                 newUserDataDBRs2: entriesDetailsDB,
