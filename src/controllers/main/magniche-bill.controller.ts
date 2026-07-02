@@ -29,29 +29,56 @@ export class MagnicheBillController {
             const authHeader = req.headers.authorization;
             const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
             const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+            const ctx = {
+                district_id: Number(decoded_user['DISTRICT_ID']),
+                taluka_id: Number(decoded_user['TALUKA_ID']),
+                panchayat_id: Number(decoded_user['PANCHAYAT_ID']),
+                gatgrampanchayat_id: Number(decoded_user['GATGRAMPANCHAYAT_id']),
+                user_id: Number(decoded_user['userId']),
+            };
+            const params = {
+                new_user_id: req.body.new_user_id,
+                ward_no: req.body.ward_no,
+                start: req.body.start,
+                end: req.body.end,
+                year: req.body.year,
+            };
+            const all_data = await MagnicheBillController.buildMagnicheBill129_1Data(ctx, params);
+            return _200(res, "Data fetched successfully", { status: 200, data: all_data });
+        } catch (error) {
+            console.error('Error in search:', error);
+            return _400(res, error.message);
+        }
+    }
+
+    /** Core 129-1 data assembly, reusable from both the authenticated controller
+     *  (ctx from JWT) and the public report endpoint (ctx from the stored link). */
+    static async buildMagnicheBill129_1Data(
+        ctx: { district_id: number; taluka_id: number; panchayat_id: number; gatgrampanchayat_id: number; user_id: number; },
+        params: { new_user_id?: any; ward_no?: any; start?: any; end?: any; year?: any; },
+    ): Promise<any> {
             const entriesParam = {
-                'district_id': Number(decoded_user['DISTRICT_ID']),
-                'taluka_id': Number(decoded_user['TALUKA_ID']),
-                'panchayat_id': Number(decoded_user['PANCHAYAT_ID']),
-                'gatgrampanchayat_id': Number(decoded_user['GATGRAMPANCHAYAT_id']),
-                'user_id': Number(decoded_user['userId'])
+                'district_id': ctx.district_id,
+                'taluka_id': ctx.taluka_id,
+                'panchayat_id': ctx.panchayat_id,
+                'gatgrampanchayat_id': ctx.gatgrampanchayat_id,
+                'user_id': ctx.user_id
             }
-            const new_user_id = req.body.new_user_id;
-            const ward_no = req.body.ward_no;
-            const start= req.body.start;
-            const end = req.body.end;
-            const year = req.body.year;
-            console.log(req.body)
+            const new_user_id = params.new_user_id;
+            const ward_no = params.ward_no;
+            const start= params.start;
+            const end = params.end;
+            const year = params.year;
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             let yearRS42 = null;
             let rs3Data = null;
             let rs1Data = null;
             if(new_user_id){
                 yearRS42 = await fetchCurrentYear();
-                rs3Data = await getUserDataForRs3(Number(decoded_user['userId']), new_user_id);
+                rs3Data = await getUserDataForRs3(ctx.user_id, new_user_id);
             } else {
                 yearRS42 = await getYearByYearId(year);
-                rs1Data = await getRecordBasedOnStartandEnd(Number(decoded_user['userId']), ward_no, start, end, new_user_id);
+                rs1Data = await getRecordBasedOnStartandEnd(ctx.user_id, ward_no, start, end, new_user_id);
             }
             
             // console.log("yearRS42--", yearRS42[0].YEAR_ID)
@@ -61,7 +88,7 @@ export class MagnicheBillController {
             if (rs3Data && new_user_id) {
                 for (const data_rs3 of rs3Data) {
                     const sevakarParam = {
-                        'user_id': Number(decoded_user['userId']),
+                        'user_id': ctx.user_id,
                         "previousYear_id": Number(yearRS42.yearId_negative_1),
                         "vard_number": data_rs3.VARD_NUMBER,
                         "newuser_id":data_rs3.NEWUSER_ID,
@@ -162,11 +189,11 @@ export class MagnicheBillController {
                 }
             } else if(rs1Data && !new_user_id){
                 for (const item of rs1Data) {
-                    rs3Data = await getUserDataForRs3(Number(decoded_user['userId']),item.NEWUSER_ID) || [];
+                    rs3Data = await getUserDataForRs3(ctx.user_id,item.NEWUSER_ID) || [];
                     if(rs3Data.length > 0){
                         for(const data_rs3 of rs3Data){
                             const sevakarParam = {
-                                'user_id': Number(decoded_user['userId']),
+                                'user_id': ctx.user_id,
                                 "previousYear_id": Number(yearRS42[0].YEAR_ID) - 1,
                                 "vard_number": data_rs3.VARD_NUMBER,
                                 "newuser_id":data_rs3.NEWUSER_ID,
@@ -267,42 +294,65 @@ export class MagnicheBillController {
                 // rs4 : rs4Data
                 rs3 : rs3Updated
             }
-            return _200(res, "Data fetched successfully", { status: 200, data: all_data });
-        } catch (error) {
-            console.error('Error in search:', error);
-            return _400(res, error.message);
-        }
+            return all_data;
     }
-    
+
 
     static async getMagnicheBill_129_2_details(req: Request, res: Response) {
         try {
             const authHeader = req.headers.authorization;
             const token = authHeader ? authHeader.slice(7, authHeader.length) : null;
             const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
+            const ctx = {
+                district_id: Number(decoded_user['DISTRICT_ID']),
+                taluka_id: Number(decoded_user['TALUKA_ID']),
+                panchayat_id: Number(decoded_user['PANCHAYAT_ID']),
+                gatgrampanchayat_id: Number(decoded_user['GATGRAMPANCHAYAT_id']),
+                user_id: Number(decoded_user['userId']),
+            };
+            const params = {
+                new_user_id: req.body.new_user_id,
+                ward_no: req.body.ward_no,
+                start: req.body.start,
+                end: req.body.end,
+                year: req.body.year,
+            };
+            const all_data = await MagnicheBillController.buildMagnicheBill129_2Data(ctx, params);
+            return _200(res, "Data fetched successfully", { status: 200, data: all_data });
+        } catch (error) {
+            console.error('Error in search:', error);
+            return _400(res, error.message);
+        }
+    }
+
+    /** Core 129-2 data assembly, reusable from both the authenticated controller
+     *  (ctx from JWT) and the public report endpoint (ctx from the stored link). */
+    static async buildMagnicheBill129_2Data(
+        ctx: { district_id: number; taluka_id: number; panchayat_id: number; gatgrampanchayat_id: number; user_id: number; },
+        params: { new_user_id?: any; ward_no?: any; start?: any; end?: any; year?: any; },
+    ): Promise<any> {
             const entriesParam = {
-                'district_id': Number(decoded_user['DISTRICT_ID']),
-                'taluka_id': Number(decoded_user['TALUKA_ID']),
-                'panchayat_id': Number(decoded_user['PANCHAYAT_ID']),
-                'gatgrampanchayat_id': Number(decoded_user['GATGRAMPANCHAYAT_id']),
-                'user_id': Number(decoded_user['userId'])
+                'district_id': ctx.district_id,
+                'taluka_id': ctx.taluka_id,
+                'panchayat_id': ctx.panchayat_id,
+                'gatgrampanchayat_id': ctx.gatgrampanchayat_id,
+                'user_id': ctx.user_id
             }
-            const new_user_id = req.body.new_user_id;
-            const ward_no = req.body.ward_no;
-            const start= req.body.start;
-            const end = req.body.end;
-            const year = req.body.year;
-            // console.log(req.body)
+            const new_user_id = params.new_user_id;
+            const ward_no = params.ward_no;
+            const start= params.start;
+            const end = params.end;
+            const year = params.year;
             const entriesDetailsDB: any = await getEntriesDetails(entriesParam);
             let yearRS42 = null;
             let rs3Data = null;
             let rs1Data = null;
             if(new_user_id){
                 yearRS42 = await fetchCurrentYear();
-                rs3Data = await getUserDataForRs3(Number(decoded_user['userId']), new_user_id);
+                rs3Data = await getUserDataForRs3(ctx.user_id, new_user_id);
             } else {
                 yearRS42 = await getYearByYearId(year);
-                rs1Data = await getRecordBasedOnStartandEnd(Number(decoded_user['userId']), ward_no, start, end, new_user_id);
+                rs1Data = await getRecordBasedOnStartandEnd(ctx.user_id, ward_no, start, end, new_user_id);
             }
             
             // console.log("yearRS42--", yearRS42[0].YEAR_ID)
@@ -312,7 +362,7 @@ export class MagnicheBillController {
             if (rs3Data && new_user_id) {
                 for (const data_rs3 of rs3Data) {
                     const sevakarParam = {
-                        'user_id': Number(decoded_user['userId']),
+                        'user_id': ctx.user_id,
                         "previousYear_id": Number(yearRS42.yearId_negative_1),
                         "vard_number": data_rs3.VARD_NUMBER,
                         "newuser_id":data_rs3.NEWUSER_ID,
@@ -413,11 +463,11 @@ export class MagnicheBillController {
                 }
             } else if(rs1Data && !new_user_id){
                 for (const item of rs1Data) {
-                    rs3Data = await getUserDataForRs3(Number(decoded_user['userId']),item.NEWUSER_ID) || [];
+                    rs3Data = await getUserDataForRs3(ctx.user_id,item.NEWUSER_ID) || [];
                     if(rs3Data.length > 0){
                         for(const data_rs3 of rs3Data){
                             const sevakarParam = {
-                                'user_id': Number(decoded_user['userId']),
+                                'user_id': ctx.user_id,
                                 "previousYear_id": Number(yearRS42[0].YEAR_ID) - 1,
                                 "vard_number": data_rs3.VARD_NUMBER,
                                 "newuser_id":data_rs3.NEWUSER_ID,
@@ -518,11 +568,7 @@ export class MagnicheBillController {
                 // rs4 : rs4Data
                 rs3 : rs3Updated
             }
-            return _200(res, "Data fetched successfully", { status: 200, data: all_data });
-        } catch (error) {
-            console.error('Error in search:', error);
-            return _400(res, error.message);
-        }
+            return all_data;
     }
 
 }

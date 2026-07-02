@@ -12,11 +12,12 @@ import {
     getUserDataForAdhikrutGharkul, getUserDataForGharKar, getUserDataForRs3, getYear, getYearByYearId,
 } from "../../services/main/customer.service";
 import { createReportViewLink, getReportViewLinkByToken, reportScopeKey } from "../../services/main/report-link.service";
+import { MagnicheBillController } from "./magniche-bill.controller";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
 
 // Per-newuser reports need a newuser_id; ward/range reports need report_params.
 const NEWUSER_REPORTS = ['namuna-8-1', 'namuna-9-1', 'namuna-8-sarkari'];
-const PARAM_REPORTS = ['namuna-8-1-single-vard', 'namuna-8-images', 'namuna-8-vard-new', 'namuna-8-sarkari-ward', 'malmatta-darkachi-yadi', 'malmatta-khula-bhukhand', 'malmatta-ghar-kar', 'namuna-9-vard-new'];
+const PARAM_REPORTS = ['namuna-8-1-single-vard', 'namuna-8-images', 'namuna-8-vard-new', 'namuna-8-sarkari-ward', 'malmatta-darkachi-yadi', 'malmatta-khula-bhukhand', 'malmatta-ghar-kar', 'namuna-9-vard-new', '129-1', '129-2'];
 const SUPPORTED_REPORTS = [...NEWUSER_REPORTS, ...PARAM_REPORTS];
 
 export class PublicReportController {
@@ -166,11 +167,65 @@ export class PublicReportController {
                 const data = await PublicReportController.buildNamuna9VardNewData(link);
                 return _200(res, "Report fetched", { report_key: link.report_key, data });
             }
+            if (link.report_key === '129-1') {
+                const data = await PublicReportController.build129_1Data(link);
+                return _200(res, "Report fetched", { report_key: link.report_key, data });
+            }
+            if (link.report_key === '129-2') {
+                const data = await PublicReportController.build129_2Data(link);
+                return _200(res, "Report fetched", { report_key: link.report_key, data });
+            }
             return _400(res, "Unsupported report type");
         } catch (error: any) {
             logger.error("PublicReport.getPublicReport :: ", error?.message || error);
             return _400(res, error?.message || "Error fetching report");
         }
+    }
+
+    /** 129-1 magniche bill — rebuilt from the stored link's snapshotted context
+     *  and report_params (no JWT). Delegates to the shared assembly in
+     *  MagnicheBillController so the logic stays in one place. */
+    private static async build129_1Data(link: any): Promise<any> {
+        const ctx = link.params || {};
+        const rp = ctx.report_params || {};
+        return MagnicheBillController.buildMagnicheBill129_1Data(
+            {
+                district_id: Number(ctx.district_id),
+                taluka_id: Number(ctx.taluka_id),
+                panchayat_id: Number(ctx.panchayat_id),
+                gatgrampanchayat_id: Number(ctx.gatgrampanchayat_id),
+                user_id: Number(ctx.user_id ?? link.user_id),
+            },
+            {
+                new_user_id: rp.new_user_id ?? link.newuser_id ?? null,
+                ward_no: rp.ward_no ?? null,
+                start: rp.start ?? null,
+                end: rp.end ?? null,
+                year: rp.year ?? null,
+            },
+        );
+    }
+
+    /** 129-2 magniche bill — same snapshot-based rebuild as 129-1. */
+    private static async build129_2Data(link: any): Promise<any> {
+        const ctx = link.params || {};
+        const rp = ctx.report_params || {};
+        return MagnicheBillController.buildMagnicheBill129_2Data(
+            {
+                district_id: Number(ctx.district_id),
+                taluka_id: Number(ctx.taluka_id),
+                panchayat_id: Number(ctx.panchayat_id),
+                gatgrampanchayat_id: Number(ctx.gatgrampanchayat_id),
+                user_id: Number(ctx.user_id ?? link.user_id),
+            },
+            {
+                new_user_id: rp.new_user_id ?? link.newuser_id ?? null,
+                ward_no: rp.ward_no ?? null,
+                start: rp.start ?? null,
+                end: rp.end ?? null,
+                year: rp.year ?? null,
+            },
+        );
     }
 
     /** Same data assembly as CustomerController.namuna_8_1, but the user
