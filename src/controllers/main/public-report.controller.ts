@@ -13,11 +13,12 @@ import {
 } from "../../services/main/customer.service";
 import { createReportViewLink, getReportViewLinkByToken, reportScopeKey } from "../../services/main/report-link.service";
 import { MagnicheBillController } from "./magniche-bill.controller";
+import { ImlakarController } from "./imlakar.controller";
 import { _200, _201, _400, _404 } from "../../utils/ApiResponse";
 
 // Per-newuser reports need a newuser_id; ward/range reports need report_params.
 const NEWUSER_REPORTS = ['namuna-8-1', 'namuna-9-1', 'namuna-8-sarkari'];
-const PARAM_REPORTS = ['namuna-8-1-single-vard', 'namuna-8-images', 'namuna-8-vard-new', 'namuna-8-sarkari-ward', 'malmatta-darkachi-yadi', 'malmatta-khula-bhukhand', 'malmatta-ghar-kar', 'namuna-9-vard-new', '129-1', '129-2'];
+const PARAM_REPORTS = ['namuna-8-1-single-vard', 'namuna-8-images', 'namuna-8-vard-new', 'namuna-8-sarkari-ward', 'malmatta-darkachi-yadi', 'malmatta-khula-bhukhand', 'malmatta-ghar-kar', 'namuna-9-vard-new', '129-1', '129-2', 'imla-kar'];
 const SUPPORTED_REPORTS = [...NEWUSER_REPORTS, ...PARAM_REPORTS];
 
 export class PublicReportController {
@@ -175,6 +176,10 @@ export class PublicReportController {
                 const data = await PublicReportController.build129_2Data(link);
                 return _200(res, "Report fetched", { report_key: link.report_key, data });
             }
+            if (link.report_key === 'imla-kar') {
+                const data = await PublicReportController.buildImlakarData(link);
+                return _200(res, "Report fetched", { report_key: link.report_key, data });
+            }
             return _400(res, "Unsupported report type");
         } catch (error: any) {
             logger.error("PublicReport.getPublicReport :: ", error?.message || error);
@@ -202,6 +207,31 @@ export class PublicReportController {
                 start: rp.start ?? null,
                 end: rp.end ?? null,
                 year: rp.year ?? null,
+            },
+        );
+    }
+
+    /** imla-kar report — rebuilt from the stored link's snapshotted context and
+     *  report_params. Per-record when new_user_id is present. */
+    private static async buildImlakarData(link: any): Promise<any> {
+        const ctx = link.params || {};
+        const rp = ctx.report_params || {};
+        return ImlakarController.buildImlakarNewData(
+            {
+                district_id: Number(ctx.district_id),
+                taluka_id: Number(ctx.taluka_id),
+                panchayat_id: Number(ctx.panchayat_id),
+                gatgrampanchayat_id: Number(ctx.gatgrampanchayat_id),
+                user_id: Number(ctx.user_id ?? link.user_id),
+            },
+            {
+                ward_no: rp.ward_no ?? null,
+                year: rp.year ?? null,
+                start: rp.start ?? null,
+                end: rp.end ?? null,
+                from_year: rp.from_year ?? null,
+                to_year: rp.to_year ?? null,
+                new_user_id: rp.new_user_id ?? link.newuser_id ?? null,
             },
         );
     }
