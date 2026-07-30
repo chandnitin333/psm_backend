@@ -15,7 +15,9 @@ export class taxGenerationController {
             const decoded_user = jwt.verify(token, getEnvironmentVariable().jwt_secret);
 
             let page_number: number = req.body.page_number ? Number(req.body.page_number) : 1;
-            let ward_no: string = req.body.ward_no ? req.body.ward_no : "";
+            // Ward 0 is valid — don't let a falsy 0 collapse to "" (which drops
+            // the ward filter and returns every record). Guard null/undefined/'' only.
+            let ward_no: string = (req.body.ward_no !== undefined && req.body.ward_no !== null && String(req.body.ward_no) !== '') ? String(req.body.ward_no) : "";
             let from_year: string = req.body.from_year ? req.body.from_year : "";
             let to_year: string = req.body.to_year ? req.body.to_year : "";
             let user_id: number = Number(decoded_user['userId']);

@@ -789,7 +789,8 @@ export async function getRecordBasedOnStartandEnd(user_id: number, ward_number: 
                 AND DELETED_AT IS NULL
             `;
             const params: any[] = [user_id];
-            if (ward_number) {
+            // Ward 0 is valid — guard null/undefined/'' only, not falsy.
+            if (ward_number !== undefined && ward_number !== null && String(ward_number) !== '') {
                 query += ` AND VARD_NUMBER = ?`;
                 params.push(ward_number);
             }
@@ -821,7 +822,7 @@ export async function getTaxLandData(user_id: number, ward_number: number, start
             AND DELETED_AT IS NULL
         `;
         const params: any[] = [user_id];
-        if (ward_number) {
+        if (ward_number !== undefined && ward_number !== null && String(ward_number) !== '') {
             query += ` AND vard_number = ?`;
             params.push(ward_number);
         }
@@ -871,7 +872,7 @@ export async function getUserDataForGharKar(user_id: number, ward_number: number
             AND DELETED_AT IS NULL
         `;
         const params: any[] = [user_id];
-        if (ward_number) {
+        if (ward_number !== undefined && ward_number !== null && String(ward_number) !== '') {
             query += ` AND VARD_NUMBER = ?`;
             params.push(ward_number);
         }
@@ -1037,7 +1038,9 @@ export async function searchCustomer(user_id: number, data: any, page:number): P
                 sql += ' AND a.MALMATTA_NUMBER LIKE ?';
                 params.push(`%${data.txt_malmatta_number}%`);
             }
-            if (data.txt_vard_number) {
+            // Ward 0 is a valid ward — guard against undefined/null/'' only,
+            // not falsy (a plain `if (0)` would drop the filter and return all).
+            if (data.txt_vard_number !== undefined && data.txt_vard_number !== null && String(data.txt_vard_number) !== '') {
                 sql += ' AND a.VARD_NUMBER LIKE ?';
                 params.push(`%${data.txt_vard_number}%`);
             }
@@ -1840,7 +1843,7 @@ export async function searchMagnicheBillData(user_id: number, data: any, page:nu
                 sql += ' AND A.ANNU_KRAMANK <= ?';
                 params.push(`${data.to_anu_kramank}`);
             }
-            if (data.vard_number) {
+            if (data.vard_number !== undefined && data.vard_number !== null && String(data.vard_number) !== '') {
                 sql += ' AND A.VARD_NUMBER LIKE ?';
                 params.push(`%${data.vard_number}%`);
             }

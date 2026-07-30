@@ -286,9 +286,11 @@ export async function searchFerFarYadi(user_id: number, data: any, page:number):
             sql += ' AND A.MALMATTA_NUMBER LIKE ?';
             params.push(`%${data.txt_malmatta_number}%`);
         }
-        if (data.txt_vard_number) {
+        // Ward 0 is valid — guard undefined/null/'' only (not falsy), and
+        // String() so a numeric 0 doesn't crash on .toLowerCase().
+        if (data.txt_vard_number !== undefined && data.txt_vard_number !== null && String(data.txt_vard_number) !== '') {
             sql += ' AND A.VARD_NUMBER LIKE ?';
-            params.push(`%${data.txt_vard_number.toLowerCase()}%`);
+            params.push(`%${String(data.txt_vard_number).toLowerCase()}%`);
         }
         if (data.txt_plot_number) {
             sql += ' AND LOWER(A.PLOT_NO) LIKE ?';

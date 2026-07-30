@@ -43,7 +43,8 @@ export async function searchCustomerVasuli(user_id: number, data: any, page:numb
         sql += " AND a.MALMATTA_NUMBER LIKE ?";
         params.push(`%${data.txt_malmatta_number}%`);
         }
-        if (data.txt_vard_number) {
+        // Ward 0 is valid — guard undefined/null/'' only, not falsy.
+        if (data.txt_vard_number !== undefined && data.txt_vard_number !== null && String(data.txt_vard_number) !== '') {
         sql += " AND a.VARD_NUMBER LIKE ?";
         params.push(`%${data.txt_vard_number}%`);
         }

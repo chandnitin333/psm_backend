@@ -28,7 +28,8 @@ export async function getTaxGenerationData(page:number,ward_no:string,from_year:
                 WHERE A.DELETED_AT IS NULL AND USER_ID = ?`;
         const params: (number | string)[] = [from_year, user_id, user_id];
 
-        if (ward_no) {
+        // Ward 0 is valid — guard for empty string only, not falsy.
+        if (ward_no !== undefined && ward_no !== null && String(ward_no) !== '') {
             sql += " AND A.vard_number = ?";
             params.push(`${ward_no}`);
         }
