@@ -31,7 +31,7 @@ export class DashboardUpload {
             const uploadData = {
                 ...req.body,
                 name: req?.body?.name,
-                r_path: req?.body?.fileDestination + '/' + req?.body?.newFileName,
+                r_path: req?.body?.newFileName,
 
             };
 
@@ -80,7 +80,7 @@ export class DashboardUpload {
             const uploadData = {
                 ...req.body,
                 name: req?.body?.name,
-                r_path: req?.body?.fileDestination + '/' + req?.body?.newFileName,
+                r_path: req?.body?. req?.body?.newFileName,
 
             };
 

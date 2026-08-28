@@ -4,10 +4,11 @@ const fs = require("fs");
 
 const multerStorage = multer.diskStorage({
   destination: async (req, file, cb) => {
-    await fs.promises.mkdir('.'+UPLOAD_PATH, { recursive: true });
+    const uploadDir = './uploads';
+    await fs.promises.mkdir(uploadDir, { recursive: true });
     req.body.fileMimeType = file.mimetype;
     req.body.fileName = file.originalname;
-    req.body.filePath = `${UPLOAD_PATH}${file.originalname}`;
+    // req.body.filePath = `${UPLOAD_PATH}/${file.originalname}`;
     req.body.fileSize = file.size;
     req.body.fileType = file.mimetype.split("/")[0];
     req.body.fileExtension = file.mimetype.split("/")[1];
@@ -16,13 +17,13 @@ const multerStorage = multer.diskStorage({
     req.body.fileField = file.fieldname;
 
     req.files = [file];
-    cb(null, `.${UPLOAD_PATH}`);
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     const ext = file.mimetype.split("/")[1];
     const newFileName = `psm-${file.fieldname}-${Date.now()}.${ext}`;
     req.body.newFileName = newFileName;
-    cb(null, `.${newFileName}`);
+    cb(null, newFileName);
   },
 });
 

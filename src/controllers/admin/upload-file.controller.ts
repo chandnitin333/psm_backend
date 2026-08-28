@@ -26,10 +26,12 @@ export class UploadFile {
             const uploadData = {
                 ...req.body,
                 name: req?.body?.file_name,
-                r_path: req?.body?.fileDestination + '/' + req?.body?.newFileName,
+                r_path: req?.body?.newFileName,
 
             };
-
+            logger.info(`uploadData=====${JSON.stringify(uploadData)}`);
+            console.log("uploadData===",uploadData)
+             logger.info("uploadData=====", uploadData);
             await createUploadFile(uploadData);
             return _201(res, "Upload File created successfully");
         } catch (error) {
@@ -37,7 +39,6 @@ export class UploadFile {
             return _400(res, error.message);
         }
     }
-
 
     static async updateUploadDataInfo(req: Request, res: Response) {
         try {
@@ -72,7 +73,7 @@ export class UploadFile {
             const uploadData = {
                 ...req.body,
                 name: req?.body?.file_name,
-                r_path: req?.body?.fileDestination + '/' + req?.body?.newFileName,
+                r_path: req?.body?.req?.body?.newFileName,
 
             };
 

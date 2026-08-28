@@ -7,6 +7,7 @@ import adminRoutes from './routes/admin.routes';
 import psmRoutes from './routes/psm.routes';
 import bodyParser = require("body-parser");
 import cors = require('cors');
+import { imageResize } from './middleware/imageResize';
 
 
 
@@ -36,6 +37,11 @@ export class Server {
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
         this.app.use(cors({ origin: '*' }));
+
+        // Serve static files from uploads directory.
+        // imageResize runs first: with ?w=<px> it serves a cached resized JPEG
+        // (fast/small for reports & print); without ?w it falls through to static.
+        this.app.use('/uploads', imageResize, express.static('uploads'));
 
         this.app.use((_, res, next) => {
 

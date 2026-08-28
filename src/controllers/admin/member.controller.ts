@@ -10,11 +10,16 @@ export class Memeber {
 
     static async createMember(req: Request, res: Response) {
         try {
+            const { panchayat_id, member_name, destination_id } = req.body || {};
+            if (!panchayat_id || !member_name || !destination_id) {
+                return _400(res, "panchayat_id, member_name and destination_id are required");
+            }
             const member: any = await addMember(req.body);
             return _201(res, "Member created successfully", member);
-        } catch (error) {
-            logger.error("Error creating member", error);
-            return _400(res, "Error creating member");
+        } catch (error: any) {
+            logger.error("Error creating member :: ", error?.message || error);
+            console.error("Error creating member ::", error);
+            return _400(res, error?.message || "Error creating member");
         }
     }
 
